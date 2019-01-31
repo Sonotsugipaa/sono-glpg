@@ -6,6 +6,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "shader.hpp"
+
 #define FPS            (4.0)
 #define FRAMES_SECOND  (1000.0/FPS)
 
@@ -16,6 +18,7 @@ namespace gla {
 	struct Runtime {
 		SDL_Window* window;
 		SDL_GLContext context;
+		ShaderProgram* shader;
 	};
 
 	Runtime* runtime;
@@ -52,18 +55,117 @@ namespace gla {
 		// GLEW
 		glewExperimental = GL_TRUE;
 		glewInit();
+
+		// GL Shader
+		runtime->shader = new ShaderProgram("shader/gltest_v.glsl", "shader/gltest_f.glsl");
+		runtime->shader->use();
 	}
 
 	void cleanup() {
 		SDL_GL_DeleteContext(runtime->context);
 		SDL_DestroyWindow(runtime->window);
+		delete runtime->shader;
 		delete runtime;
 		SDL_Quit();
 	}
 
-	void render() {
+	void render(GLuint* vao_array, std::size_t size) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		for(std::size_t i=0; i < size; i+=1) {
+			glBindVertexArray(vao_array[i]);
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}
+
 		SDL_GL_SwapWindow(gla::runtime->window);
+	}
+
+	GLuint squareVertexVbo() {
+		static const int points=4, coords=3;
+		static const GLfloat square[points][coords] = {
+			{ -0.5f,  0.5f, 0.5f },
+			{  0.5f,  0.5f, 0.5f },
+			{  0.5f, -0.5f, 0.5f },
+			{ -0.5f, -0.5f, 0.5f }
+		};
+		static GLuint retn = 0;
+
+		if(retn == 0) {
+			glGenBuffers(1, &retn);
+			glBindBuffer(GL_ARRAY_BUFFER, retn);
+			glBufferData(
+					GL_ARRAY_BUFFER,
+					points * coords * sizeof(GLfloat),
+					square,
+					GL_STATIC_DRAW );
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			std::cout << "vtx vbo = " << retn << std::endl;
+		}
+
+		return retn;
+	}
+
+	GLuint squareColorVbo() {
+		static const int points=4, coords=4;
+		static const GLfloat square[points][coords] = {
+			{ 1.0f, 0.0f, 0.0f, 1.0f },
+			{ 0.0f, 1.0f, 0.0f, 1.0f },
+			{ 0.0f, 0.0f, 1.0f, 1.0f },
+			{ 1.0f, 0.0f, 1.0f, 1.0f }
+		};
+		static GLuint retn = 0;
+
+		if(retn == 0) {
+			glGenBuffers(1, &retn);
+			glBindBuffer(GL_ARRAY_BUFFER, retn);
+			glBufferData(
+					GL_ARRAY_BUFFER,
+					points * coords * sizeof(GLfloat),
+					square,
+					GL_STATIC_DRAW );
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			std::cout << "col vbo = " << retn << std::endl;
+		}
+
+		return retn;
+	}
+
+	GLuint squareVao() {
+		static GLuint retn = 0;
+
+		if(retn == 0) {
+			GLuint attrib;
+
+			attrib = glGetAttribLocation(runtime->shader->program, "in_position");
+			glGenVertexArrays(1, &retn);
+			glBindVertexArray(retn);
+			
+			glBindBuffer(GL_ARRAY_BUFFER, squareVertexVbo());
+			glVertexAttribPointer(
+					attrib,
+					3,        /* number of values */
+					GL_FLOAT, /* type of values   */
+					GL_FALSE, /* normalized       */
+					0,        /* stride           */
+					0         /* offset           */ );
+			glEnableVertexAttribArray(attrib);
+
+			attrib = glGetAttribLocation(runtime->shader->program, "in_color");
+			glBindBuffer(GL_ARRAY_BUFFER, squareColorVbo());
+			glVertexAttribPointer(
+					attrib,
+					4,        /* number of values */
+					GL_FLOAT, /* type of values   */
+					GL_FALSE, /* normalized       */
+					0,        /* stride           */
+					0         /* offset           */ );
+
+			glEnableVertexAttribArray(attrib);
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			std::cout << "vao = " << retn << std::endl;
+		}
+
+		return retn;
 	}
 
 	void run() {
@@ -71,9 +173,11 @@ namespace gla {
 		int x=3, y=3;
 		bool quit = false;
 		bool ignore_ev = false;
+		GLuint vao = squareVao();
+
 
 		glClearColor(((float) x) / 10.0f, ((float) x) / 10.0f, 0.3f, 1.0f);
-		render();
+		render(&vao, 1);
 
 		while(! quit) {
 			SDL_PollEvent(&event);
@@ -88,6 +192,7 @@ namespace gla {
 						case SDLK_RIGHT: x++; break;
 						case SDLK_UP:    y--; break;
 						case SDLK_DOWN:  y++; break;
+						default: ignore_ev = true; break;
 					}
 					std::cout << x << ", " << y << std::endl;
 					break;
@@ -97,7 +202,10 @@ namespace gla {
 
 			if(! ignore_ev) {
 				glClearColor(((float) x) / 10.0f, 0.3f, ((float) y) / 10.0f, 1.0f);
-				render();
+
+				render(&vao, 1);
+
+				glBindVertexArray(0);
 				SDL_Delay(FRAMES_SECOND);
 			} else {
 				ignore_ev = false;
