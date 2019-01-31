@@ -1,7 +1,6 @@
 #include <SDL2/SDL.h>
 
-#include <stdbool.h>
-#include <stdio.h>
+#include <cstdio>
 
 #define FPS            (2.0)
 #define FRAMES_SECOND  (1000.0/FPS)
