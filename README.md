@@ -48,7 +48,16 @@ to compile/link.
 
 
 # License
+
 I will be frank: I have no idea how to use, manage or understand licences.
 This is amateur code, I'm not going to sue anyone who uses any of my code;
 just be aware of the licensed libraries and tools you (and I) are going to use,
 which are all available for free for non-commercial use.
+
+
+# Resources
+
+<p>
+OpenGL / SDL tutorial<br>
+http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
+</p>
