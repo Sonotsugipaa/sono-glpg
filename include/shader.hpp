@@ -1,3 +1,6 @@
+#ifndef SONOGLPG_SHADER_HPP
+#define SONOGLPG_SHADER_HPP
+
 #include <string>
 
 
@@ -15,3 +18,5 @@ namespace gla {
 	};
 
 }
+
+#endif

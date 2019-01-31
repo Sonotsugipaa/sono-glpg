@@ -1,3 +1,6 @@
+#ifndef SONOGLPG_SHADER_HPP
+#define SONOGLPG_SHADER_HPP
+
 #define GL3_PROTOTYPES 1
 #include <GL/glew.h>
 
@@ -29,3 +32,5 @@ namespace gla {
 	};
 
 }
+
+#endif
