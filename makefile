@@ -21,13 +21,13 @@ make_exec: $(ALL_MAIN_SRCS)
 bin/%: $(ALL_OBJS) src/main/%.c
 	#
 	# ----- C executable ----- #
-	gcc $(CFLAGS) $^ $(LIBS) -o $@
+	gcc $(CFLAGS)-o"$@" $^ $(LIBS) 
 
 # links all C++ source files from ./src/main
 bin/%: $(ALL_OBJS) src/main/%.cpp
 	#
 	# ----- C++ executable ----- #
-	g++ $(CPPFLAGS) $^ $(LIBS) -o $@
+	g++ $(CPPFLAGS) -o"$@" $^ $(LIBS)
 
 # compiles a C source file from ./src
 build/%.o: src/%.c
