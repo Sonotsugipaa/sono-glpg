@@ -21,7 +21,7 @@ make_exec: $(ALL_MAIN_SRCS)
 bin/%: $(ALL_OBJS) src/main/%.c
 	#
 	# ----- C executable ----- #
-	gcc $(CFLAGS)-o"$@" $^ $(LIBS) 
+	gcc $(CFLAGS) -o"$@" $^ $(LIBS) 
 
 # links all C++ source files from ./src/main
 bin/%: $(ALL_OBJS) src/main/%.cpp
