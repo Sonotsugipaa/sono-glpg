@@ -6,7 +6,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "shader.h"
+#include "shader.hpp"
 
 #define FPS            (4.0)
 #define FRAMES_SECOND  (1000.0/FPS)
@@ -18,10 +18,10 @@ namespace gla {
 	struct Runtime {
 		SDL_Window* window;
 		SDL_GLContext context;
+		ShaderProgram* shader;
 	};
 
 	Runtime* runtime;
-	Shader shader;
 
 
 	void init() {
@@ -55,16 +55,28 @@ namespace gla {
 		// GLEW
 		glewExperimental = GL_TRUE;
 		glewInit();
+
+		// GL Shader
+		runtime->shader = new ShaderProgram("shader/gltest_v.glsl", "shader/gltest_f.glsl");
+		runtime->shader->use();
 	}
 
 	void cleanup() {
 		SDL_GL_DeleteContext(runtime->context);
 		SDL_DestroyWindow(runtime->window);
+		delete runtime->shader;
 		delete runtime;
 		SDL_Quit();
 	}
 
-	void render() {
+	void render(GLuint* vao_array, std::size_t size) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		for(std::size_t i=0; i < size; i+=1) {
+			glBindVertexArray(vao_array[i]);
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}
+
 		SDL_GL_SwapWindow(gla::runtime->window);
 	}
 
@@ -96,10 +108,10 @@ namespace gla {
 	GLuint squareColorVbo() {
 		static const int points=4, coords=4;
 		static const GLfloat square[points][coords] = {
-			{ 0.5f, 0.0f, 0.0f, 1.0f },
-			{ 0.0f, 0.5f, 0.0f, 1.0f },
-			{ 0.0f, 0.0f, 0.5f, 1.0f },
-			{ 0.5f, 0.0f, 0.5f, 1.0f }
+			{ 1.0f, 0.0f, 0.0f, 1.0f },
+			{ 0.0f, 1.0f, 0.0f, 1.0f },
+			{ 0.0f, 0.0f, 1.0f, 1.0f },
+			{ 1.0f, 0.0f, 1.0f, 1.0f }
 		};
 		static GLuint retn = 0;
 
@@ -122,29 +134,33 @@ namespace gla {
 		static GLuint retn = 0;
 
 		if(retn == 0) {
+			GLuint attrib;
+
+			attrib = glGetAttribLocation(runtime->shader->program, "in_position");
 			glGenVertexArrays(1, &retn);
+			glBindVertexArray(retn);
+			
 			glBindBuffer(GL_ARRAY_BUFFER, squareVertexVbo());
-			glBindVertexArray(retn);
 			glVertexAttribPointer(
-					/* attrib id        */ 0,
-					/* number of values */ 3,
-					/* type of values   */ GL_FLOAT,
-					/* normalized       */ GL_FALSE,
-					/* stride           */ 0,
-					/* offset           */ 0 );
-			glEnableVertexAttribArray(0 /* attrib id, same as above */);
+					attrib,
+					3,        /* number of values */
+					GL_FLOAT, /* type of values   */
+					GL_FALSE, /* normalized       */
+					0,        /* stride           */
+					0         /* offset           */ );
+			glEnableVertexAttribArray(attrib);
 
+			attrib = glGetAttribLocation(runtime->shader->program, "in_color");
 			glBindBuffer(GL_ARRAY_BUFFER, squareColorVbo());
-			glBindVertexArray(retn);
 			glVertexAttribPointer(
-					/* attrib id        */ 1,
-					/* number of values */ 4,
-					/* type of values   */ GL_FLOAT,
-					/* normalized       */ GL_FALSE,
-					/* stride           */ 0,
-					/* offset           */ 0 );
+					attrib,
+					4,        /* number of values */
+					GL_FLOAT, /* type of values   */
+					GL_FALSE, /* normalized       */
+					0,        /* stride           */
+					0         /* offset           */ );
 
-			glEnableVertexAttribArray(1 /* attrib id, same as above */);
+			glEnableVertexAttribArray(attrib);
 			//glBindBuffer(GL_ARRAY_BUFFER, 0);
 			std::cout << "vao = " << retn << std::endl;
 		}
@@ -161,7 +177,7 @@ namespace gla {
 
 
 		glClearColor(((float) x) / 10.0f, ((float) x) / 10.0f, 0.3f, 1.0f);
-		render();
+		render(&vao, 1);
 
 		while(! quit) {
 			SDL_PollEvent(&event);
@@ -186,12 +202,8 @@ namespace gla {
 
 			if(! ignore_ev) {
 				glClearColor(((float) x) / 10.0f, 0.3f, ((float) y) / 10.0f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-				glBindVertexArray(vao);
-				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-				render();
+				render(&vao, 1);
 
 				glBindVertexArray(0);
 				SDL_Delay(FRAMES_SECOND);
@@ -207,13 +219,7 @@ namespace gla {
 int main (int argn, char** argv) {
 	gla::init();
 
-	if(! gla::shader.Init())
-		return EXIT_FAILURE;
-	gla::shader.UseProgram();
-
 	gla::run();
-
-	gla::shader.CleanUp();
 
 	gla::cleanup();
 	return EXIT_SUCCESS;
