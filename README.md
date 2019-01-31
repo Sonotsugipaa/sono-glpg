@@ -1,4 +1,4 @@
-# Sonotsugipaa's OpenGL (pg...? I forgot)
+# Sonotsugipaa's OpenGL Playground
 
 <p>
 Small workspace to play around with OpenGL.
