@@ -11,6 +11,10 @@
 
 namespace gla {
 
+	/* Deleted member functions: copying a VertexBuffer or a
+	 * VertexArray *WILL* trigger unexpected and duplicate
+	 * deallocations. */
+
 	class VertexBuffer {
 	protected:
 		GLenum target;
@@ -19,11 +23,16 @@ namespace gla {
 		const GLenum usage;
 
 		VertexBuffer(GLuint target, GLenum usage);
+		VertexBuffer(VertexBuffer&) = delete;
+		VertexBuffer(VertexBuffer&&) = delete;
 		~VertexBuffer();
 
 		void bind();
 		GLuint id();
 		void bufferData(void* data_pointer, size_t data_size);
+
+		VertexBuffer& operator = (VertexBuffer&) = delete;
+		VertexBuffer& operator = (VertexBuffer&&) = delete;
 	};
 
 
@@ -32,6 +41,8 @@ namespace gla {
 		GLuint vao_id;
 	public:
 		VertexArray();
+		VertexArray(VertexArray&) = delete;
+		VertexArray(VertexArray&&) = delete;
 		~VertexArray();
 
 		void assignVertexBuffer(
@@ -40,6 +51,9 @@ namespace gla {
 				GLsizei stride, GLvoid* offset );
 		void bind();
 		GLuint id();
+
+		VertexArray& operator = (VertexArray&) = delete;
+		VertexArray& operator = (VertexArray&&) = delete;
 	};
 
 }
