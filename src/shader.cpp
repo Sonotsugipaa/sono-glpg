@@ -21,40 +21,31 @@ namespace {
 	}
 
 	void printShaderLinkingError(GLuint shaderProgram) {
-		std::cout << "\033[1;91mShader linking failed : " << std::endl;
+		std::cout << "\033[1;91mShader linking failed." << std::endl;
 
-		// Find length of shader info log
 		int maxLength;
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
 
-		std::cout << "Info Length : " << maxLength << std::endl;
-
-		// Get shader info log
 		char* shaderProgramInfoLog = new char[maxLength];
 		glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, shaderProgramInfoLog);
 
 		std::cout
-				<< "Linker error message : " << shaderProgramInfoLog
+				<< "Linker error message: " << shaderProgramInfoLog
 		 		<< "\033[m" << std::endl;
 
-		/* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
-		/* In this simple program, we'll just leave */
 		delete shaderProgramInfoLog;
 		return;
 	}
 
 	void printShaderCompilationErrorInfo(GLuint shaderId) {
-		std::cout << "\033[1;91mShader compilation failed : " << std::endl;
+		std::cout << "\033[1;91mShader compilation failed." << std::endl;
 
-		// Find length of shader info log
 		int maxLength;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &maxLength);
 
-		// Get shader info log
 		char* shaderInfoLog = new char[maxLength];
 		glGetShaderInfoLog(shaderId, maxLength, &maxLength, shaderInfoLog );
 
-		// Print shader info log
 		std::cout
 			<< "\tError info : " << shaderInfoLog << "\033[m" << std::endl;
 		delete shaderInfoLog;
