@@ -1,5 +1,5 @@
-#ifndef SONOGLPG_SHADER_HPP
-#define SONOGLPG_SHADER_HPP
+#ifndef SONOGLPG_GLOBJECT_HPP
+#define SONOGLPG_GLOBJECT_HPP
 
 #include <vector>
 

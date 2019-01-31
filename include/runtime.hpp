@@ -1,5 +1,5 @@
-#ifndef SONOGLPG_SHADER_HPP
-#define SONOGLPG_SHADER_HPP
+#ifndef SONOGLPG_RUNTIME_HPP
+#define SONOGLPG_RUNTIME_HPP
 
 #define GL3_PROTOTYPES 1
 #include <GL/glew.h>
