@@ -6,6 +6,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "shader.h"
+
 #define FPS            (4.0)
 #define FRAMES_SECOND  (1000.0/FPS)
 
@@ -19,6 +21,7 @@ namespace gla {
 	};
 
 	Runtime* runtime;
+	Shader shader;
 
 
 	void init() {
@@ -62,8 +65,91 @@ namespace gla {
 	}
 
 	void render() {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		SDL_GL_SwapWindow(gla::runtime->window);
+	}
+
+	GLuint squareVertexVbo() {
+		static const int points=4, coords=3;
+		static const GLfloat square[points][coords] = {
+			{ -0.5f,  0.5f, 0.5f },
+			{  0.5f,  0.5f, 0.5f },
+			{  0.5f, -0.5f, 0.5f },
+			{ -0.5f, -0.5f, 0.5f }
+		};
+		static GLuint retn = 0;
+
+		if(retn == 0) {
+			glGenBuffers(1, &retn);
+			glBindBuffer(GL_ARRAY_BUFFER, retn);
+			glBufferData(
+					GL_ARRAY_BUFFER,
+					points * coords * sizeof(GLfloat),
+					square,
+					GL_STATIC_DRAW );
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			std::cout << "vtx vbo = " << retn << std::endl;
+		}
+
+		return retn;
+	}
+
+	GLuint squareColorVbo() {
+		static const int points=4, coords=4;
+		static const GLfloat square[points][coords] = {
+			{ 0.5f, 0.0f, 0.0f, 1.0f },
+			{ 0.0f, 0.5f, 0.0f, 1.0f },
+			{ 0.0f, 0.0f, 0.5f, 1.0f },
+			{ 0.5f, 0.0f, 0.5f, 1.0f }
+		};
+		static GLuint retn = 0;
+
+		if(retn == 0) {
+			glGenBuffers(1, &retn);
+			glBindBuffer(GL_ARRAY_BUFFER, retn);
+			glBufferData(
+					GL_ARRAY_BUFFER,
+					points * coords * sizeof(GLfloat),
+					square,
+					GL_STATIC_DRAW );
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			std::cout << "col vbo = " << retn << std::endl;
+		}
+
+		return retn;
+	}
+
+	GLuint squareVao() {
+		static GLuint retn = 0;
+
+		if(retn == 0) {
+			glGenVertexArrays(1, &retn);
+			glBindBuffer(GL_ARRAY_BUFFER, squareVertexVbo());
+			glBindVertexArray(retn);
+			glVertexAttribPointer(
+					/* attrib id        */ 0,
+					/* number of values */ 3,
+					/* type of values   */ GL_FLOAT,
+					/* normalized       */ GL_FALSE,
+					/* stride           */ 0,
+					/* offset           */ 0 );
+			glEnableVertexAttribArray(0 /* attrib id, same as above */);
+
+			glBindBuffer(GL_ARRAY_BUFFER, squareColorVbo());
+			glBindVertexArray(retn);
+			glVertexAttribPointer(
+					/* attrib id        */ 1,
+					/* number of values */ 4,
+					/* type of values   */ GL_FLOAT,
+					/* normalized       */ GL_FALSE,
+					/* stride           */ 0,
+					/* offset           */ 0 );
+
+			glEnableVertexAttribArray(1 /* attrib id, same as above */);
+			//glBindBuffer(GL_ARRAY_BUFFER, 0);
+			std::cout << "vao = " << retn << std::endl;
+		}
+
+		return retn;
 	}
 
 	void run() {
@@ -71,6 +157,8 @@ namespace gla {
 		int x=3, y=3;
 		bool quit = false;
 		bool ignore_ev = false;
+		GLuint vao = squareVao();
+
 
 		glClearColor(((float) x) / 10.0f, ((float) x) / 10.0f, 0.3f, 1.0f);
 		render();
@@ -88,6 +176,7 @@ namespace gla {
 						case SDLK_RIGHT: x++; break;
 						case SDLK_UP:    y--; break;
 						case SDLK_DOWN:  y++; break;
+						default: ignore_ev = true; break;
 					}
 					std::cout << x << ", " << y << std::endl;
 					break;
@@ -97,7 +186,14 @@ namespace gla {
 
 			if(! ignore_ev) {
 				glClearColor(((float) x) / 10.0f, 0.3f, ((float) y) / 10.0f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				glBindVertexArray(vao);
+				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
 				render();
+
+				glBindVertexArray(0);
 				SDL_Delay(FRAMES_SECOND);
 			} else {
 				ignore_ev = false;
@@ -111,7 +207,13 @@ namespace gla {
 int main (int argn, char** argv) {
 	gla::init();
 
+	if(! gla::shader.Init())
+		return EXIT_FAILURE;
+	gla::shader.UseProgram();
+
 	gla::run();
+
+	gla::shader.CleanUp();
 
 	gla::cleanup();
 	return EXIT_SUCCESS;
