@@ -11,7 +11,7 @@ namespace gla {
 	Runtime::Runtime(
 			std::string name,
 			int x, int y, int w, int h,
-			bool vsync,
+			bool resizable, bool vsync,
 			std::string vshader, std::string fshader
 	) {
 		// SDL
@@ -39,9 +39,11 @@ namespace gla {
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 		// VSync, apparently...?
-		if(vsync) {
+		if(vsync)
 			SDL_GL_SetSwapInterval(1);
-		}
+
+		SDL_SetWindowResizable(window, resizable? SDL_TRUE : SDL_FALSE);
+
 
 		// GLEW
 		glewExperimental = GL_TRUE;

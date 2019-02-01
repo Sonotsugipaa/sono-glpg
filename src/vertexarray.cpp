@@ -34,4 +34,8 @@ namespace gla {
 		glEnableVertexAttribArray(attrib_pos);
 	}
 
+	GLuint VertexArray::id() {
+		return vao_id;
+	}
+
 }
