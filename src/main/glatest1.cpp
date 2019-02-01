@@ -167,14 +167,16 @@ namespace gla {
 	}
 
 
-	GLfloat data_vertex[4][3] = {
-		{ -0.5f,  0.5f, 0.5f },
-		{  0.5f,  0.5f, 0.5f },
-		{  0.5f, -0.5f, 0.5f },
-		{ -0.5f, -0.5f, 0.5f }
+	GLfloat data_vertex[5][3] = {
+		{ -0.5f,  0.5f, 0.0f },
+		{  0.0f, 0.7f, 0.0f },
+		{  0.5f,  0.5f, 0.0f },
+		{  0.5f, -0.5f, 0.0f },
+		{ -0.5f, -0.5f, 0.0f }
 	};
 
-	GLfloat data_color[4][4] = {
+	GLfloat data_color[5][4] = {
+		{ 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 1.0f, 0.0f, 0.0f, 1.0f },
 		{ 0.0f, 1.0f, 0.0f, 1.0f },
@@ -210,14 +212,14 @@ int main(int argn, char** argv) {
 
 	VertexBuffer vb_vertex = VertexBuffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
 	VertexBuffer vb_color =  VertexBuffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
-	vb_vertex.bufferData(data_vertex, 4*3*sizeof(GLfloat));
-	vb_color.bufferData(data_color, 4*4*sizeof(GLfloat));
+	vb_vertex.bufferData(data_vertex, 5*3*sizeof(GLfloat));
+	vb_color.bufferData(data_color, 5*4*sizeof(GLfloat));
 
 	std::cout
 			<< "pos attrib " << glGetAttribLocation(runtime.shader->program, "in_position") << std::endl
 			<< "col attrib " << glGetAttribLocation(runtime.shader->program, "in_color") << std::endl;
 
-	Shape shape = Shape(vb_vertex, vb_color, 4);
+	Shape shape = Shape(vb_vertex, vb_color, 5);
 
 	run(&runtime, &shape);
 
