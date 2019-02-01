@@ -17,26 +17,50 @@ Now that I think about it, I'm not breaching any copyright gizmo... am I?
 1. `g++`, the C++ compiler
 2. GNU Make (`make`)
 3. Additional OpenGL related packages (more info below)
-4. Hardware that supports OpenGL 3.
+4. Hardware that supports OpenGL 3
+
+
+# Dependencies
+
+- The ones mentioned in '<b>Requirements</b>'
+- OpenGL 3, GLEW, SDL2
+- GLM (only the headers, for vector and matrix operations)
+- Git (obviously)
 
 
 # Setup
 
-First you need to install some dependencies: _OpenGL_, _GLEW_ and _SDL2_.<br>
+<p>
+First you need to install some dependencies: <i>OpenGL</i>, <i>GLEW</i> and
+<i>SDL2</i>.
+<br>
 On Ubuntu (and derivates), install these packages:
-```bash
-sudo apt-get update
-sudo apt-get install libsdl2-dev libgl1-mesa-dev libx11-dev libxrandr-dev
-```
-And... that's it, actually. For now.
+
+		sudo apt-get update
+		sudo apt-get install libsdl2-dev libgl1-mesa-dev libx11-dev libxrandr-dev
+
+</p> <p>
+Next, you need the GLM headers. The most space-efficient way to do so is to
+download the latest version (https://github.com/g-truc/glm/releases/tag/0.9.9.3)
+and extract the header files, found in the folder `glm/glm/`, to `/usr/include`:
+to do so, temporarily extract the `glm/glm/` folder (<i>NOT THE PARENT</i>, `glm/`!),
+open a terminal where you extracted the folder and enter
+`sudo mv ./glm /usr/include/.` .
+<br>
+If everything went according to my plan, you now have the file
+`/usr/include/glm/glm.hpp`, among others; you're going to have a stray
+`CMakeLists.txt`, you can safely remove that - at least for the scope of
+this workspace.
+</p> <p>
+That's it, for now.
+</p>
 
 
 # Usage
 
 <p>
-To create an executable program, create a source file (ending with either `*.c`
-or `*.cpp`) in the `src/main/` folder - this file must contain the main
-function.
+To create an executable program, create a source file (ending with `*.cpp`) in
+the `src/main/` folder - this file must contain the main function.
 If you want to create intermediate objects, create and write source files in
 `src/` with the aforementioned file extension, and it will automatically be
 compiled to `build/` and used when compiling executables, which can be found
@@ -52,7 +76,7 @@ To clear compiled intermediate files, run `make clear`; if you want to delete
 executables too, run `make purge`.
 <br>
 To compile single executables or intermediate files, run `make bin/NAME` or
-`make build/NAME`, where _NAME_ is (obviously) the name of the file you want
+`make build/NAME`, where 'NAME' is (obviously) the name of the file you want
 to compile/link.
 </p>
 
