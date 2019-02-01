@@ -24,6 +24,7 @@ namespace gla {
 				                          * SDL_WINDOWPOS_CENTERED or
 				                          * SDL_WINDOWPOS_UNDEFINED */
 				int width, int height,
+				bool resizable,
 				bool vsync,
 				std::string vertex_shader_name,
 				std::string fragment_shader_name );

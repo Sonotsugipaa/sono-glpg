@@ -195,7 +195,7 @@ int main(int argn, char** argv) {
 		"glatest",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		WIDTH, HEIGHT,
-		true,
+		true, true,
 		"shader/gltest_v.glsl",
 		"shader/gltest_f.glsl" );
 
