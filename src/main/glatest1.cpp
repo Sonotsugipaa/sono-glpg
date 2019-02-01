@@ -8,20 +8,47 @@
 
 #include "runtime.hpp"
 #include "globject.hpp"
-#include "shapes3d.hpp"
 
-#define FPS            (4.0)
+#define FPS            (8.0)
 #define FRAMES_SECOND  (1000.0/FPS)
 
 
 
 namespace gla {
 
+	class Shape {
+	protected:
+		VertexArray va;
+		GLenum draw_mode;
+		GLuint vectors_n;
+	public:
+		Shape(
+				GLenum draw_mode, VertexBuffer& vertex_vb,
+				VertexBuffer& color_vb, std::size_t vectors_n
+		):
+				draw_mode(draw_mode), vectors_n(vectors_n)
+		{
+			va.assignVertexBuffer(
+					vertex_vb, 0,
+					3, GL_FLOAT, GL_FALSE,
+					0, 0 );
+			va.assignVertexBuffer(
+					color_vb, 1,
+					4, GL_FLOAT, GL_FALSE,
+					0, 0 );
+		}
+
+		void draw() {
+			va.bind();
+			glDrawArrays(draw_mode, 0, vectors_n);
+		}
+	};
+
+
 	void render(Runtime* runtime, Shape* shape, std::size_t size) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for(std::size_t i=0; i < size; i+=1) {
-			std::cout << "render [" << i << "]" << std::endl;
 			shape[i].draw();
 		}
 
