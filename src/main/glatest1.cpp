@@ -6,27 +6,54 @@
 
 #include <SDL2/SDL.h>
 
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+
 #include "runtime.hpp"
 #include "globject.hpp"
 
 #define FPS            (8.0)
 #define FRAMES_SECOND  (1000.0/FPS)
+#define STEPS          (10)
 
 
 
 namespace gla {
 
+	GLint uniform_trans, uniform_proj;
+
+
 	class Shape {
 	protected:
 		VertexArray va;
-		GLenum draw_mode;
+		glm::mat4 trans;
+		glm::vec2* vertices_cache = nullptr;
 		GLuint vectors_n;
+
+		void cache_reset() {
+			if(vertices_cache != nullptr)
+				delete[] vertices_cache;
+		}
+
+		void cache_populate() {
+			if(vertices_cache == nullptr)
+				vertices_cache = new glm::vec2[vectors_n];
+
+			for(GLuint i=0; i < vectors_n; i+=1) {
+				//std::cout << "populated " << va.id() << "[" << i << "]" << std::endl;
+				vertices_cache[i] = glm::vec2(trans * glm::vec4(0.0f));
+				std::cout << "trans " << vertices_cache[i].x << ", " << vertices_cache[i].y << std::endl;
+			}
+		}
 	public:
 		Shape(
-				GLenum draw_mode, VertexBuffer& vertex_vb,
-				VertexBuffer& color_vb, std::size_t vectors_n
+				VertexBuffer& vertex_vb, VertexBuffer& color_vb,
+				std::size_t vectors_n
 		):
-				draw_mode(draw_mode), vectors_n(vectors_n)
+				vectors_n(vectors_n)
 		{
 			va.assignVertexBuffer(
 					vertex_vb, 0,
@@ -36,11 +63,29 @@ namespace gla {
 					color_vb, 1,
 					4, GL_FLOAT, GL_FALSE,
 					0, 0 );
+			cache_populate();
 		}
 
 		void draw() {
 			va.bind();
-			glDrawArrays(draw_mode, 0, vectors_n);
+			glUniformMatrix4fv(
+					uniform_trans, /* uniform location   */
+					1,             /* number of matrices */
+					GL_FALSE,      /* transpose          */
+					&trans[0][0]   /* first value        */ );
+			glDrawArrays(GL_LINE_LOOP, 0, vectors_n);
+		}
+
+		void setPos(glm::vec3 pos, float rotation) {
+			std::cout << "set pos " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
+			/*
+			trans = glm::rotate(
+					glm::translate(glm::mat4(1.0f), pos),
+					rotation,
+					glm::vec3(0.0f, 0.0f, 1.0f) );
+			*/
+			trans = glm::translate(glm::mat4(1.0f), pos);
+			cache_populate();
 		}
 	};
 
@@ -57,11 +102,23 @@ namespace gla {
 
 	void run(Runtime* runtime, Shape* shape) {
 		SDL_Event event;
-		int x=0, y=0;
+		int x=0, y=0, z=0;
 		bool quit = false;
 		bool ignore_ev = false;
 
-		glClearColor(((float) x) / 10.0f, ((float) x) / 10.0f, 0.0f, 1.0f);
+		glClearColor(
+				((float) (x + (STEPS/2))) / STEPS,
+				((float) (y + (STEPS/2))) / STEPS,
+				((float) (z + (STEPS/2))) / STEPS,
+				1.0f );
+
+		shape->setPos(
+				glm::vec3(
+					( (float) x) / STEPS,
+					( (float) y) / STEPS,
+					(((float) z) / STEPS) -1.0f ),
+				0 );
+
 		render(runtime, shape, 1);
 
 		while(! quit) {
@@ -73,21 +130,33 @@ namespace gla {
 					break;
 				case SDL_KEYDOWN:
 					switch(event.key.keysym.sym) {
-						case SDLK_LEFT:  x--; break;
-						case SDLK_RIGHT: x++; break;
-						case SDLK_UP:    y--; break;
-						case SDLK_DOWN:  y++; break;
+						case SDLK_LEFT:      x--;  break;
+						case SDLK_RIGHT:     x++;  break;
+						case SDLK_UP:        y--;  break;
+						case SDLK_DOWN:      y++;  break;
+						case SDLK_PAGEUP:    z--;  break;
+						case SDLK_PAGEDOWN:  z++;  break;
 						default: ignore_ev = true; break;
 					}
-					std::cout << x << ", " << y << std::endl;
+					//std::cout << x << ", " << y << std::endl;
 					break;
 				default:
 					ignore_ev = true;
 			}
 
 			if(! ignore_ev) {
-				glClearColor(((float) x) / 10.0f, 0.0f, ((float) y) / 10.0f, 1.0f);
+				glClearColor(
+						((float) (x + (STEPS/2))) / STEPS,
+						((float) (y + (STEPS/2))) / STEPS,
+						((float) (z + (STEPS/2))) / STEPS,
+						1.0f );
 
+				shape->setPos(
+						glm::vec3(
+							( (float) x) / STEPS,
+							( (float) y) / STEPS,
+							(((float) z) / STEPS) -1.0f ),
+						0 );
 				render(runtime, shape, 1);
 
 				SDL_Delay(FRAMES_SECOND);
@@ -118,13 +187,26 @@ namespace gla {
 int main(int argn, char** argv) {
 	using namespace gla;
 
+	const GLint
+		WIDTH = 600,
+		HEIGHT = 500;
+
 	Runtime runtime = Runtime(
 		"glatest",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		600, 600,
+		WIDTH, HEIGHT,
 		true,
 		"shader/gltest_v.glsl",
 		"shader/gltest_f.glsl" );
+
+	uniform_trans = glGetUniformLocation(runtime.shader->program, "uni_trans");
+	uniform_proj = glGetUniformLocation(runtime.shader->program, "uni_proj");
+	std::cout << "uni_trans " << uniform_trans << std::endl;
+	std::cout << "uni_proj  " << uniform_proj << std::endl;
+	{
+		glm::mat4 proj = glm::perspective(90.0f, (GLfloat) WIDTH / HEIGHT, 0.2f, 100.0f);
+		glUniformMatrix4fv(uniform_proj, 1, GL_FALSE, &proj[0][0]);
+	}
 
 	VertexBuffer vb_vertex = VertexBuffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
 	VertexBuffer vb_color =  VertexBuffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
@@ -135,7 +217,7 @@ int main(int argn, char** argv) {
 			<< "pos attrib " << glGetAttribLocation(runtime.shader->program, "in_position") << std::endl
 			<< "col attrib " << glGetAttribLocation(runtime.shader->program, "in_color") << std::endl;
 
-	Shape shape = Shape(GL_TRIANGLE_FAN, vb_vertex, vb_color, 4);
+	Shape shape = Shape(vb_vertex, vb_color, 4);
 
 	run(&runtime, &shape);
 
