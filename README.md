@@ -84,7 +84,7 @@ to compile/link.
 # License
 
 I will be frank: I have no idea how to use, manage or understand licences.
-This is amateur code, I'm not going to sue anyone who uses any of my code;
+This is amateur code, I'm not going to sue anyone who uses any of it;
 just be aware of the licensed libraries and tools you (and I) are going to use,
 which are all available for free for non-commercial use.
 <br>
