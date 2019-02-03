@@ -21,7 +21,11 @@ namespace gla {
 	class CompilationException : public std::exception {
 		std::string msg;
 	public:
-		CompilationException(bool linker, char* message);
+		 // Linking error
+		CompilationException(const char * message);
+		 // Compilation error
+		CompilationException(const char * shader, const char * message);
+
 		const char * what() const noexcept;
 	};
 
