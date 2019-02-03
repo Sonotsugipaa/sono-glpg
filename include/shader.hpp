@@ -2,6 +2,7 @@
 #define SONOGLPG_SHADER_HPP
 
 #include <string>
+#include <exception>
 
 
 
@@ -15,6 +16,17 @@ namespace gla {
 		~ShaderProgram();
 
 		void use();
+	};
+
+	class CompilationException : public std::exception {
+		std::string msg;
+	public:
+		 // Linking error
+		CompilationException(const char * message);
+		 // Compilation error
+		CompilationException(const char * shader, const char * message);
+
+		const char * what() const noexcept;
 	};
 
 }
