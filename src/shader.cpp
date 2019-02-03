@@ -21,34 +21,27 @@ namespace {
 	}
 
 	void printShaderLinkingError(GLuint shaderProgram) {
-		std::cout << "\033[1;91mShader linking failed." << std::endl;
-
 		int maxLength;
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
-
+		
 		char* shaderProgramInfoLog = new char[maxLength];
 		glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, shaderProgramInfoLog);
 
-		std::cout
-				<< "Linker error message: " << shaderProgramInfoLog
-		 		<< "\033[m" << std::endl;
-
-		delete shaderProgramInfoLog;
-		return;
+		gla::CompilationException ex = gla::CompilationException(true, shaderProgramInfoLog);
+		delete[] shaderProgramInfoLog;
+		throw ex;
 	}
 
 	void printShaderCompilationErrorInfo(GLuint shaderId) {
-		std::cout << "\033[1;91mShader compilation failed." << std::endl;
-
 		int maxLength;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &maxLength);
 
 		char* shaderInfoLog = new char[maxLength];
 		glGetShaderInfoLog(shaderId, maxLength, &maxLength, shaderInfoLog );
 
-		std::cout
-			<< "\tError info : " << shaderInfoLog << "\033[m" << std::endl;
-		delete shaderInfoLog;
+		gla::CompilationException ex = gla::CompilationException(false, shaderInfoLog);
+		delete[] shaderInfoLog;
+		throw ex;
 	}
 
 	void compile_shader(
@@ -109,6 +102,21 @@ namespace gla {
 
 	void ShaderProgram::use() {
 		glUseProgram(program);
+	}
+
+
+	CompilationException::CompilationException(
+			bool ln, char* message
+	) {
+		msg =
+				std::string("\033[1;91mShader ") +
+				(ln? "Linking" : "Compilation") +
+				" error.\n" +
+				message + "\033[m\n";
+	}
+
+	const char * CompilationException::what() const noexcept {
+		return msg.c_str();
 	}
 
 }
