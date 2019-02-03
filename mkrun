@@ -1,0 +1,2 @@
+printf $'\e[H\e[2J\e[3J'
+make "bin/$1" && "bin/$1"
