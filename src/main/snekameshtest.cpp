@@ -1,6 +1,8 @@
 #include <iostream>
-#include <cstdlib>
+#include <thread>
+#include <chrono>
 
+#include <cstdlib>
 #include <cstdio>
 
 #include "sneka/pool.hpp"
@@ -82,10 +84,10 @@ namespace {
 	}
 
 	void set_pos(glm::vec3 pos, GLfloat rot) {
-		mat_trans = glm::translate(
-				//glm::rotate(glm::mat4(1.0f), rot, glm::vec3(0.0f, 1.0f, 0.0f)),
-				glm::mat4(1.0f),
-				pos );
+		mat_trans = glm::rotate(
+				glm::translate(glm::mat4(1.0f), pos),
+				rot,
+				glm::vec3(0.0f, 1.0f, 0.0f) );
 
 		glUniformMatrix4fv(
 				sneka::pool::uniform_trans, /* uniform location   */
@@ -94,25 +96,35 @@ namespace {
 				&mat_trans[0][0]   /* first value        */ );
 	}
 
+	void draw_thread(GLfloat* rotation, bool* quit) {
+		*rotation = 0.0f;
+
+		while(! *quit) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(16));
+
+			*rotation += 0.01f;
+
+			//std::cout << "rotation " << rotation << std::endl;
+		}
+	}
+
 
 	void run(gla::VertexArray& va) {
 		SDL_Event event;
 		int x=0, y=0, z=0;
 		bool quit = false;
 		bool ignore_ev = false;
+		GLfloat rotation = 0.0f;
 
-		glClearColor(
-				((float) (x + (STEPS/2))) / STEPS,
-				((float) (y + (STEPS/2))) / STEPS,
-				((float) (z + (STEPS/2))) / STEPS,
-				1.0f );
+		std::thread drawer = std::thread(draw_thread, &rotation, &quit);
 
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		set_pos(
 				glm::vec3(
-					( (float) x) / STEPS,
-					( (float) y) / STEPS,
-					(((float) z) / STEPS) -1.0f ),
-				0 );
+					( (GLfloat) x) / STEPS,
+					( (GLfloat) y) / STEPS,
+					(((GLfloat) z) / STEPS) -1.0f ),
+				0.0f );
 
 		draw_square(va);
 
@@ -140,20 +152,13 @@ namespace {
 			}
 
 			if(! ignore_ev) {
-				std::cout << "x" << x << ", y" << y << ", z" << z << std::endl;
-
-				glClearColor(
-						((float) (x + (STEPS/2))) / STEPS,
-						((float) (y + (STEPS/2))) / STEPS,
-						((float) (z + (STEPS/2))) / STEPS,
-						1.0f );
-
+				//std::cout << "x" << x << ", y" << y << ", z" << z << std::endl;
 				set_pos(
 						glm::vec3(
-							( (float) x) / STEPS,
-							( (float) y) / STEPS,
-							(((float) z) / STEPS) -1.0f ),
-						0 );
+							( (GLfloat) x) / STEPS,
+							( (GLfloat) y) / STEPS,
+							(((GLfloat) z) / STEPS) -1.0f ),
+						rotation );
 
 				draw_square(va);
 
@@ -162,6 +167,8 @@ namespace {
 				ignore_ev = false;
 			}
 		}
+
+		drawer.join();
 	}
 
 }
