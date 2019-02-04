@@ -31,7 +31,7 @@ namespace {
 		*dest = (GLfloat) i / POOL_MESH_FILE_PRECISION;
 	}
 
-	sneka::Mesh* load_mesh(std::string path) {
+	sneka::Mesh* load_mesh(std::string path, bool need_vertices) {
 		GLfloat* vertices;
 		GLsizei len;
 
@@ -58,7 +58,7 @@ namespace {
 		}
 		fclose(f);
 
-		sneka::Mesh* retn = new sneka::Mesh(path, vertices, len);
+		sneka::Mesh* retn = new sneka::Mesh(path, vertices, len, true);
 		delete[] vertices;
 		return retn;
 	}
@@ -68,7 +68,7 @@ namespace {
 		auto end = pool_meshes.end();
 
 		while(iter != end) {
-			std::cout << "unloaded mesh " << iter->second->name << std::endl;
+			std::cout << "Unloaded mesh " << iter->second->name << '.' << std::endl;
 			pool_meshes.erase(iter);
 			++iter;
 		}
@@ -146,14 +146,24 @@ namespace sneka::pool {
 		runtime_inst = nullptr;
 	}
 
-	Mesh& get_mesh(std::string name) {
+	Mesh& get_mesh(std::string name, bool need_vertices) {
 		assert_runtime_init(true);
 
 		std::map<std::string, Mesh*>::iterator iter;
 
 		iter = pool_meshes.find(name);
+
+		if(iter != pool_meshes.end() && need_vertices) {
+			if(! iter->second->hasVertices()) {
+				delete iter->second;
+				pool_meshes.erase(iter);
+				iter = pool_meshes.end();
+			}
+		}
+
 		if(iter == pool_meshes.end()) {
-			pool_meshes[name] = load_mesh(name);
+
+			pool_meshes[name] = load_mesh(name, need_vertices);
 
 			iter = pool_meshes.find(name);
 			if(iter == pool_meshes.end()) {

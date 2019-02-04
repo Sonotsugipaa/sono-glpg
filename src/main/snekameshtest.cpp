@@ -6,6 +6,7 @@
 #include <cstdio>
 
 #include "sneka/pool.hpp"
+#include "sneka/renderobject.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -32,15 +33,15 @@ namespace {
 	glm::mat4 mat_view;
 
 
-	void draw_square(sneka::Mesh& mesh) {
+	void draw_square(sneka::RenderObject& obj) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		mesh.draw();
+		obj.draw();
 
 		SDL_GL_SwapWindow(sneka::pool::runtime()->window);
 	}
 
-	void set_pos(glm::vec3 pos, GLfloat rot) {
+	void set_view_pos(glm::vec3 pos, GLfloat rot) {
 		mat_view = glm::rotate(
 				glm::translate(glm::mat4(1.0f), pos),
 				rot,
@@ -66,7 +67,7 @@ namespace {
 	}
 
 
-	void run(sneka::Mesh& mesh) {
+	void run(sneka::RenderObject& obj) {
 		SDL_Event event;
 		int x=0, y=0, z=0;
 		bool quit = false;
@@ -76,14 +77,14 @@ namespace {
 		std::thread drawer = std::thread(draw_thread, &rotation, &quit);
 
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-		set_pos(
-				glm::vec3(
+		obj.setPosition(
 					( (GLfloat) x) / STEPS,
 					( (GLfloat) y) / STEPS,
-					(((GLfloat) z) / STEPS) -1.0f ),
-				0.0f );
+					(((GLfloat) z) / STEPS) -1.0f );
 
-		draw_square(mesh);
+		set_view_pos(glm::vec3(0.0f), 0.0f);
+
+		draw_square(obj);
 
 		while(! quit) {
 			SDL_PollEvent(&event);
@@ -110,14 +111,13 @@ namespace {
 
 			if(! ignore_ev) {
 				//std::cout << "x" << x << ", y" << y << ", z" << z << std::endl;
-				set_pos(
-						glm::vec3(
+				obj.setPosition(
 							( (GLfloat) x) / STEPS,
 							( (GLfloat) y) / STEPS,
-							(((GLfloat) z) / STEPS) -1.0f ),
-						rotation );
+							(((GLfloat) z) / STEPS) -1.0f );
+				obj.setRotationRad(rotation);
 
-				draw_square(mesh);
+				draw_square(obj);
 
 				SDL_Delay(FRAMES_SECOND);
 			} else {
@@ -143,11 +143,13 @@ int main(int argn, char** args) {
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true);
 
+	if(argn < 2) throw argn;
+
 	mat_proj = glm::perspective(90.0f, (GLfloat) W / H, 0.2f, 100.0f);
 	glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &mat_proj[0][0]);
 
-	Mesh& square_mesh = pool::get_mesh("assets/trisquare.mesh");
-	pool::get_mesh("assets/trisquare.mesh");
+	Mesh& square_mesh = pool::get_mesh(args[1]);
+	pool::get_mesh(args[1]);
 
 	// test if an invalid mesh triggers an exception
 	try {
@@ -160,7 +162,9 @@ int main(int argn, char** args) {
 				<< std::endl;
 	}
 
-	run(square_mesh);
+	RenderObject square_obj = RenderObject(square_mesh);
+
+	run(square_obj);
 
 	//quitGl();
 	pool::runtime_destroy();

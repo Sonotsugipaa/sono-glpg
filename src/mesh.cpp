@@ -5,8 +5,17 @@
  * already happening, soooo...) */
 #include "sneka/pool.hpp"
 
-#include <iostream> // Debug only
+#include <stdexcept>
 
+
+
+namespace {
+
+	void invalid_access() {
+		throw std::logic_error("Tried to access forgotten or non-existent data from a mesh.");
+	}
+
+}
 
 
 namespace sneka {
@@ -19,12 +28,18 @@ namespace sneka {
 	{ }
 	*/
 
-	Mesh::Mesh(std::string nm, GLfloat* vertices, GLsizei n):
+	Mesh::Mesh(std::string nm, GLfloat* vertices, GLsizei n, bool keep):
 
 			vb(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW),
 			vertices_n(n), name(nm)
 	{
-		std::cout << n << std::endl;
+		if(keep) {
+			vertices_raw = new GLfloat[n * SNEKA_VERTEX_SIZE];
+			GLsizei sz = n * SNEKA_VERTEX_SIZE;
+			for(GLsizei i=0; i < sz; i+=1)
+				vertices_raw[i] = vertices[i];
+		}
+
 		vb.bufferData(vertices, n * SNEKA_VERTEX_SIZE * sizeof(GLfloat));
 
 		va.assignVertexBuffer(
@@ -35,10 +50,31 @@ namespace sneka {
 				vb, pool::in_color,
 				4, GL_FLOAT, GL_FALSE,
 				SNEKA_VERTEX_SIZE * sizeof(GLfloat), (GLfloat*) (3 * sizeof(GLfloat)) );
-		/*va.assignVertexBuffer(
-				vb, pool::in_random,
-				1, GL_FLOAT, GL_FALSE,
-				SNEKA_VERTEX_SIZE * sizeof(GLfloat), (GLfloat*) (7 * sizeof(GLfloat)) );*/
+	}
+
+	Mesh::~Mesh() {
+		if(vertices_raw != nullptr) {
+			delete[] vertices_raw;
+		}
+	}
+
+
+	void Mesh::forgetVertices() {
+		if(vertices_raw == nullptr)
+			return;
+
+		delete[] vertices_raw;
+		vertices_raw = nullptr;
+	}
+
+	bool Mesh::hasVertices() {
+		return vertices_raw != nullptr;
+	}
+
+	GLfloat Mesh::operator [] (GLsizei i) {
+		if(vertices_raw == nullptr)
+			invalid_access();
+		return vertices_raw[i];
 	}
 
 	void Mesh::draw() const {

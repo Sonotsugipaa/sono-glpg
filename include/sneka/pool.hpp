@@ -15,7 +15,7 @@
  * In order to obtain floats, each integer is divided by
  * a precision factor: POOL_MESH_FILE_PRECISION is that
  * factor. */
-#define POOL_MESH_FILE_PRECISION (10.0)
+#define POOL_MESH_FILE_PRECISION (100.0)
 
 
 
@@ -56,11 +56,17 @@ namespace sneka::pool {
 	 * add_col shader uniform. */
 	void set_add_col_enabled(bool);
 
-	Mesh& get_mesh(std::string name);
+	/* If need_vertices = true, ensures that the mesh contains
+	 * the vertices; if they don't, the file is reloaded and the
+	 * mesh is invalidated.
+	 * NOTE: doing this might have give significant performance hit. */
+	Mesh& get_mesh(std::string name, bool need_vertices = false);
 
 
 	class PoolException : public std::exception {
+	protected:
 		std::string msg;
+
 	public:
 		PoolException(char*);
 		PoolException(const char *);
