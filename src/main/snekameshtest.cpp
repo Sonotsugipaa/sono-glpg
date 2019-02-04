@@ -28,72 +28,29 @@ namespace {
 
 	//gla::Runtime* runtime;
 
-	GLuint uniform_proj;
-	GLuint uniform_trans;
-
 	glm::mat4 mat_proj;
-	glm::mat4 mat_trans;
+	glm::mat4 mat_view;
 
 
-	/*
-	void read_int_to(FILE* file, GLfloat* dest, GLfloat mul) {
-		int i=0;
-		fread(&i, sizeof(int), 1, file);
-		*dest = (GLfloat) i / mul;
-	}
-
-	sneka::Mesh load_mesh(const char * path) {
-		using namespace sneka;
-
-		Vertex* vertices;
-		std::size_t len;
-
-		FILE* f = fopen(path, "rb");
-		fseek(f, 0, SEEK_END);
-		len = ftell(f) / (sizeof(int) * 7);
-		fseek(f, 0, SEEK_SET);
-
-		vertices = new Vertex[len];
-
-		for(std::size_t i=0; i<len; i+=1) {
-			read_int_to(f, &vertices[i].position_color[0], 10.0f);
-			read_int_to(f, &vertices[i].position_color[1], 10.0f);
-			read_int_to(f, &vertices[i].position_color[2], 10.0f);
-			read_int_to(f, &vertices[i].position_color[3], 255.0f);
-			read_int_to(f, &vertices[i].position_color[4], 255.0f);
-			read_int_to(f, &vertices[i].position_color[5], 255.0f);
-			read_int_to(f, &vertices[i].position_color[6], 255.0f);
-		}
-		fclose(f);
-
-		Mesh retn = Mesh(vertices, len);
-		delete[] vertices;
-		return retn;
-	}
-	*/
-
-	void draw_square(gla::VertexArray& va) {
+	void draw_square(sneka::Mesh& mesh) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::vec4 o = mat_trans * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		va.bind();
-		//glDrawArrays(GL_TRIANGLES, 0, squareMesh.size());
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		mesh.draw();
 
 		SDL_GL_SwapWindow(sneka::pool::runtime()->window);
 	}
 
 	void set_pos(glm::vec3 pos, GLfloat rot) {
-		mat_trans = glm::rotate(
+		mat_view = glm::rotate(
 				glm::translate(glm::mat4(1.0f), pos),
 				rot,
 				glm::vec3(0.0f, 1.0f, 0.0f) );
 
 		glUniformMatrix4fv(
-				sneka::pool::uniform_trans, /* uniform location   */
+				sneka::pool::uniform_view, /* uniform location   */
 				1,             /* number of matrices */
 				GL_FALSE,      /* transpose          */
-				&mat_trans[0][0]   /* first value        */ );
+				&mat_view[0][0]   /* first value        */ );
 	}
 
 	void draw_thread(GLfloat* rotation, bool* quit) {
@@ -109,7 +66,7 @@ namespace {
 	}
 
 
-	void run(gla::VertexArray& va) {
+	void run(sneka::Mesh& mesh) {
 		SDL_Event event;
 		int x=0, y=0, z=0;
 		bool quit = false;
@@ -126,7 +83,7 @@ namespace {
 					(((GLfloat) z) / STEPS) -1.0f ),
 				0.0f );
 
-		draw_square(va);
+		draw_square(mesh);
 
 		while(! quit) {
 			SDL_PollEvent(&event);
@@ -160,7 +117,7 @@ namespace {
 							(((GLfloat) z) / STEPS) -1.0f ),
 						rotation );
 
-				draw_square(va);
+				draw_square(mesh);
 
 				SDL_Delay(FRAMES_SECOND);
 			} else {
@@ -172,13 +129,6 @@ namespace {
 	}
 
 }
-
-GLfloat vals[4][8] = {
-	{ -1.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f, 1.0f,  0.1465f },
-	{  1.0f,  1.0f, 0.0f,   0.0f, 1.0f, 0.0f, 1.0f,  0.4671f },
-	{  1.0f, -1.0f, 0.0f,   0.0f, 0.0f, 1.0f, 1.0f,  0.1496f },
-	{ -1.0f, -1.0f, 0.0f,   1.0f, 0.0f, 0.0f, 1.0f,  0.7626f }
-};
 
 
 int main(int argn, char** args) {
@@ -196,28 +146,21 @@ int main(int argn, char** args) {
 	mat_proj = glm::perspective(90.0f, (GLfloat) W / H, 0.2f, 100.0f);
 	glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &mat_proj[0][0]);
 
-	const Runtime * runtime = pool::runtime();
-	VertexBuffer vb = VertexBuffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
-	vb.bufferData(vals, 4 * 8 * sizeof(GLfloat));
-	VertexArray va = VertexArray();
+	Mesh& square_mesh = pool::get_mesh("assets/trisquare.mesh");
+	pool::get_mesh("assets/trisquare.mesh");
 
-	va.assignVertexBuffer(
-			vb,
-			glGetAttribLocation(runtime->shader->program, "in_position"),
-			3, GL_FLOAT, GL_FALSE,
-			8 * sizeof(GLfloat), (GLfloat*) (0 * sizeof(GLfloat)) );
-	va.assignVertexBuffer(
-			vb,
-			glGetAttribLocation(runtime->shader->program, "in_color"),
-			4, GL_FLOAT, GL_FALSE,
-			8 * sizeof(GLfloat), (GLfloat*) (3 * sizeof(GLfloat)) );
-	va.assignVertexBuffer(
-			vb,
-			glGetAttribLocation(runtime->shader->program, "in_random"),
-			1, GL_FLOAT, GL_FALSE,
-			8 * sizeof(GLfloat), (GLfloat*) (7 * sizeof(GLfloat)) );
+	// test if an invalid mesh triggers an exception
+	try {
+		pool::get_mesh("makefile");
+	} catch (pool::PoolException ex) {
+		std::cout
+				<< std::endl
+				<< "intentional exception triggered: " << ex.what() << std::endl
+				<< "NOTE: this is part of the unit test, do not worry about this." << std::endl
+				<< std::endl;
+	}
 
-	run(va);
+	run(square_mesh);
 
 	//quitGl();
 	pool::runtime_destroy();

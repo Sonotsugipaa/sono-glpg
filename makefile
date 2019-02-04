@@ -41,6 +41,9 @@ build/%.o: src/%.cpp
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
 
+%.mesh: %.mesh.src
+	itob $(shell cat "$<") >"$@"
+
 setup:
 	#
 	# ----- Workspace creation ----- #

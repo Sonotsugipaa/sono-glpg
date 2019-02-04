@@ -1,10 +1,21 @@
 #ifndef SNEKA_POOL_HPP
 #define SNEKA_POOL_HPP
 
+#define GL3_PROTOTYPES 1
+#include <GL/glew.h>
+
 #include <exception>
 #include <string>
 
 #include "runtime.hpp"
+
+#include "sneka/mesh.hpp"
+
+/* Mesh values are stored as integers on file;
+ * In order to obtain floats, each integer is divided by
+ * a precision factor: POOL_MESH_FILE_PRECISION is that
+ * factor. */
+#define POOL_MESH_FILE_PRECISION (10.0)
 
 
 
@@ -14,11 +25,16 @@ namespace sneka::pool {
 
 	extern GLuint
 			uniform_proj,
-			uniform_trans,
+			uniform_view,
+			uniform_model,
 			uniform_add_col,
 			uniform_time,
 			uniform_curvature,
-			uniform_drugs;
+			uniform_drugs,
+
+			in_position,
+			in_color;
+			//in_random;
 
 	const Runtime * runtime();
 
@@ -33,6 +49,14 @@ namespace sneka::pool {
 			bool vsync );
 
 	void runtime_destroy();
+
+	/* Some render object meshes have dynamic colors, some do not;
+	 * this function is called for each object, so that those
+	 * without dynamic colors do not use a stray value for the
+	 * add_col shader uniform. */
+	void set_add_col_enabled(bool);
+
+	Mesh& get_mesh(std::string name);
 
 
 	class PoolException : public std::exception {

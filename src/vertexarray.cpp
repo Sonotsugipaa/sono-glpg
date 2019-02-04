@@ -13,7 +13,7 @@ namespace gla {
 	}
 
 
-	void VertexArray::bind() {
+	void VertexArray::bind() const {
 		glBindVertexArray(vao_id);
 	}
 
@@ -34,7 +34,7 @@ namespace gla {
 		glEnableVertexAttribArray(attrib_pos);
 	}
 
-	GLuint VertexArray::id() {
+	GLuint VertexArray::id() const {
 		return vao_id;
 	}
 

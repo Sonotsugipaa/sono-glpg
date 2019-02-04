@@ -1,9 +1,79 @@
 #include "sneka/pool.hpp"
 
+#include <map>
+
+#include <iostream> // Debug only
+
+#include <glm/vec4.hpp>
+
 
 
 namespace {
+
 	gla::Runtime* runtime_inst = nullptr;
+
+	std::map<std::string, sneka::Mesh*> pool_meshes;
+
+	bool add_col_enabled;
+
+
+	void assert_runtime_init(bool init_state) {
+		if((init_state) && (runtime_inst == nullptr))
+			throw sneka::pool::PoolException("Uninitialized runtime.");
+
+		if((! init_state) && (runtime_inst != nullptr))
+			throw sneka::pool::PoolException("Runtime already initialized.");
+	}
+
+	void read_int_to(FILE* file, GLfloat* dest) {
+		int i=0;
+		fread(&i, sizeof(int), 1, file);
+		*dest = (GLfloat) i / POOL_MESH_FILE_PRECISION;
+	}
+
+	sneka::Mesh* load_mesh(std::string path) {
+		GLfloat* vertices;
+		GLsizei len;
+
+		FILE* f = fopen(path.c_str(), "rb");
+		if(! f)
+			throw sneka::pool::PoolException("couldn't open \"" + path + "\".");
+
+		fseek(f, 0, SEEK_END);
+		len = ftell(f);
+		fseek(f, 0, SEEK_SET);
+
+		if(len % (sizeof(int) * SNEKA_VERTEX_SIZE) != 0) {
+			throw sneka::pool::PoolException(
+					"\"" + path + "\": invalid file size (" +
+					std::to_string(len) + ")" );
+		}
+		len /= (sizeof(int) * SNEKA_VERTEX_SIZE);
+
+		vertices = new GLfloat[len * SNEKA_VERTEX_SIZE];
+
+		for(GLsizei i=0; i<len; i+=1) {
+			for(GLsizei j=0; j < SNEKA_VERTEX_SIZE; j+=1)
+				read_int_to(f, vertices + j + (i * SNEKA_VERTEX_SIZE));
+		}
+		fclose(f);
+
+		sneka::Mesh* retn = new sneka::Mesh(path, vertices, len);
+		delete[] vertices;
+		return retn;
+	}
+
+	void unload_meshes() {
+		auto iter = pool_meshes.begin();
+		auto end = pool_meshes.end();
+
+		while(iter != end) {
+			std::cout << "unloaded mesh " << iter->second->name << std::endl;
+			pool_meshes.erase(iter);
+			++iter;
+		}
+	}
+
 }
 
 
@@ -13,18 +83,30 @@ namespace sneka::pool {
 
 	GLuint
 		uniform_proj = -1,
-		uniform_trans = -1,
+		uniform_view = -1,
+		uniform_model = -1,
 		uniform_add_col = -1,
 		uniform_time = -1,
 		uniform_curvature = -1,
-		uniform_drugs = -1;
+		uniform_drugs = -1,
+
+		in_position = -1,
+		in_color = -1,
+		in_random = -1;
 
 
 	const Runtime * runtime() {
-		if(runtime_inst == nullptr)
-			throw PoolException("Uninitialized runtime.");
-
+		assert_runtime_init(true);
 		return const_cast<const Runtime *>(runtime_inst);
+	}
+
+	void set_add_col_enabled(bool value) {
+		if(add_col_enabled && ! value) {
+			glm::vec4 null_col = glm::vec4(0.0f);
+			glUniform4fv(uniform_add_col, 1, &null_col[0]);
+		}
+
+		add_col_enabled = value;
 	}
 
 	void runtime_init(
@@ -34,8 +116,7 @@ namespace sneka::pool {
 			bool resizable,
 			bool vsync
 	) {
-		if(runtime_inst != nullptr)
-			throw PoolException("Tried to reinitialize the current runtime.");
+		assert_runtime_init(false);
 
 		runtime_inst = new Runtime(
 				window_name,
@@ -44,19 +125,43 @@ namespace sneka::pool {
 				"shader/sneka_v.glsl", "shader/sneka_f.glsl" );
 
 		uniform_proj =      glGetUniformLocation(runtime_inst->shader->program, "uni_proj");
-		uniform_trans =     glGetUniformLocation(runtime_inst->shader->program, "uni_trans");
+		uniform_view =      glGetUniformLocation(runtime_inst->shader->program, "uni_view");
+		uniform_model =     glGetUniformLocation(runtime_inst->shader->program, "uni_model");
 		uniform_add_col =   glGetUniformLocation(runtime_inst->shader->program, "uni_add_col");
 		uniform_time =      glGetUniformLocation(runtime_inst->shader->program, "uni_time");
 		uniform_curvature = glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");
 		uniform_drugs =     glGetUniformLocation(runtime_inst->shader->program, "uni_drugs");
+
+		in_position = glGetAttribLocation(runtime_inst->shader->program, "in_position");
+		in_color =    glGetAttribLocation(runtime_inst->shader->program, "in_color");
+		//in_random =   glGetAttribLocation(runtime_inst->shader->program, "in_random");
 	}
 
 	void runtime_destroy() {
-		if(runtime_inst == nullptr)
-			throw PoolException("Uninitialized runtime.");
+		assert_runtime_init(true);
+
+		unload_meshes();
 
 		delete runtime_inst;
 		runtime_inst = nullptr;
+	}
+
+	Mesh& get_mesh(std::string name) {
+		assert_runtime_init(true);
+
+		std::map<std::string, Mesh*>::iterator iter;
+
+		iter = pool_meshes.find(name);
+		if(iter == pool_meshes.end()) {
+			pool_meshes[name] = load_mesh(name);
+
+			iter = pool_meshes.find(name);
+			if(iter == pool_meshes.end()) {
+				throw PoolException("could not load mesh \""+name+"\"");
+			}
+		}
+
+		return *(iter->second);
 	}
 
 
