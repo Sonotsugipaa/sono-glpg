@@ -1,0 +1,4 @@
+printf $'\e[H\e[2J\e[3J'
+TARGET=$1
+shift
+make "bin/$TARGET" && "bin/$TARGET" "$*"
