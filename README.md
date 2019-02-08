@@ -7,8 +7,6 @@ This project exists for the sake of a knock-off version of an old 3D Snake
 from Nokia.
 <br>
 Also for learning OpenGL.
-<br>
-Now that I think about it, I'm not breaching any copyright gizmo... am I?
 </p>
 
 
@@ -81,11 +79,43 @@ to compile/link.
 </p>
 
 
-# License
+# Licenses
 
-I will be frank: I have no idea how to use, manage or understand licences.
-This is amateur code, I'm not going to sue anyone who uses any of it;
-just be aware of the licensed libraries and tools you (and I) are going to use,
-which are all available for free for non-commercial use.
-<br>
-Most of those have been mentioned in this file, excluding Linux and what not.
+GNU Lesser General Public License<br>
+<i>(included in the repository)</i>
+
+### GNU General Public License v3
+
+From GNU Make, G++:<br>
+<i>https://www.gnu.org/licenses/gpl-3.0.en.html</i>
+
+### GNU General Public License v2
+
+From Git;<br>
+<i>https://www.gnu.org/licenses/gpl-2.0.en.html</i>
+
+### zlib License
+
+From SDL2:<br>
+<i>https://www.zlib.net/zlib_license.html</i>
+
+### Modified BSD License
+
+From GLEW:<br>
+<i>http://glew.sourceforge.net/glew.txt</i>
+
+### Mesa 3-D License
+
+From GLEW:<br>
+<i>http://glew.sourceforge.net/mesa.txt</i>
+
+### Khronos License
+
+From GLEW:<br>
+<i>http://glew.sourceforge.net/khronos.txt</i>
+
+### Other Licenses
+
+I could not find the exact license used by OpenGL, although
+it *is* an open-source license, and this whole project is
+completely open-source.
