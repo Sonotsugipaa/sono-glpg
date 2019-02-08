@@ -2,6 +2,9 @@
 bin/
 build/
 
+# Dedicated folder to ignore version control
+no-git/
+
 
 # Compiled Object files
 *.slo
