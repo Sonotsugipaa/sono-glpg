@@ -24,10 +24,17 @@ namespace sneka {
 	public:
 		static const Direction FORWARD, LEFT, BACKWARD, RIGHT;
 
+		Direction() = default;
+		Direction(const Direction &) = default;
+		Direction(Direction &&) = default;
+
 		// "moves" the direction
-		Direction relative(Direction) const;
-		Direction operator + (Direction) const;
-		bool operator == (Direction) const;
+		Direction relative(const Direction &) const;
+		Direction operator + (const Direction &) const;
+		bool operator == (const Direction &) const;
+
+		Direction& operator = (const Direction &) = default;
+		Direction& operator = (Direction &&) = default;
 
 		GLfloat radians() const;
 		GLfloat degrees() const;

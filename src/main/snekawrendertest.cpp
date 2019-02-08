@@ -28,35 +28,11 @@
 
 
 
-namespace {
-
-	using namespace sneka;
-
-
-	/*
-	void print_direction(Direction dir) {
-		if(dir == Direction::FORWARD)
-			std::cout << "FORWARD" << std::endl;
-
-		if(dir == Direction::LEFT)
-			std::cout << "LEFT" << std::endl;
-
-		if(dir == Direction::BACKWARD)
-			std::cout << "BACKWARD" << std::endl;
-
-		if(dir == Direction::RIGHT)
-			std::cout << "RIGHT" << std::endl;
-	}
-	*/
-
-}
-
-
 int main(int argn, char** args) {
 	using namespace sneka;
 	using namespace gla;
 
-	const int W = 1300, H = 1300 * 9 / 16;
+	const int W = 600, H = 600 * 9 / 16;
 
 	pool::runtime_init(
 			"sneka world render test",
