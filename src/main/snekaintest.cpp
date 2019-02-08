@@ -20,7 +20,7 @@
 
 #include <SDL2/SDL.h>
 
-#define TILES          (25.0)
+#define TILES          (20.0)
 #define FPS            (30.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
@@ -33,6 +33,7 @@ namespace {
 	using namespace sneka;
 
 
+	/*
 	void print_direction(Direction& dir) {
 		if(dir == Direction::FORWARD)
 			std::cout << "FORWARD" << std::endl;
@@ -46,10 +47,12 @@ namespace {
 		if(dir == Direction::RIGHT)
 			std::cout << "RIGHT" << std::endl;
 	}
+	*/
 
 	const unsigned char * keyboard;
 
 	GLfloat x=0.0f, z=0.0f;
+	GLfloat speed = 0.15f;
 	bool moving = false;
 	Direction direction;
 
@@ -99,8 +102,6 @@ int main(int argn, char** args) {
 
 	const int W = 600, H = 600 * 9 / 16;
 
-	float speed = 0.06f;
-
 	pool::runtime_init(
 			"sneka world render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -108,8 +109,17 @@ int main(int argn, char** args) {
 
 	WorldRenderer* renderer = new WorldRenderer(
 			"assets/tile.mesh", TILES,
-			-0.02f, 0, W, H );
+			-0.03f, 0, W, H );
 	renderer->clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
+
+	WorldObject wobj1 = WorldObject("assets/trisquare.mesh");
+	wobj1.setGridPosition(1, 0);
+	wobj1.setHeight(0.2f);
+	renderer->putObject(wobj1);
+	WorldObject wobj2 = WorldObject("assets/trisquare.mesh");
+	wobj2.setGridPosition(-1, 0);
+	wobj2.setHeight(0.2f);
+	renderer->putObject(wobj2);
 
 	key_event = [](unsigned int keycode, bool released) {
 		if(released) {
@@ -128,6 +138,7 @@ int main(int argn, char** args) {
 	keyboard = SDL_GetKeyboardState(nullptr);
 
 	int cycle = 0;
+	GLfloat objrot = 0.0f;
 	while(poll_events()) {
 		if(moving) {
 			if(direction == Direction::FORWARD)  z -= speed; else
@@ -136,11 +147,15 @@ int main(int argn, char** args) {
 			if(direction == Direction::LEFT)     x -= speed;
 		}
 
-		renderer->setView(glm::vec3(-x, -1.0f, -z), ((float) cycle) / 10000.0f, 0.9f);
+		wobj1.setRotationRad(objrot);
+		wobj2.setRotationRad(objrot*2.0f);
+		renderer->setView(glm::vec3(-x, -1.0f, -z), ((float) cycle) / 5000.0f, 0.9f);
 		renderer->renderFrame();
 		std::this_thread::sleep_for(std::chrono::milliseconds((int) FRAMERATE));
 
 		cycle = (cycle + (int) FRAMERATE) % 31415;
+		objrot += 0.05f;
+		if(objrot > 6.2830f) objrot -= 6.2830f;
 	}
 
 	delete renderer;

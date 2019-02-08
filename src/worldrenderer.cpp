@@ -4,6 +4,8 @@
 #include "sneka/mesh.hpp"
 #include "sneka/pool.hpp"
 
+#include "utils.tpp"
+
 #include <iostream> // Debug only
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,6 +16,7 @@
 
 
 namespace {
+
 	glm::mat4 get_view(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
 		glm::mat4 retn = glm::mat4(1.0f);
 
@@ -31,6 +34,7 @@ namespace {
 
 		return glm::translate(retn, pos);
 	}
+
 }
 
 
@@ -91,7 +95,8 @@ namespace sneka {
 			GLuint tiles, GLfloat curv, GLfloat drugs,
 			GLuint scr_w, GLuint scr_h
 	):
-			floor_tiles(tiles), curvature(curv), drugs(drugs)
+			floor_tiles(tiles), floor_tiles_half(floor_tiles / 2.0f),
+			curvature(curv), drugs(drugs)
 	{
 		mat_proj = glm::perspective(
 				90.0f, (GLfloat) scr_w / scr_h,
@@ -120,6 +125,8 @@ namespace sneka {
 
 
 	void WorldRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
+		pos.x = within_bounds(pos.x, -floor_tiles_half, floor_tiles_half);
+		pos.z = within_bounds(pos.z, -floor_tiles_half, floor_tiles_half);
 		view_pos = pos;
 		view_yaw = yaw;
 		view_pitch = pitch;

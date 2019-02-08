@@ -64,7 +64,7 @@ namespace sneka {
 		RenderObject* floor;
 
 		std::map<std::size_t, WorldObject*> objects;
-		GLfloat floor_tiles, curvature, drugs;
+		GLfloat floor_tiles, floor_tiles_half, curvature, drugs;
 
 		glm::mat4 mat_proj;
 
