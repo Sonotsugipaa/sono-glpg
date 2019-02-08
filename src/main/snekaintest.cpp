@@ -21,7 +21,7 @@
 #include <SDL2/SDL.h>
 
 #define TILES          (20.0)
-#define FPS            (30.0)
+#define FPS            (10.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
 #define FRAMES         (500)
@@ -49,49 +49,10 @@ namespace {
 	}
 	*/
 
-	const unsigned char * keyboard;
-
 	GLfloat x=0.0f, z=0.0f;
 	GLfloat speed = 0.15f;
 	bool moving = false;
 	Direction direction;
-
-	void update_keyboard() {
-		SDL_PumpEvents();
-	}
-
-	void (*key_event)(unsigned int keycode, bool released);
-
-
-	bool poll_events() {
-		SDL_Event event;
-
-		static unsigned char lastk_code = 0;
-	 	static unsigned char lastk_pressed = 0;
-
-		update_keyboard();
-
-		while(SDL_PollEvent(&event)) {
-			switch(event.type) {
-				case SDL_QUIT:
-					return false;  break;
-				case SDL_KEYDOWN:
-				case SDL_KEYUP:
-					update_keyboard();
-					if(! (event.key.keysym.sym == lastk_code && event.key.state == lastk_pressed)) {
-						lastk_code = event.key.keysym.sym;
-						lastk_pressed = event.key.state;
-						key_event(lastk_code, lastk_pressed == SDL_RELEASED);
-					}
-					break;
-				case SDL_WINDOWEVENT_SIZE_CHANGED:
-					std::cout << "tried to resize to " << event.window.data1 << " x " << event.window.data2 << std::endl;
-					break;
-			}
-		}
-
-		return true;
-	}
 
 }
 
@@ -121,7 +82,7 @@ int main(int argn, char** args) {
 	wobj2.setHeight(0.2f);
 	renderer->putObject(wobj2);
 
-	key_event = [](unsigned int keycode, bool released) {
+	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
 		if(released) {
 			moving = false;
 		} else {
@@ -134,12 +95,11 @@ int main(int argn, char** args) {
 				default: moving = false;
 			}
 		}
-	};
-	keyboard = SDL_GetKeyboardState(nullptr);
+	} );
 
 	int cycle = 0;
 	GLfloat objrot = 0.0f;
-	while(poll_events()) {
+	while(pool::poll_events()) {
 		if(moving) {
 			if(direction == Direction::FORWARD)  z -= speed; else
 			if(direction == Direction::BACKWARD) z += speed; else

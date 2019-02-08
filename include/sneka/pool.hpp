@@ -23,6 +23,11 @@ namespace sneka::pool {
 
 	using namespace gla;
 
+	using key_callback_t = void (*) (
+			unsigned int keycode,
+			unsigned int modifiers,
+			bool released );
+
 	extern GLuint
 			uniform_proj,
 			uniform_view,
@@ -61,6 +66,19 @@ namespace sneka::pool {
 	 * mesh is invalidated.
 	 * NOTE: doing this might have give significant performance hit. */
 	Mesh& get_mesh(std::string name, bool need_vertices = false);
+
+	/* Processes all the events, until none are left to process;
+	 * returns 'false' if the application should exit, 'true'
+	 * otherwise. */
+	bool poll_events();
+
+	/* Returns the state of a key, either 'SDL_PRESSED' or 'SDL_RELEASED.' */
+	unsigned char keyboard_state(unsigned int keycode);
+
+	/* Sets a function to be called on key events;
+	 * returns the previous callback function, or 'nullptr'
+	 * if there was none. */
+	key_callback_t set_key_callback(key_callback_t);
 
 
 	class PoolException : public std::exception {
