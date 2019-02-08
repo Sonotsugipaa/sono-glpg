@@ -20,10 +20,11 @@
 
 #include <SDL2/SDL.h>
 
-#define TILES          (20.0)
-#define FPS            (8.0)
-#define FRAMES_SECOND  (1000.0/FPS)
+#define TILES          (25.0)
+#define FPS            (30.0)
+#define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
+#define FRAMES         (500)
 
 
 
@@ -80,8 +81,8 @@ int main(int argn, char** args) {
 
 	glm::vec3 pos = glm::vec3(0.0f, -1.0f, -10.0f);
 
-	for(int i=0; i < 240; i+=1) {
-		pos[2] += 0.25f;
+	for(int i=0; i < FRAMES; i+=1) {
+		pos[2] += (GLfloat) FRAMERATE / FRAMES;
 		if(pos[2] > ((float) TILES / 2.0f))
 			pos[2] -= (float) TILES;
 
@@ -92,7 +93,7 @@ int main(int argn, char** args) {
 
 		renderer.renderFrame();
 
-		SDL_Delay(16);
+		SDL_Delay(FRAMERATE);
 	}
 
 	pool::runtime_destroy();

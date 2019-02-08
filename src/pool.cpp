@@ -69,8 +69,9 @@ namespace {
 
 		while(iter != end) {
 			std::cout << "Unloaded mesh " << iter->second->name << '.' << std::endl;
+			delete iter->second;
 			pool_meshes.erase(iter);
-			++iter;
+			iter = pool_meshes.begin();
 		}
 	}
 
@@ -144,6 +145,8 @@ namespace sneka::pool {
 
 		delete runtime_inst;
 		runtime_inst = nullptr;
+
+		SDL_Quit();
 	}
 
 	Mesh& get_mesh(std::string name, bool need_vertices) {

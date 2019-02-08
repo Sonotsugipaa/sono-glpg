@@ -38,6 +38,7 @@ namespace {
 
 	using namespace sneka;
 
+	/*
 	void print_all_vertices(Mesh& vertices) {
 		GLsizei sz = vertices.size();
 
@@ -49,6 +50,7 @@ namespace {
 			std::cout << std::endl;
 		}
 	}
+	*/
 
 	void expand_floor(
 			Mesh* tile_mesh, GLfloat tile_size,
@@ -107,11 +109,13 @@ namespace sneka {
 		delete floor_mesh;
 		delete floor;
 
+		/* // not necessary: the map is destroyed with this object, it's an automatic variable
 		auto iter = objects.begin();
 		while(iter != objects.end()) {
 			objects.erase(iter);
-			++iter;
+			iter = objects.begin();
 		}
+		*/
 	}
 
 
