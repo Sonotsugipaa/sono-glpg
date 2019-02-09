@@ -29,12 +29,21 @@ namespace sneka {
 		Direction(Direction &&) = default;
 
 		// "moves" the direction
-		Direction relative(const Direction &) const;
+		Direction combined(const Direction &) const;
 		Direction operator + (const Direction &) const;
+
+		Direction relative(const Direction &) const;
+		Direction operator - (const Direction &) const;
 		bool operator == (const Direction &) const;
 
 		Direction& operator = (const Direction &) = default;
 		Direction& operator = (Direction &&) = default;
+
+		Direction& operator += (const Direction &);
+		Direction& operator += (Direction&&);
+		Direction& operator -= (const Direction &);
+		Direction& operator -= (Direction&&);
+
 
 		GLfloat radians() const;
 		GLfloat degrees() const;

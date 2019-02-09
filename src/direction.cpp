@@ -9,7 +9,7 @@ namespace sneka {
 			Direction::LEFT     = Direction(1),
 			Direction::BACKWARD = Direction(2),
 			Direction::RIGHT    = Direction(3);
-			
+
 
 	Direction::Direction(int value):
 			value(value)
@@ -28,12 +28,40 @@ namespace sneka {
 		return Direction(dir);
 	}
 
-	Direction Direction::relative(const Direction & other) const {
+	Direction Direction::combined(const Direction & other) const {
 		return *this + other;
+	}
+
+	Direction Direction::operator - (const Direction & other) const {
+		GLuint dir = (value - other.value) % 4;
+		return Direction(dir);
+	}
+
+	Direction Direction::relative(const Direction & other) const {
+		return operator - (other);
 	}
 
 	bool Direction::operator == (const Direction & other) const {
 		return value == other.value;
+	}
+
+
+	Direction& Direction::operator += (const Direction & other) {
+		operator = (operator + (other));
+		return *this;
+	}
+	Direction& Direction::operator += (Direction&& other) {
+		operator = (operator + (other));
+		return *this;
+	}
+
+	Direction& Direction::operator -= (const Direction & other) {
+		operator = (operator - (other));
+		return *this;
+	}
+	Direction& Direction::operator -= (Direction&& other) {
+		operator = (operator - (other));
+		return *this;
 	}
 
 }

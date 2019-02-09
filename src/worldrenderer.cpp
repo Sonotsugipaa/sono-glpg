@@ -125,8 +125,8 @@ namespace sneka {
 
 
 	void WorldRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
-		pos.x = within_bounds(pos.x, -floor_tiles_half, floor_tiles_half);
-		pos.z = within_bounds(pos.z, -floor_tiles_half, floor_tiles_half);
+		pos.x = gla::within_bounds(pos.x, -floor_tiles_half, floor_tiles_half);
+		pos.z = gla::within_bounds(pos.z, -floor_tiles_half, floor_tiles_half);
 		view_pos = pos;
 		view_yaw = yaw;
 		view_pitch = pitch;
