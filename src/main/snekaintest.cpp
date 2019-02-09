@@ -21,7 +21,7 @@
 #include <SDL2/SDL.h>
 
 #define TILES          (20.0)
-#define FPS            (10.0)
+#define FPS            (30.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
 #define FRAMES         (500)
@@ -50,7 +50,7 @@ namespace {
 	*/
 
 	GLfloat x=0.0f, z=0.0f;
-	GLfloat speed = 0.15f;
+	const GLfloat speed = 3.5f / FPS;
 	bool moving = false;
 	Direction direction;
 
