@@ -17,7 +17,7 @@ no-git/
 *.pch
 
 # Compiled Dynamic libraries
-*.so
+lib*.so*
 *.dylib
 *.dll
 
