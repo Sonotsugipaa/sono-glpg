@@ -9,7 +9,7 @@ CPP_SRCS = $(wildcard src/*.cpp)
 ALL_OBJS =\
 	$(patsubst src/%.c, build/%.o, $(C_SRCS))\
 	$(patsubst src/%.cpp, build/%.o, $(CPP_SRCS))
-LIBS = $(shell cat libraries_win)
+OPTS = $(shell cat make_opts_win)
 
 # compiles all objects, and creates executable files from ./src/main
 make_exec: $(ALL_MAIN_SRCS)
@@ -21,13 +21,13 @@ make_exec: $(ALL_MAIN_SRCS)
 bin/%: $(ALL_OBJS) src/main/%.c
 	#
 	# ----- C executable ----- #
-	gcc $(CFLAGS) -o"$@" $^ $(LIBS) 
+	gcc $(CFLAGS) -o"$@" $^ $(OPTS)
 
 # links all C++ source files from ./src/main
 bin/%: $(ALL_OBJS) src/main/%.cpp
 	#
 	# ----- C++ executable ----- #
-	g++ $(CPPFLAGS) -o"$@" $^ $(LIBS)
+	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
 
 # compiles a C source file from ./src
 build/%.o: src/%.c
@@ -41,8 +41,8 @@ build/%.o: src/%.cpp
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
 
-%.mesh: %.mesh.src
-	itob $(shell cat "$<") >"$@"
+%.mesh: %.mesh.src bin/itob
+	bin/itob $(shell cat "$<") >"$@"
 
 setup:
 	#
