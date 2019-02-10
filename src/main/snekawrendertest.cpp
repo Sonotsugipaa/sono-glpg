@@ -46,11 +46,11 @@ int main(int argn, char** args) {
 
 	GLfloat rot = 0.0f;
 
-	WorldObject wobj1 = WorldObject("assets/trisquare.mesh");
+	GridObject wobj1 = GridObject("assets/trisquare.mesh");
 	wobj1.setGridPosition(0, 0);
 	wobj1.setHeight(0.5f);
 	renderer.putObject(wobj1);
-	WorldObject wobj2 = WorldObject("assets/tile.mesh");
+	GridObject wobj2 = GridObject("assets/tile.mesh");
 	wobj2.setGridPosition(1, 0);
 	wobj2.setHeight(0.5f);
 	renderer.putObject(wobj2);

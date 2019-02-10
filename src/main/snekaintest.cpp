@@ -25,12 +25,15 @@
 #include <SDL2/SDL.h>
 
 #define SCREEN_WIDTH   (1700)
-#define TILES          (60)
+#define TILES          (40)
 #define FPS            (60.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
 #define FRAMES         (500)
 #define CAM_DISTANCE   (1.0)
+#define CAM_HEIGHT     (2.0)
+#define CAM_PITCH      (1.1)
+#define CURVATURE      (-0.04)
 
 
 
@@ -154,7 +157,7 @@ int main(int argn, char** args) {
 
 	renderer = new WorldRenderer(
 			"assets/tile.mesh", TILES,
-			-0.02f, 0, W, H );
+			CURVATURE, 0, W, H );
 	renderer->clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
 
 	// is deallocated automatically by destroyObjects(...)
@@ -168,10 +171,10 @@ int main(int argn, char** args) {
 			switch(keycode) {
 				//case SDLK_w:  direction += Direction::FORWARD;   break;
 				//case SDLK_s:  direction += Direction::BACKWARD;  break;
-				case SDLK_w:  speed_boost = speed * 6.0f;  break;
-				case SDLK_s:  speed_boost = speed * -0.7f;  break;
-				case SDLK_d:  direction += Direction::RIGHT;     break;
-				case SDLK_a:  direction += Direction::LEFT;      break;
+				case SDLK_w:  speed_boost = speed *  6.0f;    break;
+				case SDLK_s:  speed_boost = speed * -0.7f;    break;
+				case SDLK_d:  direction += Direction::RIGHT;  break;
+				case SDLK_a:  direction += Direction::LEFT;   break;
 			}
 		}
 	} );
@@ -240,10 +243,10 @@ int main(int argn, char** args) {
 					// wtf math
 					glm::vec3(
 						-((CAM_DISTANCE * glm::sin(rot)) + pos[0]),
-						-1.0f,
+						-CAM_HEIGHT,
 						-((CAM_DISTANCE * glm::cos(rot)) + pos[1]) ),
 					-rot,
-					0.9f );
+					CAM_PITCH );
 			renderer->renderFrame();
 		}
 	}
