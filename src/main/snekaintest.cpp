@@ -25,11 +25,12 @@
 #include <SDL2/SDL.h>
 
 #define SCREEN_WIDTH   (1700)
-#define TILES          (40.0)
+#define TILES          (60)
 #define FPS            (60.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
 #define FRAMES         (500)
+#define CAM_DISTANCE   (1.0)
 
 
 
@@ -39,6 +40,7 @@ namespace {
 
 	glm::vec2 pos, pos_target;
 	glm::ivec2 ipos_target;
+	RenderObject* head;
 	const GLfloat speed = 2.5f;
 	GLfloat speed_boost = 0.0f;
 	GLfloat rot = 0.0f;
@@ -99,6 +101,10 @@ namespace {
 		pos[0] = movement.old_pos[0] + (movement.xdiff * adv);
 		pos[1] = movement.old_pos[1] + (movement.zdiff * adv);
 		rot = movement.old_rot + (movement.rdiff * adv);
+
+		/* room for improvement; the head stutters because it's not
+		 * synced with the view matrix */
+		head->setPosition(pos[0], 0.0f, pos[1]);
 	}
 
 	unsigned int xorshift(unsigned int x) {
@@ -151,7 +157,11 @@ int main(int argn, char** args) {
 			-0.02f, 0, W, H );
 	renderer->clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
 
-	genObjects(renderer, "assets/pyr.mesh", 20);
+	// is deallocated automatically by destroyObjects(...)
+	head = new RenderObject("assets/arrow.mesh");
+	renderer->putObject(*head);
+
+	genObjects(renderer, "assets/pyr.mesh", (TILES*TILES) / 4);
 
 	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
 		if(! released) {
@@ -214,6 +224,7 @@ int main(int argn, char** args) {
 		*/
 
 		movement.update();
+		head->setRotationRad(direction.radians());
 
 		frame_timer.reset();
 		bool cycle_frame_timer = true;
@@ -225,8 +236,14 @@ int main(int argn, char** args) {
 
 			// delays a bit more than the actual framerate
 			std::this_thread::sleep_for(std::chrono::milliseconds((int) FRAMERATE));
-
-			renderer->setView(glm::vec3(-pos[0], -1.0f, -pos[1]), -rot, 0.9f);
+			renderer->setView(
+					// wtf math
+					glm::vec3(
+						-((CAM_DISTANCE * glm::sin(rot)) + pos[0]),
+						-1.0f,
+						-((CAM_DISTANCE * glm::cos(rot)) + pos[1]) ),
+					-rot,
+					0.9f );
 			renderer->renderFrame();
 		}
 	}

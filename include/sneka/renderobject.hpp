@@ -24,7 +24,7 @@ namespace sneka {
 		glm::mat4 mat_model;
 		bool mat_changed = true;
 		bool color_add = false;
-		glm::vec3 position = glm::vec3(0.0f);
+		glm::vec3 position;
 		glm::vec4 color;
 		GLfloat rotation = 0.0f; // +Y axis
 

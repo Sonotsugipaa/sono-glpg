@@ -15,6 +15,7 @@ namespace sneka {
 			value(value)
 	{ }
 
+
 	GLfloat Direction::radians() const {
 		return value * (3.141592f / 2.0f);
 	}
@@ -22,6 +23,27 @@ namespace sneka {
 	GLfloat Direction::degrees() const {
 		return value * (90.0f);
 	}
+
+	GLfloat Direction::sin() const {
+		switch(value) {
+			case 0:  return  1.0f;  break;
+			case 1:  return  0.0f;  break;
+			case 2:  return -1.0f;  break;
+			case 3:  return  0.0f;  break;
+		}
+		return 2.0f;
+	}
+
+	GLfloat Direction::cos() const {
+		switch(value) {
+			case 0:  return  0.0f;  break;
+			case 1:  return -1.0f;  break;
+			case 2:  return  0.0f;  break;
+			case 3:  return  1.0f;  break;
+		}
+		return 2.0f;
+	}
+
 
 	Direction Direction::operator + (const Direction & other) const {
 		GLuint dir = (value + other.value) % 4;

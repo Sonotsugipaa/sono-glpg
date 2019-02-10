@@ -5,11 +5,15 @@
 namespace sneka {
 
 	GridObject::GridObject(Mesh& mesh):
-			RenderObject::RenderObject(mesh)
+			RenderObject::RenderObject(mesh),
+			grid_pos(0),
+			offset_pos(0.0f)
 	{ }
 
 	GridObject::GridObject(std::string mesh_name):
-			RenderObject::RenderObject(mesh_name)
+			RenderObject::RenderObject(mesh_name),
+			grid_pos(0),
+			offset_pos(0.0f)
 	{ }
 
 

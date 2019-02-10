@@ -18,7 +18,9 @@ namespace {
 namespace sneka {
 
 	RenderObject::RenderObject(Mesh& mesh):
-			mesh(mesh), uid(gen++)
+			mesh(mesh),
+			position(0.0f),
+			uid(gen++)
 	{ }
 
 	RenderObject::RenderObject(std::string mesh_name):

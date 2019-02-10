@@ -16,8 +16,6 @@
 
 namespace sneka {
 
-	using uid_t = std::size_t;
-
 	class Direction {
 	private:
 		int value;
@@ -49,6 +47,8 @@ namespace sneka {
 
 		GLfloat radians() const;
 		GLfloat degrees() const;
+		GLfloat sin() const;
+		GLfloat cos() const;
 	};
 
 
