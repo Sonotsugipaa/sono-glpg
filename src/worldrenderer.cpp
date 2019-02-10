@@ -122,7 +122,7 @@ namespace sneka {
 		view_pitch = pitch;
 	}
 
-	WorldObject* WorldRenderer::popObject() {
+	RenderObject* WorldRenderer::popObject() {
 		auto iter = objects.begin();
 		if(iter == objects.end())
 			return nullptr;
@@ -130,7 +130,7 @@ namespace sneka {
 		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
-	WorldObject* WorldRenderer::getObject(uid_t uid) {
+	RenderObject* WorldRenderer::getObject(uid_t uid) {
 		auto iter = objects.find(uid);
 		if(iter == objects.end())
 			return nullptr;
@@ -138,12 +138,12 @@ namespace sneka {
 		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
-	void WorldRenderer::putObject(WorldObject& obj) {
+	void WorldRenderer::putObject(RenderObject& obj) {
 		objects[obj.uid] = &obj;
 		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
-	void WorldRenderer::removeObject(WorldObject& obj) {
+	void WorldRenderer::removeObject(RenderObject& obj) {
 		removeObject(obj.uid);
 		//std::cout << "not rendering " << obj.uid << std::endl;
 	}

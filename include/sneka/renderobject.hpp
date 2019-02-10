@@ -16,6 +16,8 @@
 
 namespace sneka {
 
+	using uid_t = std::size_t;
+
 	class RenderObject {
 	protected:
 		Mesh& mesh;
@@ -29,6 +31,8 @@ namespace sneka {
 		void mat_compute();
 
 	public:
+		const uid_t uid;
+
 		RenderObject(Mesh&);
 		RenderObject(std::string mesh_name);
 		virtual ~RenderObject() = default;

@@ -52,21 +52,31 @@ namespace sneka {
 	};
 
 
-	class WorldObject : public virtual RenderObject {
+	class GridObject : public virtual RenderObject {
 	protected:
 		glm::ivec2 grid_pos;
+		glm::vec2 offset_pos;
+		glm::vec2 cache_combined;
 		GLfloat height = 0.0f;
-	public:
-		const uid_t uid;
+		bool changed = true;
 
-		WorldObject(Mesh&);
-		WorldObject(std::string mesh_name);
-		virtual ~WorldObject() = default;
+		void updatePosition();
+
+	public:
+
+		GridObject(Mesh&);
+		GridObject(std::string mesh_name);
+		virtual ~GridObject() = default;
 
 		void setHeight(GLfloat);
 
 		void setGridPosition(glm::ivec2);
 		void setGridPosition(GLint x, GLint z);
+
+		void setOffsetPosition(glm::vec2);
+		void setOffsetPosition(GLfloat x, GLfloat z);
+
+		virtual void draw();
 	};
 
 	class WorldRenderer : public virtual Renderer {
@@ -74,7 +84,7 @@ namespace sneka {
 		Mesh* floor_mesh;
 		RenderObject* floor;
 
-		std::map<uid_t, WorldObject*> objects;
+		std::map<uid_t, RenderObject*> objects;
 		GLfloat floor_tiles, floor_tiles_half, curvature, drugs;
 
 		glm::mat4 mat_proj;
@@ -93,10 +103,10 @@ namespace sneka {
 
 		/* Returns the pointer to a random object, if there is any;
 		 * 'nullptr' otherwise. */
-		WorldObject* popObject();
-		WorldObject* getObject(uid_t);
-		void putObject(WorldObject& object);
-		void removeObject(WorldObject& object);
+		RenderObject* popObject();
+		RenderObject* getObject(uid_t);
+		void putObject(RenderObject& object);
+		void removeObject(RenderObject& object);
 		void removeObject(uid_t);
 		std::size_t size();
 

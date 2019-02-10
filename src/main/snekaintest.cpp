@@ -38,6 +38,7 @@ namespace {
 	using namespace sneka;
 
 	glm::vec2 pos, pos_target;
+	glm::ivec2 ipos_target;
 	const GLfloat speed = 2.5f;
 	GLfloat speed_boost = 0.0f;
 	GLfloat rot = 0.0f;
@@ -115,7 +116,7 @@ namespace {
 		unsigned int rand = time.count();
 
 		for(std::size_t i=0; i < count; i+=1) {
-			WorldObject* newobj = new WorldObject(mesh);
+			GridObject* newobj = new GridObject(mesh);
 			newobj->setGridPosition(
 					xorshift(rand + count + i) % (unsigned int) TILES,
 					xorshift(rand + i - count) % (unsigned int) TILES );
@@ -125,7 +126,7 @@ namespace {
 	}
 
 	void destroyObjects(WorldRenderer* renderer) {
-		WorldObject* obj;
+		RenderObject* obj;
 		while((obj = renderer->popObject()) != nullptr) {
 			renderer->removeObject(obj->uid);
 		}
@@ -170,10 +171,34 @@ int main(int argn, char** args) {
 			1.0f );
 
 	while(pool::poll_events()) {
-		if(direction == Direction::FORWARD)  pos_target[1] -= 1.0f; else
-		if(direction == Direction::BACKWARD) pos_target[1] += 1.0f; else
-		if(direction == Direction::RIGHT)    pos_target[0] += 1.0f; else
-		if(direction == Direction::LEFT)     pos_target[0] -= 1.0f;
+		if(direction == Direction::FORWARD)  ipos_target[1] -= 1; else
+		if(direction == Direction::BACKWARD) ipos_target[1] += 1; else
+		if(direction == Direction::RIGHT)    ipos_target[0] += 1; else
+		if(direction == Direction::LEFT)     ipos_target[0] -= 1;
+
+		pos_target = ipos_target;
+
+		// normalize, to keep within bounds of the floor
+		if(ipos_target[0] > TILES) {
+			pos[0]         -= TILES;
+			ipos_target[0] -= TILES;
+			pos_target[0]  -= TILES;
+		}
+		if(ipos_target[0] < 0) {
+			pos[0]         += TILES;
+			ipos_target[0] += TILES;
+			pos_target[0]  += TILES;
+		}
+		if(ipos_target[1] > TILES) {
+			pos[1]         -= TILES;
+			ipos_target[1] -= TILES;
+			pos_target[1]  -= TILES;
+		}
+		if(ipos_target[1] < 0) {
+			pos[1]         += TILES;
+			ipos_target[1] += TILES;
+			pos_target[1]  += TILES;
+		}
 
 		if(speed_boost > 0.0f) {
 			speed_boost /= 1.1f;

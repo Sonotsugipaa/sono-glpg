@@ -8,10 +8,17 @@
 
 
 
+namespace {
+
+	std::size_t gen = 1;
+
+}
+
+
 namespace sneka {
 
 	RenderObject::RenderObject(Mesh& mesh):
-			mesh(mesh)
+			mesh(mesh), uid(gen++)
 	{ }
 
 	RenderObject::RenderObject(std::string mesh_name):
