@@ -1,4 +1,4 @@
-COMMON_FLAGS = -g -Wall -I./include -Llib
+COMMON_FLAGS = -g -Wall -I./include -Llib -mwindows
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
 CPPFLAGS = -std=c++17 $(COMMON_FLAGS)
 ALL_MAIN_SRCS =\
@@ -9,7 +9,7 @@ CPP_SRCS = $(wildcard src/*.cpp)
 ALL_OBJS =\
 	$(patsubst src/%.c, build/%.o, $(C_SRCS))\
 	$(patsubst src/%.cpp, build/%.o, $(CPP_SRCS))
-LIBS = $(shell cat libraries)
+LIBS = $(shell cat libraries_win)
 
 # compiles all objects, and creates executable files from ./src/main
 make_exec: $(ALL_MAIN_SRCS)
