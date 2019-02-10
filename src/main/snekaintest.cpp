@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <map>
 
 #include <cstdlib>
 #include <cstdio>
@@ -23,8 +24,8 @@
 
 #include <SDL2/SDL.h>
 
-#define SCREEN_WIDTH   (1800)
-#define TILES          (20.0)
+#define SCREEN_WIDTH   (1700)
+#define TILES          (40.0)
 #define FPS            (60.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
@@ -37,15 +38,12 @@ namespace {
 	using namespace sneka;
 
 	glm::vec2 pos, pos_target;
-	const GLfloat speed = 1.5f;
+	const GLfloat speed = 2.5f;
 	GLfloat speed_boost = 0.0f;
-	GLfloat objrot = 0.0f;
 	GLfloat rot = 0.0f;
 	Direction direction;
 
 	WorldRenderer* renderer;
-	WorldObject* wobj1;
-	WorldObject* wobj2;
 
 	gla::Timer frame_timer;
 
@@ -102,6 +100,37 @@ namespace {
 		rot = movement.old_rot + (movement.rdiff * adv);
 	}
 
+	unsigned int xorshift(unsigned int x) {
+		x ^= (x << 13) ^ (x >> 13);
+		x ^= (x << 2) ^ (x >> 2);
+		x ^= (x << 20) ^ (x >> 20);
+		return x;
+	}
+
+	// Generates random objects through the map.
+	void genObjects(WorldRenderer* renderer, std::string mesh, std::size_t count) {
+		using namespace std::chrono;
+
+		system_clock::duration time = system_clock::now().time_since_epoch();
+		unsigned int rand = time.count();
+
+		for(std::size_t i=0; i < count; i+=1) {
+			WorldObject* newobj = new WorldObject(mesh);
+			newobj->setGridPosition(
+					xorshift(rand + count + i) % (unsigned int) TILES,
+					xorshift(rand + i - count) % (unsigned int) TILES );
+			newobj->setHeight(0.0f);
+			renderer->putObject(*newobj);
+		}
+	}
+
+	void destroyObjects(WorldRenderer* renderer) {
+		WorldObject* obj;
+		while((obj = renderer->popObject()) != nullptr) {
+			renderer->removeObject(obj->uid);
+		}
+	}
+
 }
 
 
@@ -118,17 +147,10 @@ int main(int argn, char** args) {
 
 	renderer = new WorldRenderer(
 			"assets/tile.mesh", TILES,
-			-0.03f, 0, W, H );
+			-0.02f, 0, W, H );
 	renderer->clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
 
-	wobj1 = new WorldObject("assets/trisquare.mesh");
-	wobj1->setGridPosition(1, 0);
-	wobj1->setHeight(0.2f);
-	renderer->putObject(*wobj1);
-	wobj2 = new WorldObject("assets/trisquare.mesh");
-	wobj2->setGridPosition(-1, 0);
-	wobj2->setHeight(0.2f);
-	renderer->putObject(*wobj2);
+	genObjects(renderer, "assets/pyr.mesh", 20);
 
 	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
 		if(! released) {
@@ -179,18 +201,12 @@ int main(int argn, char** args) {
 			// delays a bit more than the actual framerate
 			std::this_thread::sleep_for(std::chrono::milliseconds((int) FRAMERATE));
 
-			wobj1->setRotationRad(objrot);
-			wobj2->setRotationRad(objrot*2.0f);
 			renderer->setView(glm::vec3(-pos[0], -1.0f, -pos[1]), -rot, 0.9f);
 			renderer->renderFrame();
-
-			objrot += delta / 10.0f;
-			if(objrot >= 6.2830f) objrot -= 6.2830f;
 		}
 	}
 
-	delete wobj1;
-	delete wobj2;
+	destroyObjects(renderer);
 	delete renderer;
 
 	pool::runtime_destroy();

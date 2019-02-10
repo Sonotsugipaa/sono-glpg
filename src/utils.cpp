@@ -19,11 +19,11 @@ namespace gla {
 	}
 
 	void Timer::reset() {
-		time = system_clock::now();
+		time = steady_clock::now();
 	}
 
 	float Timer::millis() {
-		duration<double, std::micro> micros = system_clock::now() - time;
+		duration<double, std::micro> micros = steady_clock::now() - time;
 		return micros.count() / 1000.0;
 	}
 

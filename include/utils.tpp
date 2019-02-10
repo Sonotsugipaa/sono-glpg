@@ -9,7 +9,7 @@ namespace gla {
 
 	class Timer {
 	protected:
-		std::chrono::system_clock::time_point
+		std::chrono::steady_clock::time_point
 			time;
 
 	public:

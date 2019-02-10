@@ -16,6 +16,8 @@
 
 namespace sneka {
 
+	using uid_t = std::size_t;
+
 	class Direction {
 	private:
 		int value;
@@ -55,7 +57,7 @@ namespace sneka {
 		glm::ivec2 grid_pos;
 		GLfloat height = 0.0f;
 	public:
-		const std::size_t uid;
+		const uid_t uid;
 
 		WorldObject(Mesh&);
 		WorldObject(std::string mesh_name);
@@ -72,7 +74,7 @@ namespace sneka {
 		Mesh* floor_mesh;
 		RenderObject* floor;
 
-		std::map<std::size_t, WorldObject*> objects;
+		std::map<uid_t, WorldObject*> objects;
 		GLfloat floor_tiles, floor_tiles_half, curvature, drugs;
 
 		glm::mat4 mat_proj;
@@ -89,9 +91,14 @@ namespace sneka {
 				GLuint screen_width, GLuint screen_height );
 		virtual ~WorldRenderer();
 
+		/* Returns the pointer to a random object, if there is any;
+		 * 'nullptr' otherwise. */
+		WorldObject* popObject();
+		WorldObject* getObject(uid_t);
 		void putObject(WorldObject& object);
 		void removeObject(WorldObject& object);
-		void removeObject(std::size_t uid);
+		void removeObject(uid_t);
+		std::size_t size();
 
 		void setView(glm::vec3 position, GLfloat yaw, GLfloat pitch);
 

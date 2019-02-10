@@ -6,8 +6,6 @@
 
 #include "utils.tpp"
 
-#include <iostream> // Debug only
-
 #include <glm/gtc/matrix_transform.hpp>
 
 #define GL3_PROTOTYPES 1
@@ -113,14 +111,6 @@ namespace sneka {
 	WorldRenderer::~WorldRenderer() {
 		delete floor_mesh;
 		delete floor;
-
-		/* // not necessary: the map is destroyed with this object, it's an automatic variable
-		auto iter = objects.begin();
-		while(iter != objects.end()) {
-			objects.erase(iter);
-			iter = objects.begin();
-		}
-		*/
 	}
 
 
@@ -130,6 +120,22 @@ namespace sneka {
 		view_pos = pos;
 		view_yaw = yaw;
 		view_pitch = pitch;
+	}
+
+	WorldObject* WorldRenderer::popObject() {
+		auto iter = objects.begin();
+		if(iter == objects.end())
+			return nullptr;
+		return iter->second;
+		//std::cout << "now rendering " << obj.uid << std::endl;
+	}
+
+	WorldObject* WorldRenderer::getObject(uid_t uid) {
+		auto iter = objects.find(uid);
+		if(iter == objects.end())
+			return nullptr;
+		return iter->second;
+		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
 	void WorldRenderer::putObject(WorldObject& obj) {
@@ -142,10 +148,14 @@ namespace sneka {
 		//std::cout << "not rendering " << obj.uid << std::endl;
 	}
 
-	void WorldRenderer::removeObject(std::size_t uid) {
+	void WorldRenderer::removeObject(uid_t uid) {
 		auto iter = objects.find(uid);
 		if(iter != objects.end())
 			objects.erase(iter);
+	}
+
+	std::size_t WorldRenderer::size() {
+		return objects.size();
 	}
 
 	void WorldRenderer::renderFrame() {
