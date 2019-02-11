@@ -130,7 +130,7 @@ namespace {
 			newobj->setGridPosition(
 					xorshift(rand + count + i) % (unsigned int) TILES,
 					xorshift(rand + i - count) % (unsigned int) TILES );
-			newobj->setHeight(0.0f);
+			newobj->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 			renderer->putObject(*newobj);
 		}
 	}
@@ -159,7 +159,8 @@ int main(int argn, char** args) {
 	renderer = new WorldRenderer(
 			"assets/tile_caved.mesh", TILES,
 			CURVATURE, 0, W, H );
-	renderer->clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
+	renderer->clear_color = glm::vec3(0.4f, 0.4f, 0.7f);
+	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
 
 	// is deallocated automatically by destroyObjects(...)
 	head = new RenderObject("assets/arrow.mesh");

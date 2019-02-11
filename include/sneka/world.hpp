@@ -96,7 +96,7 @@ namespace sneka {
 		GLfloat view_yaw, view_pitch;
 
 	public:
-		glm::vec3 clear_color = glm::vec3(0.05f, 0.05f, 0.05f);
+		glm::vec3 clear_color;
 
 		WorldRenderer(
 				std::string tile_mesh_name,
@@ -113,6 +113,9 @@ namespace sneka {
 		void removeObject(uid_t);
 		std::size_t size();
 
+		RenderObject& getFloorObject();
+
+		void setLightDirection(glm::vec3);
 		void setView(glm::vec3 position, GLfloat yaw, GLfloat pitch);
 
 		virtual void renderFrame();

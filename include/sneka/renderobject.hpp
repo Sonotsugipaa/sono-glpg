@@ -22,8 +22,8 @@ namespace sneka {
 	protected:
 		Mesh& mesh;
 		glm::mat4 mat_model;
-		bool mat_changed = true;
-		bool color_add = false;
+		bool mat_changed;
+		bool color_mul;
 
 		/* 'position' is the position in the world,
 		 * 'translation' the position relative to the center

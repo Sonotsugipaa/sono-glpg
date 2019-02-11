@@ -14,7 +14,7 @@ namespace {
 
 	std::map<std::string, sneka::Mesh*> pool_meshes;
 
-	bool add_col_enabled;
+	bool mul_col_enabled;
 
 
 	void assert_runtime_init(bool init_state) {
@@ -89,7 +89,7 @@ namespace sneka::pool {
 		uniform_view_pos = -1,
 		uniform_model = -1,
 		uniform_model_pos = -1,
-		uniform_add_col = -1,
+		uniform_mul_col = -1,
 		uniform_shade = -1,
 		uniform_time = -1,
 		uniform_curvature = -1,
@@ -105,13 +105,15 @@ namespace sneka::pool {
 		return const_cast<const Runtime *>(runtime_inst);
 	}
 
-	void set_add_col_enabled(bool value) {
-		if(add_col_enabled && ! value) {
-			glm::vec4 null_col = glm::vec4(0.0f);
-			glUniform4fv(uniform_add_col, 1, &null_col[0]);
+	void set_mul_col_enabled(bool value) {
+		assert_runtime_init(true);
+
+		if(mul_col_enabled && ! value) {
+			glm::vec4 null_col = glm::vec4(1.0f);
+			glUniform4fv(uniform_mul_col, 1, &null_col[0]);
 		}
 
-		add_col_enabled = value;
+		mul_col_enabled = value;
 	}
 
 	void runtime_init(
@@ -135,7 +137,7 @@ namespace sneka::pool {
 		uniform_view_pos =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_pos");
 		uniform_model =       glGetUniformLocation(runtime_inst->shader->program, "uni_model");
 		uniform_model_pos =   glGetUniformLocation(runtime_inst->shader->program, "uni_model_pos");
-		uniform_add_col =     glGetUniformLocation(runtime_inst->shader->program, "uni_add_col");
+		uniform_mul_col =     glGetUniformLocation(runtime_inst->shader->program, "uni_mul_col");
 		uniform_shade =       glGetUniformLocation(runtime_inst->shader->program, "uni_shade");
 		uniform_time =        glGetUniformLocation(runtime_inst->shader->program, "uni_time");
 		uniform_curvature =   glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");

@@ -19,6 +19,8 @@ namespace sneka {
 
 	RenderObject::RenderObject(Mesh& mesh):
 			mesh(mesh),
+			mat_changed(true),
+			color_mul(false),
 			position(0.0f),
 			translation(0.0f),
 			rotation(0.0f),
@@ -66,15 +68,15 @@ namespace sneka {
 	}
 
 	void RenderObject::setColor(glm::vec4 col) {
-		color_add = true;
+		color_mul = true;
 		color = col;
 	}
 
 	void RenderObject::draw() {
-		pool::set_add_col_enabled(color_add);
+		pool::set_add_col_enabled(color_mul);
 
-		if(color_add)
-			glUniformMatrix4fv(pool::uniform_add_col, 1, GL_FALSE, &color[0]);
+		if(color_mul)
+			glUniform4fv(pool::uniform_mul_col, 1, &color[0]);
 
 		if(mat_changed) {
 			mat_compute();

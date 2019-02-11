@@ -35,7 +35,7 @@ namespace sneka::pool {
 			uniform_view_pos,
 			uniform_model,
 			uniform_model_pos,
-			uniform_add_col,
+			uniform_mul_col,
 			uniform_shade,
 			uniform_time,
 			uniform_curvature,
@@ -64,7 +64,7 @@ namespace sneka::pool {
 	 * this function is called for each object, so that those
 	 * without dynamic colors do not use a stray value for the
 	 * add_col shader uniform. */
-	void set_add_col_enabled(bool);
+	void set_mul_col_enabled(bool);
 
 	/* If need_vertices = true, ensures that the mesh contains
 	 * the vertices; if they don't, the file is reloaded and the
