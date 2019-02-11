@@ -7,6 +7,8 @@
 #include "sneka/renderer.hpp"
 #include "sneka/renderobject.hpp"
 
+#include "utils.tpp"
+
 #include <map>
 
 #define WORLD_MIN_Z (0.2)
@@ -81,11 +83,12 @@ namespace sneka {
 
 	class WorldRenderer : public virtual Renderer {
 	protected:
+		gla::Timer time;
 		Mesh* floor_mesh;
 		RenderObject* floor;
 
 		std::map<uid_t, RenderObject*> objects;
-		GLfloat floor_tiles, floor_tiles_half, curvature, drugs;
+		GLfloat floor_tiles, floor_tiles_half, floor_tile_size, curvature, drugs;
 
 		glm::mat4 mat_proj;
 

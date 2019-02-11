@@ -6,6 +6,8 @@
 
 #include "utils.tpp"
 
+#include <iostream>
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #define GL3_PROTOTYPES 1
@@ -94,6 +96,7 @@ namespace sneka {
 			GLuint scr_w, GLuint scr_h
 	):
 			floor_tiles(tiles), floor_tiles_half(floor_tiles / 2.0f),
+			floor_tile_size(1.0f),
 			curvature(curv), drugs(drugs)
 	{
 		mat_proj = glm::perspective(
@@ -102,10 +105,11 @@ namespace sneka {
 				(GLfloat) WORLD_MAX_Z);
 
 		Mesh& tile_mesh = pool::get_mesh(tile_mesh_name, true);
-		expand_floor(&tile_mesh, 1.0f, &floor_mesh, tiles);
+		expand_floor(&tile_mesh, floor_tile_size, &floor_mesh, tiles);
 		//floor_mesh = &tile_mesh;
 
 		floor = new RenderObject(*floor_mesh);
+		floor->shade = 0.6f;
 	}
 
 	WorldRenderer::~WorldRenderer() {
@@ -162,25 +166,48 @@ namespace sneka {
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glUniform1f(pool::uniform_time, time.millis() / 1000.0f);
 		glUniform1f(pool::uniform_curvature, curvature);
 		glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &mat_proj[0][0]);
 
-		glm::mat4 mat_view;
+		glm::mat4 mat_view = get_view(
+				glm::vec3(
+					view_pos[0],
+					view_pos[1],
+					view_pos[2]
+				),
+				view_yaw, view_pitch );
+
+		glm::vec3 view_dir =
+				glm::rotate(
+					glm::rotate(
+						glm::mat4(1.0f),
+						-view_yaw,
+						glm::vec3(0.0f, 1.0f, 0.0f)
+					),
+					-view_pitch,
+					glm::vec3(1.0f, 0.0f, 0.0f)
+				) *
+				glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+		view_dir = glm::normalize(view_dir);
+		//std::cout << "view dir " << view_dir[0] << ", " << view_dir[1] << ", " << view_dir[2] << std::endl;
+		glUniform3fv(pool::uniform_view_dir, 1, &view_dir[0]);
+
 		/* can be optimized: everything is drawn 9 times, but a
 		 * maximum of 4 iterations can theoretically suffice */
 		for(int x=-1; x<2; x+=1) {
 			for(int z=-1; z<2; z+=1) {
-				/* can be optimized: matrix only has to be translated, but gets
-				 * rotated too */
-				mat_view = get_view(
+				glm::mat4 mat_view_tr = glm::translate(
+						mat_view,
 						glm::vec3(
-							view_pos[0] + (x * floor_tiles),
-							view_pos[1],
-							view_pos[2] + (z * floor_tiles)
-						),
-						view_yaw, view_pitch );
+							static_cast<GLfloat>(x) * floor_tiles,
+							0.0f,
+							static_cast<GLfloat>(z) * floor_tiles
+						) );
 
-				glUniformMatrix4fv(pool::uniform_view, 1, GL_FALSE, &mat_view[0][0]);
+				glm::vec3 pos = mat_view_tr * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				glUniform3fv(pool::uniform_view_pos, 1, &pos[0]);
+				glUniformMatrix4fv(pool::uniform_view, 1, GL_FALSE, &mat_view_tr[0][0]);
 
 				floor->draw();
 
@@ -191,6 +218,28 @@ namespace sneka {
 				}
 			}
 		}
+
+		/* draft
+		glm::mat4 mat_view_tr = glm::translate(
+				mat_view,
+				glm::vec3(
+					floor_tile_size * glm::floor(view_pos[0] / floor_tile_size),
+					0.0f,
+					floor_tile_size * glm::floor(view_pos[2] / floor_tile_size)
+				) );
+
+		glm::vec3 pos = mat_view_tr * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glUniform3fv(pool::uniform_view_pos, 1, &pos[0]);
+		glUniformMatrix4fv(pool::uniform_view, 1, GL_FALSE, &mat_view_tr[0][0]);
+
+		floor->draw();
+
+		auto iter = objects.begin();
+		while(iter != objects.end()) {
+			iter->second->draw();
+			++iter;
+		}
+		*/
 
 		SDL_GL_SwapWindow(sneka::pool::runtime()->window);
 	}

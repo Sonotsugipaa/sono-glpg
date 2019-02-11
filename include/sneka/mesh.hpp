@@ -16,9 +16,9 @@ namespace sneka {
 
 	class Mesh {
 	protected:
-		gla::VertexBuffer vb;
+		gla::VertexBuffer vb, vb_normal;
 		gla::VertexArray va;
-		GLfloat * vertices_raw = nullptr;
+		GLfloat * vertices_raw;
 		const GLsizei vertices_n;
 
 	public:

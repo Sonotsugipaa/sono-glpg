@@ -7,12 +7,58 @@
 
 #include <stdexcept>
 
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
+
+#include <iostream> // Debug only
+
 
 
 namespace {
 
 	void invalid_access() {
 		throw std::logic_error("Tried to access forgotten or non-existent data from a mesh.");
+	}
+
+	/* only works for GL_TRIANGLE meshes, don't try this on GL_TRIANGLE_FAN
+	 * or anything else */
+	void tri_normals(GLfloat* dest, GLfloat* vertices, GLsizei n) {
+		using namespace glm;
+
+		/* number of vertices  -->  number of triangles */
+		n /= 3;
+
+		// for each triangle
+		for(GLsizei i = 0; i < n; i += 1) {
+			// each vertex of the triangle
+			GLsizei i1 = i * (3 * SNEKA_VERTEX_SIZE);
+			GLsizei i2 = i1 + SNEKA_VERTEX_SIZE;
+			GLsizei i3 = i2 + SNEKA_VERTEX_SIZE;
+
+			// position vector of each vertex
+			vec3 v1 = vec3(vertices[i1], vertices[i1+1], vertices[i1+2]);
+			vec3 v2 = vec3(vertices[i2], vertices[i2+1], vertices[i2+2]);
+			vec3 v3 = vec3(vertices[i3], vertices[i3+1], vertices[i3+2]);
+
+			vec3 U = v2 - v1;
+			vec3 V = v3 - v1;
+
+			vec3 normal = normalize(vec3(
+				(U[1] * V[2]) - (U[2] * V[1]),
+				(U[2] * V[0]) - (U[0] * V[2]),
+				(U[0] * V[1]) - (U[1] * V[0])
+			));
+
+			// for each normal
+			for(GLsizei j=0; j<3; j+=1) {
+				GLsizei at = 3 * ((3*i)+j);
+
+				// for each normal coordinate
+				for(GLsizei k=0; k<3; k+=1) {
+					dest[at+k] = normal[k];
+				}
+			}
+		}
 	}
 
 }
@@ -29,8 +75,9 @@ namespace sneka {
 	*/
 
 	Mesh::Mesh(std::string nm, GLfloat* vertices, GLsizei n, bool keep):
-
 			vb(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW),
+			vb_normal(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW),
+			vertices_raw(nullptr),
 			vertices_n(n), name(nm)
 	{
 		if(keep) {
@@ -40,7 +87,11 @@ namespace sneka {
 				vertices_raw[i] = vertices[i];
 		}
 
+		GLfloat* normals = new GLfloat[n * 3];
+		tri_normals(normals, vertices, n);
+
 		vb.bufferData(vertices, n * SNEKA_VERTEX_SIZE * sizeof(GLfloat));
+		vb_normal.bufferData(normals, n * 3 * sizeof(GLfloat));
 
 		va.assignVertexBuffer(
 				vb, pool::in_position,
@@ -50,6 +101,13 @@ namespace sneka {
 				vb, pool::in_color,
 				4, GL_FLOAT, GL_FALSE,
 				SNEKA_VERTEX_SIZE * sizeof(GLfloat), (GLfloat*) (3 * sizeof(GLfloat)) );
+
+		va.assignVertexBuffer(
+				vb_normal, pool::in_normal,
+				3, GL_FLOAT, GL_FALSE,
+				3 * sizeof(GLfloat), 0 );
+
+		delete[] normals;
 	}
 
 	Mesh::~Mesh() {

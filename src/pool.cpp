@@ -85,15 +85,18 @@ namespace sneka::pool {
 	GLuint
 		uniform_proj = -1,
 		uniform_view = -1,
+		uniform_view_dir = -1,
+		uniform_view_pos = -1,
 		uniform_model = -1,
 		uniform_add_col = -1,
+		uniform_shade = -1,
 		uniform_time = -1,
 		uniform_curvature = -1,
 		uniform_drugs = -1,
 
 		in_position = -1,
 		in_color = -1,
-		in_random = -1;
+		in_normal = -1;
 
 
 	const Runtime * runtime() {
@@ -125,16 +128,20 @@ namespace sneka::pool {
 				resizable, vsync,
 				"shader/sneka_v.glsl", "shader/sneka_f.glsl" );
 
-		uniform_proj =      glGetUniformLocation(runtime_inst->shader->program, "uni_proj");
-		uniform_view =      glGetUniformLocation(runtime_inst->shader->program, "uni_view");
-		uniform_model =     glGetUniformLocation(runtime_inst->shader->program, "uni_model");
-		uniform_add_col =   glGetUniformLocation(runtime_inst->shader->program, "uni_add_col");
-		uniform_time =      glGetUniformLocation(runtime_inst->shader->program, "uni_time");
-		uniform_curvature = glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");
-		uniform_drugs =     glGetUniformLocation(runtime_inst->shader->program, "uni_drugs");
+		uniform_proj =        glGetUniformLocation(runtime_inst->shader->program, "uni_proj");
+		uniform_view =        glGetUniformLocation(runtime_inst->shader->program, "uni_view");
+		uniform_view_dir =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_dir");
+		uniform_view_pos =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_pos");
+		uniform_model =       glGetUniformLocation(runtime_inst->shader->program, "uni_model");
+		uniform_add_col =     glGetUniformLocation(runtime_inst->shader->program, "uni_add_col");
+		uniform_shade =     glGetUniformLocation(runtime_inst->shader->program, "uni_shade");
+		uniform_time =        glGetUniformLocation(runtime_inst->shader->program, "uni_time");
+		uniform_curvature =   glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");
+		uniform_drugs =       glGetUniformLocation(runtime_inst->shader->program, "uni_drugs");
 
 		in_position = glGetAttribLocation(runtime_inst->shader->program, "in_position");
 		in_color =    glGetAttribLocation(runtime_inst->shader->program, "in_color");
+		in_normal =   glGetAttribLocation(runtime_inst->shader->program, "in_normal");
 		//in_random =   glGetAttribLocation(runtime_inst->shader->program, "in_random");
 	}
 

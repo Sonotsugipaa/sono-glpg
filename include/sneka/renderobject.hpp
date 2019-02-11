@@ -26,12 +26,14 @@ namespace sneka {
 		bool color_add = false;
 		glm::vec3 position;
 		glm::vec4 color;
-		GLfloat rotation = 0.0f; // +Y axis
+		GLfloat rotation; // +Y axis
 
 		void mat_compute();
 
 	public:
 		const uid_t uid;
+
+		GLfloat shade;
 
 		RenderObject(Mesh&);
 		RenderObject(std::string mesh_name);

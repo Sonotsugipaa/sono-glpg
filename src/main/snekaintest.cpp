@@ -156,7 +156,7 @@ int main(int argn, char** args) {
 			W, H, true, true);
 
 	renderer = new WorldRenderer(
-			"assets/tile.mesh", TILES,
+			"assets/tile_caved.mesh", TILES,
 			CURVATURE, 0, W, H );
 	renderer->clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
 

@@ -31,14 +31,18 @@ namespace sneka::pool {
 	extern GLuint
 			uniform_proj,
 			uniform_view,
+			uniform_view_dir,
+			uniform_view_pos,
 			uniform_model,
 			uniform_add_col,
+			uniform_shade,
 			uniform_time,
 			uniform_curvature,
 			uniform_drugs,
 
 			in_position,
-			in_color;
+			in_color,
+			in_normal;
 			//in_random;
 
 	const Runtime * runtime();
