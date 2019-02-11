@@ -91,12 +91,14 @@ namespace sneka {
 		GLfloat floor_tiles, floor_tiles_half, floor_tile_size, curvature, drugs;
 
 		glm::mat4 mat_proj;
+		glm::vec3 light_direction;
 
 		glm::vec3 view_pos;
 		GLfloat view_yaw, view_pitch;
 
 	public:
 		glm::vec3 clear_color;
+		GLfloat fog_intensity;
 
 		WorldRenderer(
 				std::string tile_mesh_name,

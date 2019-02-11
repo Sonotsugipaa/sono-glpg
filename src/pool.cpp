@@ -85,7 +85,7 @@ namespace sneka::pool {
 	GLuint
 		uniform_proj = -1,
 		uniform_view = -1,
-		uniform_view_dir = -1,
+		uniform_light_dir = -1,
 		uniform_view_pos = -1,
 		uniform_model = -1,
 		uniform_model_pos = -1,
@@ -94,6 +94,7 @@ namespace sneka::pool {
 		uniform_time = -1,
 		uniform_curvature = -1,
 		uniform_drugs = -1,
+		uniform_fog = -1,
 
 		in_position = -1,
 		in_color = -1,
@@ -133,7 +134,7 @@ namespace sneka::pool {
 
 		uniform_proj =        glGetUniformLocation(runtime_inst->shader->program, "uni_proj");
 		uniform_view =        glGetUniformLocation(runtime_inst->shader->program, "uni_view");
-		uniform_view_dir =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_dir");
+		uniform_light_dir =   glGetUniformLocation(runtime_inst->shader->program, "uni_light_dir");
 		uniform_view_pos =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_pos");
 		uniform_model =       glGetUniformLocation(runtime_inst->shader->program, "uni_model");
 		uniform_model_pos =   glGetUniformLocation(runtime_inst->shader->program, "uni_model_pos");
@@ -142,6 +143,7 @@ namespace sneka::pool {
 		uniform_time =        glGetUniformLocation(runtime_inst->shader->program, "uni_time");
 		uniform_curvature =   glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");
 		uniform_drugs =       glGetUniformLocation(runtime_inst->shader->program, "uni_drugs");
+		uniform_fog =         glGetUniformLocation(runtime_inst->shader->program, "uni_fog");
 
 		in_position = glGetAttribLocation(runtime_inst->shader->program, "in_position");
 		in_color =    glGetAttribLocation(runtime_inst->shader->program, "in_color");

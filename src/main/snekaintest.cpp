@@ -24,7 +24,7 @@
 
 #include <SDL2/SDL.h>
 
-#define SCREEN_WIDTH   (1700)
+#define SCREEN_WIDTH   (1600)
 #define FPS            (60.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
@@ -34,7 +34,7 @@
 #define CAM_PITCH      (1.1)
 #define CURVATURE      (-0.03)
 #define TILES          (40)
-#define OBJECTS        (60)
+#define OBJECTS        (500)
 
 
 
@@ -158,9 +158,10 @@ int main(int argn, char** args) {
 
 	renderer = new WorldRenderer(
 			"assets/tile_caved.mesh", TILES,
-			CURVATURE, 0, W, H );
+			CURVATURE, 0.5f, W, H );
 	renderer->clear_color = glm::vec3(0.4f, 0.4f, 0.7f);
 	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
+	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 0.0f));
 
 	// is deallocated automatically by destroyObjects(...)
 	head = new RenderObject("assets/arrow.mesh");

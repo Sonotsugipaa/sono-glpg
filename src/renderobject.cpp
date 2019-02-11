@@ -73,7 +73,7 @@ namespace sneka {
 	}
 
 	void RenderObject::draw() {
-		pool::set_add_col_enabled(color_mul);
+		pool::set_mul_col_enabled(color_mul);
 
 		if(color_mul)
 			glUniform4fv(pool::uniform_mul_col, 1, &color[0]);

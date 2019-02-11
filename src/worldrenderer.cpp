@@ -97,8 +97,11 @@ namespace sneka {
 	):
 			floor_tiles(tiles), floor_tiles_half(floor_tiles / 2.0f),
 			floor_tile_size(1.0f),
-			curvature(curv), drugs(drugs)
+			curvature(curv),
+			drugs(drugs),
+			light_direction(0.0f, 1.0f, 0.0f),
 			clear_color(glm::vec3(0.05f, 0.05f, 0.05f)),
+			fog_intensity(0.0f)
 	{
 		mat_proj = glm::perspective(
 				90.0f, (GLfloat) scr_w / scr_h,
@@ -165,12 +168,19 @@ namespace sneka {
 		return objects.size();
 	}
 
+	void WorldRenderer::setLightDirection(glm::vec3 dir) {
+		light_direction = glm::normalize(dir);
+	}
+
 	void WorldRenderer::renderFrame() {
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glm::vec4 fog = glm::vec4(clear_color, fog_intensity);
+		glUniform4fv(pool::uniform_fog, 1, &fog[0]);
 		glUniform1f(pool::uniform_time, time.millis() / 1000.0f);
 		glUniform1f(pool::uniform_curvature, curvature);
+		glUniform1f(pool::uniform_drugs, drugs);
 		glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &mat_proj[0][0]);
 
 		glm::mat4 mat_view = get_view(
@@ -195,7 +205,7 @@ namespace sneka {
 				glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 		view_dir = glm::normalize(view_dir);
 		*/
-		glUniform3fv(pool::uniform_view_dir, 1, &view_dir[0]);
+		glUniform3fv(pool::uniform_light_dir, 1, &light_direction[0]);
 
 		// draw the floor with a matrix that translates back every tile
 		glm::mat4 mat_view_tr = glm::translate(
