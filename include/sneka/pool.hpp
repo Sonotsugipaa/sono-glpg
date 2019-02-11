@@ -34,6 +34,7 @@ namespace sneka::pool {
 			uniform_view_dir,
 			uniform_view_pos,
 			uniform_model,
+			uniform_model_pos,
 			uniform_add_col,
 			uniform_shade,
 			uniform_time,

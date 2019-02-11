@@ -88,6 +88,7 @@ namespace sneka::pool {
 		uniform_view_dir = -1,
 		uniform_view_pos = -1,
 		uniform_model = -1,
+		uniform_model_pos = -1,
 		uniform_add_col = -1,
 		uniform_shade = -1,
 		uniform_time = -1,
@@ -133,8 +134,9 @@ namespace sneka::pool {
 		uniform_view_dir =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_dir");
 		uniform_view_pos =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_pos");
 		uniform_model =       glGetUniformLocation(runtime_inst->shader->program, "uni_model");
+		uniform_model_pos =   glGetUniformLocation(runtime_inst->shader->program, "uni_model_pos");
 		uniform_add_col =     glGetUniformLocation(runtime_inst->shader->program, "uni_add_col");
-		uniform_shade =     glGetUniformLocation(runtime_inst->shader->program, "uni_shade");
+		uniform_shade =       glGetUniformLocation(runtime_inst->shader->program, "uni_shade");
 		uniform_time =        glGetUniformLocation(runtime_inst->shader->program, "uni_time");
 		uniform_curvature =   glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");
 		uniform_drugs =       glGetUniformLocation(runtime_inst->shader->program, "uni_drugs");

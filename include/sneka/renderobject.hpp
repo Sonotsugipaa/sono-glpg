@@ -24,7 +24,13 @@ namespace sneka {
 		glm::mat4 mat_model;
 		bool mat_changed = true;
 		bool color_add = false;
+
+		/* 'position' is the position in the world,
+		 * 'translation' the position relative to the center
+		 * of the model */
 		glm::vec3 position;
+		glm::vec3 translation;
+
 		glm::vec4 color;
 		GLfloat rotation; // +Y axis
 
@@ -39,11 +45,12 @@ namespace sneka {
 		RenderObject(std::string mesh_name);
 		virtual ~RenderObject() = default;
 
+		glm::vec3 getPosition();
 		void setPosition(glm::vec3);
 		void setPosition(GLfloat x, GLfloat y, GLfloat z);
 
-		void setRotationRad(GLfloat);
-		void setRotationDeg(GLfloat);
+		GLfloat getRotation();
+		void setRotation(GLfloat);
 
 		void setColor(glm::vec4);
 

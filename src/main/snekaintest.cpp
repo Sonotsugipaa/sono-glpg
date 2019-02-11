@@ -25,7 +25,6 @@
 #include <SDL2/SDL.h>
 
 #define SCREEN_WIDTH   (1700)
-#define TILES          (40)
 #define FPS            (60.0)
 #define FRAMERATE      (1000.0/FPS)
 #define STEPS          (10)
@@ -33,7 +32,9 @@
 #define CAM_DISTANCE   (1.0)
 #define CAM_HEIGHT     (2.0)
 #define CAM_PITCH      (1.1)
-#define CURVATURE      (-0.04)
+#define CURVATURE      (-0.03)
+#define TILES          (40)
+#define OBJECTS        (60)
 
 
 
@@ -164,7 +165,7 @@ int main(int argn, char** args) {
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh", (TILES*TILES) / 4);
+	genObjects(renderer, "assets/pyr.mesh", OBJECTS);
 
 	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
 		if(! released) {
@@ -227,7 +228,7 @@ int main(int argn, char** args) {
 		*/
 
 		movement.update();
-		head->setRotationRad(direction.radians());
+		head->setRotation(direction.radians());
 
 		frame_timer.reset();
 		bool cycle_frame_timer = true;
