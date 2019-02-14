@@ -15,6 +15,7 @@
 #include "globject.hpp"
 #include "transition.hpp"
 #include "utils.tpp"
+#include "read_utils.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
@@ -24,17 +25,21 @@
 
 #include <SDL2/SDL.h>
 
-#define SCREEN_WIDTH   (1600)
-#define FPS            (60.0)
-#define FRAMERATE      (1000.0/FPS)
-#define STEPS          (10)
-#define FRAMES         (500)
-#define CAM_DISTANCE   (1.0)
-#define CAM_HEIGHT     (2.0)
-#define CAM_PITCH      (1.1)
-#define CURVATURE      (-0.03)
-#define TILES          (40)
-#define OBJECTS        (500)
+#define SCREEN_WIDTH         (800)
+#define WINDOW_SIZE_FACTOR   (0.7)
+#define FPS                  (60.0)
+#define FRAMERATE            (1000.0/FPS)
+#define STEPS                (10)
+#define FRAMES               (500)
+#define CAM_DISTANCE         (2.0)
+#define CAM_HEIGHT           (2.0)
+#define CAM_PITCH            (1.1)
+#define CURVATURE            (-0.03)
+#define TILES                (40)
+#define OBJECTS              (500)
+#define DRUGS                (0.5)
+#define WORLD_MIN_Z          (0.2)
+#define WORLD_MAX_Z          (100.0)
 
 
 
@@ -149,7 +154,32 @@ int main(int argn, char** args) {
 	using namespace sneka;
 	using namespace gla;
 
-	const int W = SCREEN_WIDTH, H = SCREEN_WIDTH * 9 / 16;
+	int W = SCREEN_WIDTH, H = SCREEN_WIDTH * 9 / 16;
+	/*
+	{
+		SDL_DisplayMode dm;
+		if(SDL_GetDesktopDisplayMode(0, &dm) == 0) {
+			W = dm.w * WINDOW_SIZE_FACTOR;
+			H = dm.h * WINDOW_SIZE_FACTOR;
+		}
+	}
+	*/
+
+	if(argn > 1) {
+		int read;
+		read_dec_int(args[1], &read);
+		if(read > 0) {
+			W = read;
+			H = W * 9 / 16;
+		}
+	}
+	if(argn > 2) {
+		int read;
+		read_dec_int(args[2], &read);
+		if(read > 0) {
+			H = read;
+		}
+	}
 
 	pool::runtime_init(
 			"sneka world render test",
@@ -158,16 +188,29 @@ int main(int argn, char** args) {
 
 	renderer = new WorldRenderer(
 			"assets/tile_caved.mesh", TILES,
-			CURVATURE, 0.5f, W, H );
+			CURVATURE, DRUGS, W, H );
 	renderer->clear_color = glm::vec3(0.4f, 0.4f, 0.7f);
 	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
 	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 0.0f));
+
+	pool::set_world_perspective(
+					90.0f, (GLfloat) W / H,
+					(GLfloat) WORLD_MIN_Z,
+					(GLfloat) WORLD_MAX_Z);
 
 	// is deallocated automatically by destroyObjects(...)
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
 	genObjects(renderer, "assets/pyr.mesh", OBJECTS);
+
+	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
+		glViewport(0, 0, x, y);
+		pool::set_world_perspective(
+						90.0f, (GLfloat) x / y,
+						(GLfloat) WORLD_MIN_Z,
+						(GLfloat) WORLD_MAX_Z);
+	} );
 
 	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
 		if(! released) {

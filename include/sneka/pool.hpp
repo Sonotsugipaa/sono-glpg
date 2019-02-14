@@ -7,6 +7,8 @@
 #include <exception>
 #include <string>
 
+#include <glm/mat4x4.hpp>
+
 #include "runtime.hpp"
 
 #include "sneka/mesh.hpp"
@@ -28,6 +30,8 @@ namespace sneka::pool {
 			unsigned int modifiers,
 			bool released );
 
+	using resize_callback_t = void (*)(unsigned int width, unsigned int height);
+
 	extern GLuint
 			uniform_proj,
 			uniform_view,
@@ -46,6 +50,13 @@ namespace sneka::pool {
 			in_color,
 			in_normal;
 			//in_random;
+
+	glm::mat4& world_proj_matrix();
+
+	void set_world_perspective(
+			GLfloat fov_y, GLfloat ratio,
+			GLfloat zNear, GLfloat zFar
+	);
 
 	const Runtime * runtime();
 
@@ -85,6 +96,11 @@ namespace sneka::pool {
 	 * returns the previous callback function, or 'nullptr'
 	 * if there was none. */
 	key_callback_t set_key_callback(key_callback_t);
+
+	/* Sets a function to be called on resize events;
+	 * returns the previous callback function, or 'nullptr'
+	 * if there was none. */
+	resize_callback_t set_resize_callback(resize_callback_t);
 
 
 	class PoolException : public std::exception {

@@ -27,15 +27,15 @@ void main(void) {
 	vec4 view_pos = uni_view * model_pos;
 
 	gl_Position = uni_proj * view_pos;
-	//gl_Position.y += (uni_curvature * ((gl_Position.w * gl_Position.w)+(gl_Position.x * gl_Position.x)-1.0));
+
+	float drugs_y = (
+				(cos(gl_Position.z + (uni_time * fac1)) / 2)
+			) * (
+				(sin(gl_Position.x + (uni_time * fac2)) / 2)
+			) * fac3;
+
 	gl_Position.y =
-			gl_Position.y + (
-				(
-					(cos(gl_Position.z + (uni_time * fac1)) / 2)
-				) * (
-					(sin(gl_Position.x + (uni_time * fac2)) / 2)
-				) * fac3
-			) + (
+			gl_Position.y + drugs_y + (
 				uni_curvature * (
 					(
 						gl_Position.w * gl_Position.w

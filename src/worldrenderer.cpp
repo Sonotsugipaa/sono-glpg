@@ -103,17 +103,12 @@ namespace sneka {
 			clear_color(glm::vec3(0.05f, 0.05f, 0.05f)),
 			fog_intensity(0.0f)
 	{
-		mat_proj = glm::perspective(
-				90.0f, (GLfloat) scr_w / scr_h,
-				(GLfloat) WORLD_MIN_Z,
-				(GLfloat) WORLD_MAX_Z);
-
 		Mesh& tile_mesh = pool::get_mesh(tile_mesh_name, true);
 		expand_floor(&tile_mesh, floor_tile_size, &floor_mesh, tiles);
 		//floor_mesh = &tile_mesh;
 
 		floor = new RenderObject(*floor_mesh);
-		floor->shade = 0.6f;
+		floor->shade = 0.8f;
 	}
 
 	WorldRenderer::~WorldRenderer() {
@@ -181,7 +176,7 @@ namespace sneka {
 		glUniform1f(pool::uniform_time, time.millis() / 1000.0f);
 		glUniform1f(pool::uniform_curvature, curvature);
 		glUniform1f(pool::uniform_drugs, drugs);
-		glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &mat_proj[0][0]);
+		glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &pool::world_proj_matrix()[0][0]);
 
 		glm::mat4 mat_view = get_view(
 				glm::vec3(

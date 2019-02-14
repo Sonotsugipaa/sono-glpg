@@ -5,6 +5,7 @@
 #include <iostream> // Debug only
 
 #include <glm/vec4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 
 
@@ -13,6 +14,8 @@ namespace {
 	gla::Runtime* runtime_inst = nullptr;
 
 	std::map<std::string, sneka::Mesh*> pool_meshes;
+
+	glm::mat4 world_proj_matrix_inst = glm::mat4(1.0f);
 
 	bool mul_col_enabled;
 
@@ -188,6 +191,17 @@ namespace sneka::pool {
 		}
 
 		return *(iter->second);
+	}
+
+	glm::mat4& world_proj_matrix() {
+		return world_proj_matrix_inst;
+	}
+
+	void set_world_perspective(
+			GLfloat fov_y, GLfloat ratio,
+			GLfloat zNear, GLfloat zFar
+	) {
+			world_proj_matrix_inst = glm::perspective(fov_y, ratio, zNear, zFar);
 	}
 
 

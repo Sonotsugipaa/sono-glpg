@@ -11,9 +11,6 @@
 
 #include <map>
 
-#define WORLD_MIN_Z (0.2)
-#define WORLD_MAX_Z (100.0)
-
 
 
 namespace sneka {
@@ -90,7 +87,6 @@ namespace sneka {
 		std::map<uid_t, RenderObject*> objects;
 		GLfloat floor_tiles, floor_tiles_half, floor_tile_size, curvature, drugs;
 
-		glm::mat4 mat_proj;
 		glm::vec3 light_direction;
 
 		glm::vec3 view_pos;
