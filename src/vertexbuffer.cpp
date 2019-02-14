@@ -5,7 +5,7 @@
 namespace gla {
 
 	VertexBuffer::VertexBuffer(GLuint target, GLenum usage):
-			target(target), usage(usage)
+			target(target), vbo_id(0), usage(usage)
 	{
 		glGenBuffers(1, &vbo_id);
 	}
