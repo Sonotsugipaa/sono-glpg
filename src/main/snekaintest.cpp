@@ -31,12 +31,12 @@
 #define FRAMERATE            (1000.0/FPS)
 #define STEPS                (10)
 #define FRAMES               (500)
-#define CAM_DISTANCE         (2.0)
+#define CAM_DISTANCE         (1.0)
 #define CAM_HEIGHT           (2.0)
 #define CAM_PITCH            (1.1)
 #define CURVATURE            (-0.03)
-#define TILES                (40)
-#define OBJECTS              (500)
+#define TILES                (30)
+#define OBJECTS              (300)
 #define DRUGS                (0.5)
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
@@ -49,6 +49,7 @@ namespace {
 
 	glm::vec2 pos, pos_target;
 	glm::ivec2 ipos_target;
+	std::map<int unsigned, GridObject*> grid_objects;
 	RenderObject* head;
 	const GLfloat speed = 2.5f;
 	GLfloat speed_boost = 0.0f;
@@ -117,10 +118,18 @@ namespace {
 	}
 
 	unsigned int xorshift(unsigned int x) {
-		x ^= (x << 13) ^ (x >> 13);
-		x ^= (x << 2) ^ (x >> 2);
-		x ^= (x << 20) ^ (x >> 20);
+		x ^= (x << 25) ^ (x >> 24);
+		x ^= (x << 2);
+		x ^= (x >> 5);
+		x ^= (x << 19);
+		x ^= (x >> 23);
 		return x;
+	}
+
+	int unsigned hash_ivec2(glm::ivec2& v) {
+		return
+				((v[0] << (4 * sizeof(unsigned int))) >> (4 * sizeof(unsigned int))) |
+				( v[1] << (4 * sizeof(unsigned int)));
 	}
 
 	// Generates random objects through the map.
@@ -132,18 +141,37 @@ namespace {
 
 		for(std::size_t i=0; i < count; i+=1) {
 			GridObject* newobj = new GridObject(mesh);
-			newobj->setGridPosition(
-					xorshift(rand + count + i) % (unsigned int) TILES,
-					xorshift(rand + i - count) % (unsigned int) TILES );
+
+			glm::ivec2 genpos;
+			int unsigned genhash;
+			int unsigned geni = 0;
+			do {
+				genpos = glm::ivec2(
+						xorshift(rand + count + i + geni) % (unsigned int) TILES,
+						xorshift(rand + i - count + geni) % (unsigned int) TILES );
+				genhash = hash_ivec2(genpos);
+				geni += 1;
+			} while(grid_objects.find(genhash) != grid_objects.end());
+
+			newobj->setGridPosition(genpos);
 			newobj->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+			grid_objects[genhash] = newobj;
 			renderer->putObject(*newobj);
 		}
 	}
 
 	void destroyObjects(WorldRenderer* renderer) {
 		RenderObject* obj;
-		while((obj = renderer->popObject()) != nullptr) {
+		auto iter = grid_objects.begin();
+		auto end = grid_objects.end();
+
+		while(iter != end) {
+			obj = iter->second;
 			renderer->removeObject(obj->uid);
+			grid_objects.erase(iter);
+			delete obj;
+
+			iter = grid_objects.begin();
 		}
 	}
 
@@ -202,7 +230,8 @@ int main(int argn, char** args) {
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh", OBJECTS);
+	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2);
+	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		glViewport(0, 0, x, y);
