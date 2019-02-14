@@ -26,7 +26,7 @@ namespace gla {
 		window = SDL_CreateWindow(
 			name.c_str(),
 			x, y, w, h,
-			SDL_WINDOW_OPENGL );
+			SDL_WINDOW_OPENGL | (resizable? SDL_WINDOW_RESIZABLE : 0) );
 
 		// SDL Context
 		context = new SDL_GLContext();
@@ -42,7 +42,11 @@ namespace gla {
 		if(vsync)
 			SDL_GL_SetSwapInterval(1);
 
-		SDL_SetWindowResizable(window, resizable? SDL_TRUE : SDL_FALSE);
+		if(resizable) {
+			SDL_SetWindowResizable(window, SDL_TRUE);
+		} else {
+			SDL_SetWindowResizable(window, SDL_FALSE);
+		}
 
 
 		// GLEW
