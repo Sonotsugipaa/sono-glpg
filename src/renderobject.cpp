@@ -25,7 +25,9 @@ namespace sneka {
 			translation(0.0f),
 			rotation(0.0f),
 			uid(gen++),
-			shade(0.3f)
+			shade(0.3f),
+			reflect(0.2f),
+			reflect_falloff(1.0f)
 	{ }
 
 	RenderObject::RenderObject(std::string mesh_name):
@@ -84,6 +86,8 @@ namespace sneka {
 
 		glUniform3fv(pool::uniform_model_pos, 1, &position[0]);
 		glUniform1f(pool::uniform_shade, shade);
+		glUniform1f(pool::uniform_reflect, reflect);
+		glUniform1f(pool::uniform_reflect_falloff, reflect_falloff);
 		glUniformMatrix4fv(
 				sneka::pool::uniform_model,
 				1,

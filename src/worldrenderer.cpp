@@ -109,6 +109,8 @@ namespace sneka {
 
 		floor = new RenderObject(*floor_mesh);
 		floor->shade = 0.8f;
+		floor->reflect = 0.0f;
+		floor->reflect_falloff = 1.0f;
 	}
 
 	WorldRenderer::~WorldRenderer() {

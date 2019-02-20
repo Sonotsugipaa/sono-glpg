@@ -93,11 +93,14 @@ namespace sneka::pool {
 		uniform_model = -1,
 		uniform_model_pos = -1,
 		uniform_mul_col = -1,
-		uniform_shade = -1,
 		uniform_time = -1,
 		uniform_curvature = -1,
 		uniform_drugs = -1,
 		uniform_fog = -1,
+
+		uniform_shade = -1,
+		uniform_reflect = -1,
+		uniform_reflect_falloff = -1,
 
 		in_position = -1,
 		in_color = -1,
@@ -135,18 +138,22 @@ namespace sneka::pool {
 				resizable, vsync,
 				"shader/sneka_v.glsl", "shader/sneka_f.glsl" );
 
-		uniform_proj =        glGetUniformLocation(runtime_inst->shader->program, "uni_proj");
-		uniform_view =        glGetUniformLocation(runtime_inst->shader->program, "uni_view");
-		uniform_light_dir =   glGetUniformLocation(runtime_inst->shader->program, "uni_light_dir");
-		uniform_view_pos =    glGetUniformLocation(runtime_inst->shader->program, "uni_view_pos");
-		uniform_model =       glGetUniformLocation(runtime_inst->shader->program, "uni_model");
-		uniform_model_pos =   glGetUniformLocation(runtime_inst->shader->program, "uni_model_pos");
-		uniform_mul_col =     glGetUniformLocation(runtime_inst->shader->program, "uni_mul_col");
-		uniform_shade =       glGetUniformLocation(runtime_inst->shader->program, "uni_shade");
-		uniform_time =        glGetUniformLocation(runtime_inst->shader->program, "uni_time");
-		uniform_curvature =   glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");
-		uniform_drugs =       glGetUniformLocation(runtime_inst->shader->program, "uni_drugs");
-		uniform_fog =         glGetUniformLocation(runtime_inst->shader->program, "uni_fog");
+		uniform_proj =            glGetUniformLocation(runtime_inst->shader->program, "uni_proj");
+		uniform_view =            glGetUniformLocation(runtime_inst->shader->program, "uni_view");
+		uniform_light_dir =       glGetUniformLocation(runtime_inst->shader->program, "uni_light_dir");
+		uniform_view_pos =        glGetUniformLocation(runtime_inst->shader->program, "uni_view_pos");
+		uniform_model =           glGetUniformLocation(runtime_inst->shader->program, "uni_model");
+		uniform_model =           glGetUniformLocation(runtime_inst->shader->program, "uni_model");
+		uniform_model_pos =       glGetUniformLocation(runtime_inst->shader->program, "uni_model_pos");
+		uniform_mul_col =         glGetUniformLocation(runtime_inst->shader->program, "uni_mul_col");
+		uniform_time =            glGetUniformLocation(runtime_inst->shader->program, "uni_time");
+		uniform_curvature =       glGetUniformLocation(runtime_inst->shader->program, "uni_curvature");
+		uniform_drugs =           glGetUniformLocation(runtime_inst->shader->program, "uni_drugs");
+		uniform_fog =             glGetUniformLocation(runtime_inst->shader->program, "uni_fog");
+
+		uniform_shade =           glGetUniformLocation(runtime_inst->shader->program, "uni_shade");
+		uniform_reflect =         glGetUniformLocation(runtime_inst->shader->program, "uni_reflect");
+		uniform_reflect_falloff = glGetUniformLocation(runtime_inst->shader->program, "uni_reflect_falloff");
 
 		in_position = glGetAttribLocation(runtime_inst->shader->program, "in_position");
 		in_color =    glGetAttribLocation(runtime_inst->shader->program, "in_color");

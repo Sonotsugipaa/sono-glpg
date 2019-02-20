@@ -40,11 +40,14 @@ namespace sneka::pool {
 			uniform_model,
 			uniform_model_pos,
 			uniform_mul_col,
-			uniform_shade,
 			uniform_time,
 			uniform_curvature,
 			uniform_drugs,
 			uniform_fog,
+
+			uniform_shade,
+			uniform_reflect,
+			uniform_reflect_falloff,
 
 			in_position,
 			in_color,

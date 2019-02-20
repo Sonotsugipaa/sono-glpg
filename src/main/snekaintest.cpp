@@ -35,8 +35,8 @@
 #define CAM_HEIGHT           (2.0)
 #define CAM_PITCH            (1.1)
 #define CURVATURE            (-0.03)
-#define TILES                (30)
-#define OBJECTS              (300)
+#define TILES                (60)
+#define OBJECTS              (500)
 #define DRUGS                (0.5)
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
@@ -133,7 +133,11 @@ namespace {
 	}
 
 	// Generates random objects through the map.
-	void genObjects(WorldRenderer* renderer, std::string mesh, std::size_t count) {
+	void genObjects(
+			WorldRenderer* renderer,
+			std::string mesh, std::size_t count,
+			GLfloat shade, GLfloat reflect, GLfloat reflect_falloff
+	) {
 		using namespace std::chrono;
 
 		system_clock::duration time = system_clock::now().time_since_epoch();
@@ -155,6 +159,9 @@ namespace {
 
 			newobj->setGridPosition(genpos);
 			newobj->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+			newobj->shade = shade;
+			newobj->reflect = reflect;
+			newobj->reflect_falloff = reflect_falloff;
 			grid_objects[genhash] = newobj;
 			renderer->putObject(*newobj);
 		}
@@ -230,8 +237,8 @@ int main(int argn, char** args) {
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2);
-	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2);
+	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, 0.3f, 2.0f, 5.0f);
+	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, 0.3f, 2.0f, 5.0f);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		glViewport(0, 0, x, y);
