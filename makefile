@@ -41,8 +41,20 @@ build/%.o: src/%.cpp
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
 
-%.mesh: %.mesh.src bin/itob
-	bin/itob $(shell cat "$<") >"$@"
+bin/baker: src/main/baker.cpp
+	#
+	# ----- .src processor ----- #
+	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
+
+# compiles decimal-to-binary converter
+bin/itob: src/main/itob.cpp build/read_utils.o
+	#
+	# ----- 10-to-2 converter ----- #
+	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
+
+
+%: %.bake bin/itob bin/baker
+	$(shell ./make_asset "$<" "$@")
 
 setup:
 	#

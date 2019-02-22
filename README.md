@@ -12,8 +12,8 @@ Also for learning OpenGL.
 
 # Requirements
 
-1. `g++`, the C++ compiler
-2. GNU Make (`make`)
+1. <code>g++</code>, the C++ compiler
+2. GNU Make (<code>make</code>)
 3. Additional OpenGL related packages (more info below)
 4. Hardware that supports OpenGL 3
 
@@ -32,23 +32,25 @@ Also for learning OpenGL.
 First you need to install some dependencies: <i>OpenGL</i>, <i>GLEW</i> and
 <i>SDL2</i>.
 <br>
-On Ubuntu (and derivates), install these packages:
+On Ubuntu (and derivates), install these packages:<br>
 
-		sudo apt-get update
-		sudo apt-get install libsdl2-dev libgl1-mesa-dev libx11-dev libxrandr-dev
+<code>sudo apt-get update</code><br>
+<code>sudo apt-get install libsdl2-dev libgl1-mesa-dev libx11-dev libxrandr-dev</code><br>
+
 
 </p> <p>
 Next, you need the GLM headers. The most space-efficient way to do so is to
 download the latest version (https://github.com/g-truc/glm/releases/tag/0.9.9.3)
-and extract the header files, found in the folder `glm/glm/`, to `/usr/include`:
-to do so, temporarily extract the `glm/glm/` folder (<i>NOT THE PARENT</i>, `glm/`!),
-open a terminal where you extracted the folder and enter
-`sudo mv ./glm /usr/include/.` .
+and extract the header files, found in the folder <code>glm/glm/</code>, to
+<code>/usr/include</code>: to do so, temporarily extract the
+<code>glm/glm/</code> folder (<i>NOT THE PARENT</i>, <code>glm/</code>!), open
+a terminal where you extracted the folder and enter
+<code>sudo mv ./glm /usr/include/.</code>.
 <br>
 If everything went according to my plan, you now have the file
-`/usr/include/glm/glm.hpp`, among others; you're going to have a stray
-`CMakeLists.txt`, you can safely remove that - at least for the scope of
-this workspace.
+<code>/usr/include/glm/glm.hpp</code>, among others; you're going to have a
+stray <code>CMakeLists.txt</code>, you can safely remove that - at least for
+the scope of this workspace.
 </p> <p>
 That's it, for now.
 </p>
@@ -57,25 +59,69 @@ That's it, for now.
 # Usage
 
 <p>
-To create an executable program, create a source file (ending with `*.cpp`) in
-the `src/main/` folder - this file must contain the main function.
+To create an executable program, create a source file
+(ending with <code>.cpp</code>) in the <code>src/main/</code> folder - this
+file must contain the main function.
 If you want to create intermediate objects, create and write source files in
-`src/` with the aforementioned file extension, and it will automatically be
-compiled to `build/` and used when compiling executables, which can be found
-in `bin/`.<br>
+<code>src/</code> with the aforementioned file extension, and it will
+automatically be compiled to <code>build/</code> and used when compiling
+executables, which can be found in <code>bin/</code>.<br>
 
-You will be able to #include everything in `include/`.
+You will be able to #include everything in <code>include/</code>.
 </p>
 
 <p>
-To compile and link everything, simply run `make make_exec` (or just `make`).
+To compile and link everything, simply run <code>make make_exec</code> (or just <code>make</code>).
 <br>
-To clear compiled intermediate files, run `make clear`; if you want to delete
-executables too, run `make purge`.
+To clear compiled intermediate files, run <code>make clear</code>; if you want to delete
+executables too, run <code>make purge</code>.
 <br>
-To compile single executables or intermediate files, run `make bin/NAME` or
-`make build/NAME`, where 'NAME' is (obviously) the name of the file you want
+To compile single executables or intermediate files, run <code>make bin/NAME</code> or
+<code>make build/NAME</code>, where 'NAME' is (obviously) the name of the file you want
 to compile/link.
+</p>
+
+### Assets
+
+<p>
+The workspace includes some utility programs for creating binary files from
+decimal numbers, which should be stored in assets.<br>
+Those utilities, compiled (like everything else) to <code>bin/</code> are:
+</p>
+
+1. itob <i>(<b>I</b>nteger <b>TO</b> <b>B</b>inary)</i>
+2. baker <i>(<b>B</b>inary m<b>AKER</b>)</i>
+
+<p>
+Itob simply converts all of its arguments to binary characters, and prints
+them to the output stream:
+<code>itob 97 98</code> will print <code>a...b...</code> (each period being
+the null character, ASCII 0).
+</p> <p>
+Baker simply prints every argument to the output stream, but allows the
+definition and replacement of character sequences.
+</p>
+
+- If an argument starts with <code>!</code>, a variable with that name (without
+  <code>!</code>) will be defined, for example<br>
+  <code>baker !abc STR</code><br>
+  will define <code>abc</code> as <code>STR</code> (without actually printing
+  anything);
+- If an argument starts with <code>?</code>, the variable with that name will
+  be used instead (unless it hasn't been defined), so<br>
+  <code>baker !abc STR Hello, ?abc ?undefined</code><br>
+  will print <code>Hello, STR</code>.
+
+<p>
+Note the argument following a variable definition
+(<i>arg2</i> in <code>!arg1 arg2</code>) does not expand, therefore<br>
+<code>baker !! ! ?!</code> will print <code>!</code>, and<br>
+<code>baker !? ? ??</code> will print <code>?</code>.<br>
+These two examples are actually built-in variables, along with the variable
+'br' defined as the line break character (ASCII 10).
+</p> <p>
+It is possible to combine the two programs, "compiling" a binary file using
+the GNU Make target <code>%: %.bake [...]</code>.
 </p>
 
 
