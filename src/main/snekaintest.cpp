@@ -8,7 +8,9 @@
 
 #include "sneka/pool.hpp"
 #include "sneka/renderobject.hpp"
-#include "sneka/world.hpp"
+#include "sneka/direction.hpp"
+#include "sneka/gridobject.hpp"
+#include "sneka/worldrenderer.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"

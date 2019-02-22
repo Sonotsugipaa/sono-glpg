@@ -1,4 +1,4 @@
-#include "sneka/world.hpp"
+#include "sneka/gridobject.hpp"
 
 
 
@@ -17,7 +17,7 @@ namespace sneka {
 	{ }
 
 
-	void GridObject::setHeight(GLfloat h) {
+	void GridObject::setHeight(float h) {
 		height = h;
 
 		changed = true;
@@ -42,7 +42,7 @@ namespace sneka {
 		changed = true;
 	}
 
-	void GridObject::setOffsetPosition(GLfloat x, GLfloat z) {
+	void GridObject::setOffsetPosition(float x, float z) {
 		offset_pos = glm::vec2(x, z);
 
 		changed = true;
@@ -53,8 +53,8 @@ namespace sneka {
 		if(! changed) return;
 
 		glm::vec2 combined = glm::vec2(
-				offset_pos[0] + static_cast<GLfloat>(grid_pos[0]),
-				offset_pos[1] + static_cast<GLfloat>(grid_pos[1]) );
+				offset_pos[0] + static_cast<float>(grid_pos[0]),
+				offset_pos[1] + static_cast<float>(grid_pos[1]) );
 		RenderObject::setPosition(combined[0], height, combined[1]);
 
 		changed = false;

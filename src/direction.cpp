@@ -1,4 +1,4 @@
-#include "sneka/world.hpp"
+#include "sneka/direction.hpp"
 
 
 
@@ -16,15 +16,15 @@ namespace sneka {
 	{ }
 
 
-	GLfloat Direction::radians() const {
+	float Direction::radians() const {
 		return value * (3.141592f / 2.0f);
 	}
 
-	GLfloat Direction::degrees() const {
+	float Direction::degrees() const {
 		return value * (90.0f);
 	}
 
-	GLfloat Direction::sin() const {
+	float Direction::sin() const {
 		switch(value) {
 			case 0:  return  1.0f;  break;
 			case 1:  return  0.0f;  break;
@@ -34,7 +34,7 @@ namespace sneka {
 		return 2.0f;
 	}
 
-	GLfloat Direction::cos() const {
+	float Direction::cos() const {
 		switch(value) {
 			case 0:  return  0.0f;  break;
 			case 1:  return -1.0f;  break;
@@ -46,7 +46,7 @@ namespace sneka {
 
 
 	Direction Direction::operator + (const Direction & other) const {
-		GLuint dir = (value + other.value) % 4;
+		int dir = (value + other.value) % 4;
 		return Direction(dir);
 	}
 
@@ -55,7 +55,7 @@ namespace sneka {
 	}
 
 	Direction Direction::operator - (const Direction & other) const {
-		GLuint dir = (value - other.value) % 4;
+		int dir = (value - other.value) % 4;
 		return Direction(dir);
 	}
 
