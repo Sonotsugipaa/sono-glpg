@@ -35,9 +35,9 @@
 #define CAM_HEIGHT           (2.0)
 #define CAM_PITCH            (1.1)
 #define CURVATURE            (-0.03)
-#define TILES                (60)
-#define OBJECTS              (500)
-#define DRUGS                (0.5)
+#define TILES                (40)
+#define OBJECTS              (25)
+#define DRUGS                (0.0)
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
@@ -226,7 +226,9 @@ int main(int argn, char** args) {
 			CURVATURE, DRUGS, W, H );
 	renderer->clear_color = glm::vec3(0.4f, 0.4f, 0.7f);
 	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
-	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 0.0f));
+	renderer->getFloorObject().reflect = 1.0f;
+	renderer->getFloorObject().reflect_falloff = 30.0f;
+	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 1.0f));
 
 	pool::set_world_perspective(
 					90.0f, (GLfloat) W / H,
@@ -237,8 +239,8 @@ int main(int argn, char** args) {
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, 0.3f, 2.0f, 5.0f);
-	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, 0.3f, 2.0f, 5.0f);
+	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, 0.1f, 4.0f, 3.0f);
+	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, 0.1f, 4.0f, 3.0f);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		glViewport(0, 0, x, y);

@@ -63,8 +63,8 @@ int main(int argn, char** args) {
 			pos[2] -= (float) TILES;
 
 		renderer.setView(pos, rot, 0.9f);
-		wobj1.setRotationRad(rot);
-		wobj2.setRotationRad(0.1f - (rot * 0.7f));
+		wobj1.setRotation(rot);
+		wobj2.setRotation(0.1f - (rot * 0.7f));
 		rot += 0.03f;
 
 		renderer.renderFrame();
