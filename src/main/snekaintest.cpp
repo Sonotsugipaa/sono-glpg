@@ -44,6 +44,13 @@
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
+#define OBJECT_SHADE         (0.4)
+#define OBJECT_REFLECT       (4.0)
+#define OBJECT_REFLECT_FO    (3.0)
+#define FLOOR_SHADE          (0.8)
+#define FLOOR_REFLECT        (1.0)
+#define FLOOR_REFLECT_FO     (30.0)
+
 
 
 namespace {
@@ -234,8 +241,9 @@ int main(int argn, char** args) {
 			CURVATURE, DRUGS, W, H );  TRACE;
 	renderer->clear_color = glm::vec3(0.4f, 0.4f, 0.7f);
 	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
-	renderer->getFloorObject().reflect = 1.0f;
-	renderer->getFloorObject().reflect_falloff = 30.0f;
+	renderer->getFloorObject().shade = (float) FLOOR_SHADE;
+	renderer->getFloorObject().reflect = (float) FLOOR_REFLECT;
+	renderer->getFloorObject().reflect_falloff = (float) FLOOR_REFLECT_FO;
 	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 1.0f));
 
 	pool::set_world_perspective(
@@ -247,8 +255,8 @@ int main(int argn, char** args) {
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES, 0.1f, 4.0f, 3.0f);
-	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, TILES, 0.1f, 4.0f, 3.0f);
+	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO);
+	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		glViewport(0, 0, x, y);
