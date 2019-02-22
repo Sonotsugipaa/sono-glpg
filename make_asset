@@ -1,0 +1,8 @@
+
+if [ -z $1 -o -z $2 ]
+then
+	echo $'\033[1;91m''Usage: '$0' <src> <dest>'$'\033[m'
+	exit 1
+fi
+
+bin/itob $(bin/baker $(cat "$1")) >"$2"
