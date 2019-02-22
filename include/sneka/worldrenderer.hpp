@@ -6,6 +6,7 @@
 
 #include "sneka/renderer.hpp"
 #include "sneka/renderobject.hpp"
+#include "sneka/floorobject.hpp"
 
 #include "utils.tpp"
 
@@ -18,11 +19,12 @@ namespace sneka {
 	class WorldRenderer : public virtual Renderer {
 	protected:
 		gla::Timer time;
-		Mesh* floor_mesh;
-		RenderObject* floor;
+		FloorObject* floor;
 
 		std::map<uid_t, RenderObject*> objects;
-		GLfloat floor_tiles, floor_tiles_half, floor_tile_size, curvature, drugs;
+		GLfloat floor_tiles, floor_tiles_half, floor_tile_size;
+		GLfloat repeat_stride;
+		GLfloat curvature, drugs;
 
 		glm::vec3 light_direction;
 
@@ -34,8 +36,8 @@ namespace sneka {
 		GLfloat fog_intensity;
 
 		WorldRenderer(
-				std::string tile_mesh_name,
-				GLuint floor_tiles, GLfloat curvature, GLfloat drugs,
+				FloorObject& floor, GLuint repeat_stride,
+				GLfloat curvature, GLfloat drugs,
 				GLuint screen_width, GLuint screen_height );
 		virtual ~WorldRenderer();
 
@@ -48,7 +50,7 @@ namespace sneka {
 		void removeObject(uid_t);
 		std::size_t size();
 
-		RenderObject& getFloorObject();
+		FloorObject & getFloorObject();
 
 		void setLightDirection(glm::vec3);
 		void setView(glm::vec3 position, GLfloat yaw, GLfloat pitch);

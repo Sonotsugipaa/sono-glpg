@@ -17,8 +17,21 @@ namespace {
 
 namespace sneka {
 
+	RenderObject::RenderObject():
+			mesh(nullptr),
+			mat_changed(true),
+			color_mul(false),
+			position(0.0f),
+			translation(0.0f),
+			rotation(0.0f),
+			uid(gen++),
+			shade(0.3f),
+			reflect(0.2f),
+			reflect_falloff(1.0f)
+	{ }
+
 	RenderObject::RenderObject(Mesh& mesh):
-			mesh(mesh),
+			mesh(&mesh),
 			mat_changed(true),
 			color_mul(false),
 			position(0.0f),
@@ -43,7 +56,7 @@ namespace sneka {
 	}
 
 
-	glm::vec3 RenderObject::getPosition() {
+	glm::vec3 RenderObject::getPosition() const {
 		return position;
 	}
 
@@ -59,7 +72,7 @@ namespace sneka {
 		//mat_changed = true;  // translation done by the renderer
 	}
 
-	GLfloat RenderObject::getRotation() {
+	GLfloat RenderObject::getRotation() const {
 		return rotation;
 	}
 
@@ -72,6 +85,10 @@ namespace sneka {
 	void RenderObject::setColor(glm::vec4 col) {
 		color_mul = true;
 		color = col;
+	}
+
+	const Mesh * RenderObject::getMesh() const {
+		return mesh;
 	}
 
 	void RenderObject::draw() {
@@ -94,7 +111,12 @@ namespace sneka {
 				GL_FALSE,
 				&mat_model[0][0] );
 
-		mesh.draw();
+		if(mesh == nullptr) {
+			// TODO: throw a proper exception
+			throw std::string("Tried to render an uninitialized RenderObject.");
+		}
+
+		mesh->draw();
 	}
 
 }

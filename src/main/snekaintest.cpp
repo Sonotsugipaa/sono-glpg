@@ -18,6 +18,7 @@
 #include "transition.hpp"
 #include "utils.tpp"
 #include "read_utils.hpp"
+#include "trace.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
@@ -37,7 +38,7 @@
 #define CAM_HEIGHT           (2.0)
 #define CAM_PITCH            (1.1)
 #define CURVATURE            (-0.03)
-#define TILES                (40)
+#define TILES                (10)
 #define OBJECTS              (25)
 #define DRUGS                (0.0)
 #define WORLD_MIN_Z          (0.2)
@@ -138,6 +139,7 @@ namespace {
 	void genObjects(
 			WorldRenderer* renderer,
 			std::string mesh, std::size_t count,
+			int unsigned tiles,
 			GLfloat shade, GLfloat reflect, GLfloat reflect_falloff
 	) {
 		using namespace std::chrono;
@@ -153,8 +155,8 @@ namespace {
 			int unsigned geni = 0;
 			do {
 				genpos = glm::ivec2(
-						xorshift(rand + count + i + geni) % (unsigned int) TILES,
-						xorshift(rand + i - count + geni) % (unsigned int) TILES );
+						xorshift(rand + count + i + geni) % (unsigned int) tiles,
+						xorshift(rand + i - count + geni) % (unsigned int) tiles );
 				genhash = hash_ivec2(genpos);
 				geni += 1;
 			} while(grid_objects.find(genhash) != grid_objects.end());
@@ -218,14 +220,18 @@ int main(int argn, char** args) {
 		}
 	}
 
+	trace_sigaction_init();  TRACE;
+
 	pool::runtime_init(
 			"sneka world render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			W, H, true, true);
+			W, H, true, true);  TRACE;
+
+	FloorObject floor = FloorObject("assets/tile_caved.mesh", 40);
 
 	renderer = new WorldRenderer(
-			"assets/tile_caved.mesh", TILES,
-			CURVATURE, DRUGS, W, H );
+			floor, TILES,
+			CURVATURE, DRUGS, W, H );  TRACE;
 	renderer->clear_color = glm::vec3(0.4f, 0.4f, 0.7f);
 	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
 	renderer->getFloorObject().reflect = 1.0f;
@@ -235,14 +241,14 @@ int main(int argn, char** args) {
 	pool::set_world_perspective(
 					90.0f, (GLfloat) W / H,
 					(GLfloat) WORLD_MIN_Z,
-					(GLfloat) WORLD_MAX_Z);
+					(GLfloat) WORLD_MAX_Z);  TRACE;
 
 	// is deallocated automatically by destroyObjects(...)
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, 0.1f, 4.0f, 3.0f);
-	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, 0.1f, 4.0f, 3.0f);
+	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES, 0.1f, 4.0f, 3.0f);
+	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, TILES, 0.1f, 4.0f, 3.0f);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		glViewport(0, 0, x, y);
@@ -250,7 +256,7 @@ int main(int argn, char** args) {
 						90.0f, (GLfloat) x / y,
 						(GLfloat) WORLD_MIN_Z,
 						(GLfloat) WORLD_MAX_Z);
-	} );
+	} );  TRACE;
 
 	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
 		if(! released) {
@@ -263,11 +269,11 @@ int main(int argn, char** args) {
 				case SDLK_a:  direction += Direction::LEFT;   break;
 			}
 		}
-	} );
+	} );  TRACE;
 
 	Transition movement_tr = Transition(
 			transition_pos,
-			1.0f );
+			1.0f );  TRACE;
 
 	while(pool::poll_events()) {
 		if(direction == Direction::FORWARD)  ipos_target[1] -= 1; else
@@ -306,7 +312,7 @@ int main(int argn, char** args) {
 		if(speed_boost < 0.0f) {
 			speed_boost /= 1.7f;
 		}
-
+		TRACE;
 		/*
 		std::cout << "dir     " << direction.degrees() << std::endl;
 		std::cout << "dir old " << movement.old_direction.degrees() << std::endl;
@@ -318,7 +324,9 @@ int main(int argn, char** args) {
 		frame_timer.reset();
 		bool cycle_frame_timer = true;
 		float speed_total = speed + speed_boost;
+		TRACE;
 		while(cycle_frame_timer) {
+			TRACE;
 			float delta = speed_total * frame_timer.millis() / 1000.0f;
 			frame_timer.reset();
 			cycle_frame_timer = movement_tr.advance(delta);
@@ -337,9 +345,11 @@ int main(int argn, char** args) {
 		}
 	}
 
+	TRACE;
 	destroyObjects(renderer);
 	delete renderer;
 
+	TRACE;
 	pool::runtime_destroy();
 	return EXIT_SUCCESS;
 }

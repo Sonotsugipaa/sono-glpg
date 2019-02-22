@@ -20,7 +20,7 @@ namespace sneka {
 
 	class RenderObject {
 	protected:
-		Mesh& mesh;
+		Mesh* mesh;
 		glm::mat4 mat_model;
 		bool mat_changed;
 		bool color_mul;
@@ -36,6 +36,9 @@ namespace sneka {
 
 		void mat_compute();
 
+		// used if a subclass wants to build and allocate its own mesh
+		RenderObject();
+
 	public:
 		const uid_t uid;
 
@@ -45,15 +48,17 @@ namespace sneka {
 		RenderObject(std::string mesh_name);
 		virtual ~RenderObject() = default;
 
-		glm::vec3 getPosition();
+		glm::vec3 getPosition() const;
 		void setPosition(glm::vec3);
 		void setPosition(GLfloat x, GLfloat y, GLfloat z);
 
-		GLfloat getRotation();
+		GLfloat getRotation() const;
 		void setRotation(GLfloat);
 
+		const glm::vec4 getColor() const;
 		void setColor(glm::vec4);
 
+		const Mesh * getMesh() const;
 		virtual void draw();
 	};
 

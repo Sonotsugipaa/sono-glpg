@@ -1,10 +1,11 @@
-#include "sneka/world.hpp"
+#include "sneka/worldrenderer.hpp"
 
 #include "sneka/renderobject.hpp"
 #include "sneka/mesh.hpp"
 #include "sneka/pool.hpp"
 
 #include "utils.tpp"
+#include "trace.hpp"
 
 #include <iostream>
 
@@ -38,94 +39,37 @@ namespace {
 }
 
 
-namespace {
-
-	using namespace sneka;
-
-	/*
-	void print_all_vertices(Mesh& vertices) {
-		GLsizei sz = vertices.size();
-
-		for(GLsizei i=0; i<sz; i+=1) {
-			std::cout << vertices[(i * SNEKA_VERTEX_SIZE)];
-			for(GLsizei j=1; j < SNEKA_VERTEX_SIZE; j+=1) {
-				std::cout << ", " << vertices[(i * SNEKA_VERTEX_SIZE) + j];
-			}
-			std::cout << std::endl;
-		}
-	}
-	*/
-
-	void expand_floor(
-			Mesh* tile_mesh, GLfloat tile_size,
-			Mesh** dest, GLsizei floor_size_length
-	) {
-		GLsizei area = floor_size_length * floor_size_length;
-		GLfloat* new_array = new GLfloat[area * tile_mesh->size() * SNEKA_VERTEX_SIZE];
-		GLfloat* new_array_cur = new_array;
-
-		for(GLint x=0; x < floor_size_length; x += 1) {
-			for(GLint z=0; z < floor_size_length; z += 1) {
-				new_array_cur = new_array + ((x + (z * floor_size_length)) * SNEKA_VERTEX_SIZE * tile_mesh->size());
-
-				for(int i=0; i < tile_mesh->size(); i += 1) {
-					int at = i * SNEKA_VERTEX_SIZE;
-					new_array_cur[at+0] = (*tile_mesh)[at+0] + x;
-					new_array_cur[at+1] = (*tile_mesh)[at+1];
-					new_array_cur[at+2] = (*tile_mesh)[at+2] + z;
-
-					for(GLsizei j=3; j < SNEKA_VERTEX_SIZE; j += 1) {
-						new_array_cur[at+j] = (*tile_mesh)[at+j];
-					}
-				}
-			}
-		}
-
-		*dest = new Mesh("?", new_array, area * tile_mesh->size());
-		delete[] new_array;
-	}
-
-}
-
 
 namespace sneka {
 
 	WorldRenderer::WorldRenderer(
-			std::string tile_mesh_name,
-			GLuint tiles, GLfloat curv, GLfloat drugs,
+			FloorObject& floor, GLuint repeat_stride,
+			GLfloat curv, GLfloat drugs,
 			GLuint scr_w, GLuint scr_h
 	):
-			floor_tiles(tiles), floor_tiles_half(floor_tiles / 2.0f),
+			floor(&floor),
+			floor_tiles(floor.side_length), floor_tiles_half(floor_tiles / 2.0f),
 			floor_tile_size(1.0f),
+			repeat_stride(repeat_stride),
 			curvature(curv),
 			drugs(drugs),
 			light_direction(0.0f, 1.0f, 0.0f),
 			clear_color(glm::vec3(0.05f, 0.05f, 0.05f)),
 			fog_intensity(0.0f)
-	{
-		Mesh& tile_mesh = pool::get_mesh(tile_mesh_name, true);
-		expand_floor(&tile_mesh, floor_tile_size, &floor_mesh, tiles);
-		//floor_mesh = &tile_mesh;
+	{ TRACE; }
 
-		floor = new RenderObject(*floor_mesh);
-		floor->shade = 0.8f;
-		floor->reflect = 0.0f;
-		floor->reflect_falloff = 1.0f;
-	}
-
-	WorldRenderer::~WorldRenderer() {
-		delete floor_mesh;
-		delete floor;
-	}
+	WorldRenderer::~WorldRenderer() { TRACE; }
 
 
 	void WorldRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
+		TRACE;
 		view_pos = pos;
 		view_yaw = yaw;
 		view_pitch = pitch;
 	}
 
 	RenderObject* WorldRenderer::popObject() {
+		TRACE;
 		auto iter = objects.begin();
 		if(iter == objects.end())
 			return nullptr;
@@ -134,6 +78,7 @@ namespace sneka {
 	}
 
 	RenderObject* WorldRenderer::getObject(uid_t uid) {
+		TRACE;
 		auto iter = objects.find(uid);
 		if(iter == objects.end())
 			return nullptr;
@@ -142,34 +87,42 @@ namespace sneka {
 	}
 
 	void WorldRenderer::putObject(RenderObject& obj) {
+		TRACE;
 		objects[obj.uid] = &obj;
 		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
 	void WorldRenderer::removeObject(RenderObject& obj) {
+		TRACE;
 		removeObject(obj.uid);
 		//std::cout << "not rendering " << obj.uid << std::endl;
 	}
 
 	void WorldRenderer::removeObject(uid_t uid) {
+		TRACE;
 		auto iter = objects.find(uid);
 		if(iter != objects.end())
 			objects.erase(iter);
 	}
 
-	RenderObject& WorldRenderer::getFloorObject() {
+	FloorObject & WorldRenderer::getFloorObject() {
+		TRACE;
 		return *floor;
 	}
 
 	std::size_t WorldRenderer::size() {
+		TRACE;
 		return objects.size();
 	}
 
 	void WorldRenderer::setLightDirection(glm::vec3 dir) {
+		TRACE;
 		light_direction = glm::normalize(dir);
 	}
 
 	void WorldRenderer::renderFrame() {
+		TRACE;
+
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -216,6 +169,7 @@ namespace sneka {
 		glUniform3fv(pool::uniform_view_pos, 1, &pos[0]);
 		glUniformMatrix4fv(pool::uniform_view, 1, GL_FALSE, &mat_view_tr[0][0]);
 
+		TRACE;
 		floor->draw();
 
 		/* can be optimized: everything is drawn 9 times, but a
@@ -225,9 +179,9 @@ namespace sneka {
 				mat_view_tr = glm::translate(
 						mat_view,
 						glm::vec3(
-							static_cast<GLfloat>(x) * floor_tiles,
+							static_cast<GLfloat>(x) * repeat_stride,
 							0.0f,
-							static_cast<GLfloat>(z) * floor_tiles
+							static_cast<GLfloat>(z) * repeat_stride
 						) );
 				glm::vec3 pos = - (mat_view_tr * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 				glUniform3fv(pool::uniform_view_pos, 1, &pos[0]);
@@ -235,6 +189,7 @@ namespace sneka {
 
 				auto iter = objects.begin();
 				while(iter != objects.end()) {
+					TRACE;
 					iter->second->draw();
 					++iter;
 				}
