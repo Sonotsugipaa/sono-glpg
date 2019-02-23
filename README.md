@@ -111,14 +111,22 @@ definition and replacement of character sequences.
   be used instead (unless it hasn't been defined), so<br>
   <code>baker !abc STR Hello, ?abc ?undefined</code><br>
   will print <code>Hello, STR</code>.
+- If a variable definition starts with <code>[</code> and ends with
+  <code>]</code>, everything between the tokens will be the variable's value.<br>
+  <b>IMPORTANT NOTE</b>: the closing bracket does <b>NOT</b> delimit a token,
+  and an argument such as <code>ABC]DE</code> will not end the variable's
+  definition. This may be useful for defining variables with brackets as
+  characters, such as <code>!key [[value1 value2]]</code> so that
+  <code>?key</code> expands to <code>[value1 value2]</code>, brackes included
+  (again, a space between the two <b>closing</b> brackets will result in the
+  end of the variable definition on the first one).
 
 <p>
-Note the argument following a variable definition
+The argument following a variable definition
 (<i>arg2</i> in <code>!arg1 arg2</code>) does not expand, therefore<br>
 <code>baker !! ! ?!</code> will print <code>!</code>, and<br>
 <code>baker !? ? ??</code> will print <code>?</code>.<br>
-These two examples are actually built-in variables, along with the variable
-'br' defined as the line break character (ASCII 10).
+These two examples are actually built-in variables.
 </p> <p>
 It is possible to combine the two programs, "compiling" a binary file using
 the GNU Make target <code>%: %.bake [...]</code>.
