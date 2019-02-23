@@ -35,6 +35,19 @@ namespace gla {
 	template<>
 	float within_bounds<float>(float original, float lower, float higher);
 
+
+	#define UNIT(X)  (X*sizeof(T))
+	template<typename T>
+	T xorshift(T x) {
+		x ^= (x << (UNIT(3))) ^ (x >> (UNIT(3)+1));
+		x ^= (x << (UNIT(2)));
+		x ^= (x >> (UNIT(2)+1));
+		x ^= (x << (UNIT(5)-1));
+		x ^= (x >> (UNIT(5)+1));
+		return x+1;
+	}
+	#undef UNIT
+
 }
 
 #endif

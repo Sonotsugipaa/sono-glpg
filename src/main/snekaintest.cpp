@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <map>
+#include <exception>
 
 #include <cstdlib>
 #include <cstdio>
@@ -127,15 +128,6 @@ namespace {
 		head->setPosition(pos[0], 0.0f, pos[1]);
 	}
 
-	unsigned int xorshift(unsigned int x) {
-		x ^= (x << 25) ^ (x >> 24);
-		x ^= (x << 2);
-		x ^= (x >> 5);
-		x ^= (x << 19);
-		x ^= (x >> 23);
-		return x;
-	}
-
 	int unsigned hash_ivec2(glm::ivec2& v) {
 		return
 				((v[0] << (4 * sizeof(unsigned int))) >> (4 * sizeof(unsigned int))) |
@@ -153,6 +145,7 @@ namespace {
 
 		system_clock::duration time = system_clock::now().time_since_epoch();
 		unsigned int rand = time.count();
+		unsigned int genj = 0;
 
 		for(std::size_t i=0; i < count; i+=1) {
 			GridObject* newobj = new GridObject(mesh);
@@ -162,12 +155,17 @@ namespace {
 			int unsigned geni = 0;
 			do {
 				genpos = glm::ivec2(
-						xorshift(rand + count + i + geni) % (unsigned int) tiles,
-						xorshift(rand + i - count + geni) % (unsigned int) tiles );
+						gla::xorshift(rand + count + i + genj) % (unsigned int) tiles,
+						gla::xorshift(rand + i - count + genj) % (unsigned int) tiles );
 				genhash = hash_ivec2(genpos);
 				geni += 1;
+				genj += geni;
+				if(geni > 1000)
+					throw std::runtime_error(
+							"Could not generate a random position for an object"
+							" (too many attempts)" );
 			} while(grid_objects.find(genhash) != grid_objects.end());
-
+			
 			newobj->setGridPosition(genpos);
 			newobj->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 			newobj->shade = shade;
