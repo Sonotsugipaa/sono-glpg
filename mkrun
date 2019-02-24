@@ -1,3 +1,23 @@
+if [ $1 = 'all' ]
+then
+	make purge
+	make assets/arrow.mesh
+	make assets/bloc.mesh
+	make assets/pyr.mesh
+	make assets/tile.mesh
+	make assets/tile_caved.mesh
+	make assets/trisquare.mesh
+	sleep 4
+	make bin/snekameshtest && bin/snekameshtest assets/arrow.mesh
+	sleep 4
+	make bin/snekawrendertest && bin/snekawrendertest
+	sleep 4
+	make bin/snekaintest && bin/snekaintest
+	sleep 4
+	make bin/snekaobjtest && bin/snekaobjtest
+	exit
+fi
+
 printf $'\e[H\e[2J\e[3J'
 TARGET=$1
 shift

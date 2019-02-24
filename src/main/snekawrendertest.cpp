@@ -39,8 +39,10 @@ int main(int argn, char** args) {
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true);
 
+	FloorObject floor = FloorObject("assets/tile.mesh", 40);
+
 	WorldRenderer renderer = WorldRenderer(
-			"assets/tile.mesh", TILES,
+			floor, TILES,
 			-0.02f, 0, W, H );
 	renderer.clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
 

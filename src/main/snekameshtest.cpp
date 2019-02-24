@@ -115,7 +115,7 @@ namespace {
 							( (GLfloat) x) / STEPS,
 							( (GLfloat) y) / STEPS,
 							(((GLfloat) z) / STEPS) -1.0f );
-				obj.setRotationRad(rotation);
+				obj.setRotation(rotation);
 
 				draw_square(obj);
 
