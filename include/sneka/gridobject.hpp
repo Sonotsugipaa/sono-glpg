@@ -12,7 +12,7 @@
 
 namespace sneka {
 
-	class GridObject : public virtual RenderObject {
+	class GridObject : public RenderObject {
 	private:
 		glm::vec2 cache_combined;
 		bool changed = true;

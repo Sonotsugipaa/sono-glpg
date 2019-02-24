@@ -16,7 +16,7 @@
 
 namespace sneka {
 
-	class WorldRenderer : public virtual Renderer {
+	class WorldRenderer : public Renderer {
 	protected:
 		gla::Timer time;
 		FloorObject* floor;
