@@ -54,13 +54,6 @@ namespace sneka::pool {
 			in_normal;
 			//in_random;
 
-	glm::mat4& world_proj_matrix();
-
-	void set_world_perspective(
-			GLfloat fov_y, GLfloat ratio,
-			GLfloat zNear, GLfloat zFar
-	);
-
 	const Runtime * runtime();
 
 
@@ -75,11 +68,18 @@ namespace sneka::pool {
 
 	void runtime_destroy();
 
-	/* Some render object meshes have dynamic colors, some do not;
-	 * this function is called for each object, so that those
-	 * without dynamic colors do not use a stray value for the
-	 * add_col shader uniform. */
-	void set_mul_col_enabled(bool);
+	GLuint viewport_width();
+	GLuint viewport_height();
+	GLfloat viewport_ratio();
+
+	void set_viewport(GLuint width, GLuint height);
+
+	/* With two calls, it returns the same value if and only if
+	 * the viewport hasn't been changed
+	 * (with a chance of less than a 1/18446744073709551616th of
+	 * returning the same value even if the viewport has been
+	 * changed - TL;DR, use this for cached values only). */
+	GLuint64 viewport_change();
 
 	/* If need_vertices = true, ensures that the mesh contains
 	 * the vertices; if they don't, the file is reloaded and the

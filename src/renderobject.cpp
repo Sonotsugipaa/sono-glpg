@@ -20,7 +20,6 @@ namespace {
 namespace sneka {
 
 	RenderObject::RenderObject():
-			mesh(nullptr),
 			mat_changed(true),
 			color_mul(false),
 			position(0.0f),
@@ -32,18 +31,11 @@ namespace sneka {
 			reflect_falloff(1.0f)
 	{ }
 
-	RenderObject::RenderObject(Mesh& mesh):
-			mesh(&mesh),
-			mat_changed(true),
-			color_mul(false),
-			position(0.0f),
-			translation(0.0f),
-			rotation(0.0f),
-			uid(gen++),
-			shade(0.3f),
-			reflect(0.2f),
-			reflect_falloff(1.0f)
-	{ }
+	RenderObject::RenderObject(Mesh& _mesh):
+			RenderObject::RenderObject()
+	{
+		mesh = &_mesh;
+	}
 
 	RenderObject::RenderObject(std::string mesh_name):
 			RenderObject::RenderObject(pool::get_mesh(mesh_name))
@@ -84,9 +76,22 @@ namespace sneka {
 		mat_changed = true;
 	}
 
+	const glm::vec4 RenderObject::getColor() const {
+		if(color_mul) return color;
+		return glm::vec4(1.0f);
+	}
+
 	void RenderObject::setColor(glm::vec4 col) {
 		color_mul = true;
 		color = col;
+	}
+
+	void RenderObject::setColorEnabled(bool value) {
+		color_mul = value;
+	}
+
+	const bool RenderObject::isColorEnabled() const {
+		return color_mul;
 	}
 
 	const Mesh * RenderObject::getMesh() const {
@@ -94,10 +99,9 @@ namespace sneka {
 	}
 
 	void RenderObject::draw() {
-		pool::set_mul_col_enabled(color_mul);
-
-		if(color_mul)
-			glUniform4fv(pool::uniform_mul_col, 1, &color[0]);
+		if(! color_mul)
+			color = glm::vec4(1.0f);
+		glUniform4fv(pool::uniform_mul_col, 1, &color[0]);
 
 		if(mat_changed) {
 			mat_compute();
@@ -114,7 +118,6 @@ namespace sneka {
 				&mat_model[0][0] );
 
 		if(mesh == nullptr) {
-			// TODO: throw a proper exception
 			throw std::runtime_error("Tried to render an uninitialized RenderObject.");
 		}
 

@@ -9,7 +9,9 @@ namespace {
 	using namespace sneka::pool;
 
 	void default_key_callback(unsigned int, unsigned int, bool) { }
-	void default_resize_callback(unsigned int, unsigned int) { }
+	void default_resize_callback(unsigned int x, unsigned int y) {
+		set_viewport(x, y);
+	}
 
 	const unsigned char * keyboard = nullptr;
 	key_callback_t key_callback = default_key_callback;

@@ -17,7 +17,9 @@ namespace {
 
 	glm::mat4 world_proj_matrix_inst = glm::mat4(1.0f);
 
-	bool mul_col_enabled;
+	GLuint vp_w, vp_h;
+	GLuint64 vp_change = 0;
+	GLfloat vp_r;
 
 
 	void assert_runtime_init(bool init_state) {
@@ -112,17 +114,6 @@ namespace sneka::pool {
 		return const_cast<const Runtime *>(runtime_inst);
 	}
 
-	void set_mul_col_enabled(bool value) {
-		assert_runtime_init(true);
-
-		if(mul_col_enabled && ! value) {
-			glm::vec4 null_col = glm::vec4(1.0f);
-			glUniform4fv(uniform_mul_col, 1, &null_col[0]);
-		}
-
-		mul_col_enabled = value;
-	}
-
 	void runtime_init(
 			std::string window_name,
 			int x, int y,
@@ -137,6 +128,8 @@ namespace sneka::pool {
 				x, y, width, height,
 				resizable, vsync,
 				"shader/sneka_v.glsl", "shader/sneka_f.glsl" );
+
+		set_viewport(width, height);
 
 		uniform_proj =            glGetUniformLocation(runtime_inst->shader->program, "uni_proj");
 		uniform_view =            glGetUniformLocation(runtime_inst->shader->program, "uni_view");
@@ -172,6 +165,19 @@ namespace sneka::pool {
 		SDL_Quit();
 	}
 
+	GLuint viewport_width()  { return vp_w; }
+	GLuint viewport_height() { return vp_h; }
+	GLfloat viewport_ratio() { return vp_r; }
+
+	void set_viewport(GLuint w, GLuint h) {
+		vp_w = w; vp_h = h;
+		vp_r = static_cast<GLfloat>(w) / static_cast<GLfloat>(h);
+		vp_change += 1;
+		glViewport(0, 0, w, h);
+	}
+
+	GLuint64 viewport_change() { return vp_change; }
+
 	Mesh& get_mesh(std::string name, bool need_vertices) {
 		assert_runtime_init(true);
 
@@ -198,17 +204,6 @@ namespace sneka::pool {
 		}
 
 		return *(iter->second);
-	}
-
-	glm::mat4& world_proj_matrix() {
-		return world_proj_matrix_inst;
-	}
-
-	void set_world_perspective(
-			GLfloat fov_y, GLfloat ratio,
-			GLfloat zNear, GLfloat zFar
-	) {
-			world_proj_matrix_inst = glm::perspective(fov_y, ratio, zNear, zFar);
 	}
 
 

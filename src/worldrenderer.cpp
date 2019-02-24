@@ -54,6 +54,9 @@ namespace sneka {
 			curvature(curv),
 			drugs(drugs),
 			light_direction(0.0f, 1.0f, 0.0f),
+			view_pos(glm::vec3(0.0f, 0.0f, 0.0f)),
+			view_yaw(0.0f), view_pitch(0.0f),
+			proj_fov_y(90.0f), proj_z_near(0.2f), proj_z_far(100.0f),
 			clear_color(glm::vec3(0.05f, 0.05f, 0.05f)),
 			fog_intensity(0.0f)
 	{ TRACE; }
@@ -120,18 +123,35 @@ namespace sneka {
 		light_direction = glm::normalize(dir);
 	}
 
+	void WorldRenderer::setWorldPerspective(
+			GLfloat fov_y,
+			GLfloat zNear, GLfloat zFar
+	) {
+		proj_fov_y = fov_y;
+		proj_z_near = zNear;
+		proj_z_far = zFar;
+	}
+
 	void WorldRenderer::renderFrame() {
 		TRACE;
 
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::vec4 fog = glm::vec4(clear_color, fog_intensity);
-		glUniform4fv(pool::uniform_fog, 1, &fog[0]);
-		glUniform1f(pool::uniform_time, time.millis() / 1000.0f);
-		glUniform1f(pool::uniform_curvature, curvature);
-		glUniform1f(pool::uniform_drugs, drugs);
-		glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &pool::world_proj_matrix()[0][0]);
+		{
+			glm::vec4 fog = glm::vec4(clear_color, fog_intensity);
+			glm::mat4 proj_mat = glm::perspective(
+					proj_fov_y,
+					pool::viewport_ratio(),
+					proj_z_near,
+					proj_z_far );
+
+			glUniform4fv(pool::uniform_fog, 1, &fog[0]);
+			glUniform1f(pool::uniform_time, time.millis() / 1000.0f);
+			glUniform1f(pool::uniform_curvature, curvature);
+			glUniform1f(pool::uniform_drugs, drugs);
+			glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &proj_mat[0][0]);
+		}
 
 		glm::mat4 mat_view = get_view(
 				glm::vec3(

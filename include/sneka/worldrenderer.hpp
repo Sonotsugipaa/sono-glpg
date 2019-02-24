@@ -31,6 +31,8 @@ namespace sneka {
 		glm::vec3 view_pos;
 		GLfloat view_yaw, view_pitch;
 
+		GLfloat proj_fov_y, proj_z_near, proj_z_far;
+
 	public:
 		glm::vec3 clear_color;
 		GLfloat fog_intensity;
@@ -54,6 +56,11 @@ namespace sneka {
 
 		void setLightDirection(glm::vec3);
 		void setView(glm::vec3 position, GLfloat yaw, GLfloat pitch);
+
+		void setWorldPerspective(
+				GLfloat fov_y,
+				GLfloat zNear, GLfloat zFar
+		);
 
 		virtual void renderFrame();
 	};

@@ -13,13 +13,14 @@
 namespace sneka {
 
 	class GridObject : public virtual RenderObject {
-	protected:
+	private:
+		glm::vec2 cache_combined;
+		bool changed = true;
 		glm::ivec2 grid_pos;
 		glm::vec2 offset_pos;
-		glm::vec2 cache_combined;
 		float height = 0.0f;
-		bool changed = true;
 
+	protected:
 		void updatePosition();
 
 	public:

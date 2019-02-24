@@ -56,6 +56,8 @@ namespace sneka {
 		void setRotation(GLfloat);
 
 		const glm::vec4 getColor() const;
+		const bool isColorEnabled() const;
+		void setColorEnabled(bool);
 		void setColor(glm::vec4);
 
 		const Mesh * getMesh() const;

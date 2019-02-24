@@ -243,11 +243,11 @@ int main(int argn, char** args) {
 	renderer->getFloorObject().reflect = (float) FLOOR_REFLECT;
 	renderer->getFloorObject().reflect_falloff = (float) FLOOR_REFLECT_FO;
 	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 1.0f));
-
-	pool::set_world_perspective(
-					90.0f, (GLfloat) W / H,
+	renderer->setWorldPerspective(
+					90.0f,
 					(GLfloat) WORLD_MIN_Z,
-					(GLfloat) WORLD_MAX_Z);  TRACE;
+					(GLfloat) WORLD_MAX_Z);
+	TRACE;
 
 	// is deallocated automatically by destroyObjects(...)
 	head = new RenderObject("assets/arrow.mesh");
@@ -257,11 +257,7 @@ int main(int argn, char** args) {
 	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
-		glViewport(0, 0, x, y);
-		pool::set_world_perspective(
-						90.0f, (GLfloat) x / y,
-						(GLfloat) WORLD_MIN_Z,
-						(GLfloat) WORLD_MAX_Z);
+		pool::set_viewport(x, y);
 	} );  TRACE;
 
 	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
