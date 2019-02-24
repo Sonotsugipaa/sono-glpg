@@ -45,7 +45,7 @@
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
-#define OBJECT_SHADE         (0.4)
+#define OBJECT_SHADE         (0.7)
 #define OBJECT_REFLECT       (4.0)
 #define OBJECT_REFLECT_FO    (3.0)
 #define FLOOR_SHADE          (0.8)
@@ -165,7 +165,7 @@ namespace {
 							"Could not generate a random position for an object"
 							" (too many attempts)" );
 			} while(grid_objects.find(genhash) != grid_objects.end());
-			
+
 			newobj->setGridPosition(genpos);
 			newobj->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 			newobj->shade = shade;

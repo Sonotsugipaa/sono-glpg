@@ -1,5 +1,7 @@
 #include "sneka/renderobject.hpp"
 
+#include <stdexcept>
+
 #include "sneka/pool.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -113,7 +115,7 @@ namespace sneka {
 
 		if(mesh == nullptr) {
 			// TODO: throw a proper exception
-			throw std::string("Tried to render an uninitialized RenderObject.");
+			throw std::runtime_error("Tried to render an uninitialized RenderObject.");
 		}
 
 		mesh->draw();

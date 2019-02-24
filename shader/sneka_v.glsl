@@ -73,7 +73,7 @@ void main(void) {
 				uni_reflect_falloff
 			);
 
-	ex_color = in_color + vec4(vec3(shade_amount + reflect_amount), 1.0);
+	ex_color = in_color + vec4(vec3(shade_amount + reflect_amount), 0.0);
 	//ex_color = vec4(vec3(reflect_amount), 1.0);
 	//ex_color = vec4((lookat/2.0) + 1.0, 1.0);
 }

@@ -1,15 +1,22 @@
--50  0 -50    70  70  70 100
--50  0  50    70  70  70 100
-  0 40   0   100 100 100 100
+!- -50
+!+ 50
+!h 40
+!colL 70
+!colH 100
+!colA 100
 
--50  0  50    70  70  70 100
- 50  0  50    70  70  70 100
-  0 40   0   100 100 100 100
+ ?-  0  ?-   ?colL ?colL ?colL ?colA
+ ?-  0  ?+   ?colL ?colL ?colL ?colA
+  0 ?h   0   ?colH ?colH ?colH ?colA
 
- 50  0  50    70  70  70 100
- 50  0 -50    70  70  70 100
-  0 40   0   100 100 100 100
+ ?-  0  ?+   ?colL ?colL ?colL ?colA
+ ?+  0  ?+   ?colL ?colL ?colL ?colA
+  0 ?h   0   ?colH ?colH ?colH ?colA
 
- 50  0 -50    70  70  70 100
--50  0 -50    70  70  70 100
-  0 40   0   100 100 100 100
+ ?+  0  ?+   ?colL ?colL ?colL ?colA
+ ?+  0  ?-   ?colL ?colL ?colL ?colA
+  0 ?h   0   ?colH ?colH ?colH ?colA
+
+ ?+  0  ?-   ?colL ?colL ?colL ?colA
+ ?-  0  ?-   ?colL ?colL ?colL ?colA
+  0 ?h   0   ?colH ?colH ?colH ?colA
