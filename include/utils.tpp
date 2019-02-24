@@ -1,5 +1,5 @@
-#ifndef SONOGLPG_UTILS_HPP
-#define SONOGLPG_UTILS_HPP
+#ifndef SONOGLPG_UTILS_TPP
+#define SONOGLPG_UTILS_TPP
 
 #include <chrono>
 
