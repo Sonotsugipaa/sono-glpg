@@ -7,8 +7,6 @@
 #include "utils.tpp"
 #include "trace.hpp"
 
-#include <iostream>
-
 #include <glm/gtc/matrix_transform.hpp>
 
 #define GL3_PROTOTYPES 1
@@ -42,18 +40,30 @@ namespace {
 
 namespace sneka {
 
+	void WorldRenderer::lights_cache_compute() {
+		if(! lights_cache_changed) return;
+
+		for(std::size_t i=0; i < lights.size(); i+=1) {
+			for(std::size_t j=0; j < 3; j+=1) {
+				lights_cache[(i*3)+j] = glm::normalize(lights[i])[j];
+			}
+		}
+		lights_cache_changed = false;
+	}
+
+
 	WorldRenderer::WorldRenderer(
 			FloorObject& floor, GLuint repeat_stride,
 			GLfloat curv, GLfloat drugs,
 			GLuint scr_w, GLuint scr_h
 	):
+			lights_cache_changed(true),
 			floor(&floor),
 			floor_tiles(floor.side_length), floor_tiles_half(floor_tiles / 2.0f),
 			floor_tile_size(1.0f),
 			repeat_stride(repeat_stride),
 			curvature(curv),
 			drugs(drugs),
-			light_direction(0.0f, 1.0f, 0.0f),
 			view_pos(glm::vec3(0.0f, 0.0f, 0.0f)),
 			view_yaw(0.0f), view_pitch(0.0f),
 			proj_fov_y(90.0f), proj_z_near(0.2f), proj_z_far(100.0f),
@@ -63,13 +73,6 @@ namespace sneka {
 
 	WorldRenderer::~WorldRenderer() { TRACE; }
 
-
-	void WorldRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
-		TRACE;
-		view_pos = pos;
-		view_yaw = yaw;
-		view_pitch = pitch;
-	}
 
 	RenderObject* WorldRenderer::popObject() {
 		TRACE;
@@ -87,6 +90,11 @@ namespace sneka {
 			return nullptr;
 		return iter->second;
 		//std::cout << "now rendering " << obj.uid << std::endl;
+	}
+
+	// this NEEDS to be tested, the getObject(uid_t) call could be ambiguous
+	const RenderObject * WorldRenderer::getObject(uid_t uid) const {
+		return const_cast<const RenderObject *>(getObject(uid));
 	}
 
 	void WorldRenderer::putObject(RenderObject& obj) {
@@ -108,20 +116,62 @@ namespace sneka {
 			objects.erase(iter);
 	}
 
+	std::size_t WorldRenderer::getObjectsCount() const {
+		TRACE;
+		return objects.size();
+	}
+
+
 	FloorObject & WorldRenderer::getFloorObject() {
 		TRACE;
 		return *floor;
 	}
 
-	std::size_t WorldRenderer::size() {
-		TRACE;
-		return objects.size();
+
+	bool WorldRenderer::addLight(glm::vec3 dir) {
+		if(lights.size() > max_lights) return false;
+		lights_cache_changed = true;
+
+		lights.push_back(dir);
+		return true;
 	}
 
-	void WorldRenderer::setLightDirection(glm::vec3 dir) {
-		TRACE;
-		light_direction = glm::normalize(dir);
+	// this might need some proper testing
+	bool WorldRenderer::setLight(std::size_t i, glm::vec3 dir) {
+		lights_cache_changed = true;
+
+		std::size_t size = lights.size();
+		if(i < size) {
+			lights[i] = dir;
+			return true;
+		}
+		if(i == size) {
+			return addLight(dir);
+		}
+		return false;
 	}
+
+	void WorldRenderer::clearLights() {
+		lights_cache_changed = true;
+		lights.resize(0);
+	}
+
+	std::vector<glm::vec3> WorldRenderer::getLights() const {
+		return lights;
+	}
+
+	std::size_t WorldRenderer::getLightsCount() const {
+		return lights.size();
+	}
+
+
+	void WorldRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
+		TRACE;
+		view_pos = pos;
+		view_yaw = yaw;
+		view_pitch = pitch;
+	}
+
 
 	void WorldRenderer::setWorldPerspective(
 			GLfloat fov_y,
@@ -132,6 +182,8 @@ namespace sneka {
 		proj_z_far = zFar;
 	}
 
+
+	// Watch out, we got a big one over here!
 	void WorldRenderer::renderFrame() {
 		TRACE;
 
@@ -175,7 +227,10 @@ namespace sneka {
 				glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 		view_dir = glm::normalize(view_dir);
 		*/
-		glUniform3fv(pool::uniform_light_dir, 1, &light_direction[0]);
+
+		lights_cache_compute();
+		glUniform3fv(pool::uniform_light_dir, lights.size(), lights_cache);
+		glUniform1i(pool::uniform_light_count, lights.size());
 
 		// draw the floor with a matrix that translates back every tile
 		glm::mat4 mat_view_tr = glm::translate(

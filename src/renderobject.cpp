@@ -28,7 +28,8 @@ namespace sneka {
 			uid(gen++),
 			shade(0.3f),
 			reflect(0.2f),
-			reflect_falloff(1.0f)
+			reflect_falloff(1.0f),
+			reflect_opaque(0.3f)
 	{ }
 
 	RenderObject::RenderObject(Mesh& _mesh):
@@ -111,6 +112,7 @@ namespace sneka {
 		glUniform1f(pool::uniform_shade, shade);
 		glUniform1f(pool::uniform_reflect, reflect);
 		glUniform1f(pool::uniform_reflect_falloff, reflect_falloff);
+		glUniform1f(pool::uniform_reflect_opaque, reflect_opaque);
 		glUniformMatrix4fv(
 				sneka::pool::uniform_model,
 				1,

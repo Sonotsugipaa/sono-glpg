@@ -29,28 +29,32 @@
 
 #include <SDL2/SDL.h>
 
-#define SCREEN_WIDTH         (800)
+#define SCREEN_WIDTH         (1000)
 #define WINDOW_SIZE_FACTOR   (0.7)
 #define FPS                  (60.0)
 #define FRAMERATE            (1000.0/FPS)
-#define STEPS                (10)
 #define FRAMES               (500)
 #define CAM_DISTANCE         (1.0)
 #define CAM_HEIGHT           (2.0)
 #define CAM_PITCH            (1.1)
 #define CURVATURE            (-0.03)
-#define TILES                (30)
+#define TILES                (25)
 #define OBJECTS              (250)
 #define DRUGS                (0.0)
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
-#define OBJECT_SHADE         (0.7)
-#define OBJECT_REFLECT       (4.0)
+#define OBJECT_SHADE         (1.0)
+#define OBJECT_REFLECT       (8.0)
 #define OBJECT_REFLECT_FO    (3.0)
-#define FLOOR_SHADE          (0.8)
+#define OBJECT_REFLECT_O     (1.0)
+#define FLOOR_SHADE          (0.9)
 #define FLOOR_REFLECT        (1.0)
 #define FLOOR_REFLECT_FO     (30.0)
+#define FLOOR_REFLECT_O      (1.6)
+
+using std::cout;
+using std::endl;
 
 
 
@@ -139,7 +143,8 @@ namespace {
 			WorldRenderer* renderer,
 			std::string mesh, std::size_t count,
 			int unsigned tiles,
-			GLfloat shade, GLfloat reflect, GLfloat reflect_falloff
+			GLfloat shade,
+			GLfloat reflect, GLfloat reflect_falloff, GLfloat reflect_opaque
 	) {
 		using namespace std::chrono;
 
@@ -171,6 +176,7 @@ namespace {
 			newobj->shade = shade;
 			newobj->reflect = reflect;
 			newobj->reflect_falloff = reflect_falloff;
+			newobj->reflect_opaque = reflect_opaque;
 			grid_objects[genhash] = newobj;
 			renderer->putObject(*newobj);
 		}
@@ -190,6 +196,24 @@ namespace {
 			iter = grid_objects.begin();
 		}
 	}
+
+	/*
+	std::ostream& operator << (std::ostream& stream, const glm::vec2 & vec) {
+		stream << '[' << vec[0] << ", " << vec[1] << ']';
+		return stream;
+	}
+	std::ostream& operator << (std::ostream& stream, const glm::vec3 & vec) {
+		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ']';
+		return stream;
+	}
+	std::ostream& operator << (std::ostream& stream, const glm::vec4 & vec) {
+		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3] << ']';
+		return stream;
+	}
+	*/
+
+	/* This is a comment followed by a semicolon used to fix Atom's poor
+	 * syntax coloring, please ignore this. */;
 
 }
 
@@ -242,7 +266,11 @@ int main(int argn, char** args) {
 	renderer->getFloorObject().shade = (float) FLOOR_SHADE;
 	renderer->getFloorObject().reflect = (float) FLOOR_REFLECT;
 	renderer->getFloorObject().reflect_falloff = (float) FLOOR_REFLECT_FO;
-	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 1.0f));
+	renderer->getFloorObject().reflect_opaque = (float) FLOOR_REFLECT_O;
+	renderer->addLight(glm::vec3(3.0f, 3.0f, 3.0f));
+	renderer->addLight(glm::vec3(-3.0f, 0.5f, 3.0f));
+	renderer->addLight(glm::vec3(0.5f, 1.0f, -3.0f));
+	renderer->addLight(glm::vec3(-0.5f, 1.0f, -3.0f));
 	renderer->setWorldPerspective(
 					90.0f,
 					(GLfloat) WORLD_MIN_Z,
@@ -253,8 +281,8 @@ int main(int argn, char** args) {
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO);
-	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO);
+	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO, (float) OBJECT_REFLECT_O);
+	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO, (float) OBJECT_REFLECT_O);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		pool::set_viewport(x, y);

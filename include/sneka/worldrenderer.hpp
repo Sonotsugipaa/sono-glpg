@@ -17,6 +17,15 @@
 namespace sneka {
 
 	class WorldRenderer : public Renderer {
+	public:
+		// this value depends on the vertex shader
+		static constexpr GLint max_lights = 4;
+
+	private:
+		GLfloat lights_cache[max_lights * 3];
+		bool lights_cache_changed;
+		void lights_cache_compute();
+
 	protected:
 		gla::Timer time;
 		FloorObject* floor;
@@ -26,7 +35,7 @@ namespace sneka {
 		GLfloat repeat_stride;
 		GLfloat curvature, drugs;
 
-		glm::vec3 light_direction;
+		std::vector<glm::vec3> lights;
 
 		glm::vec3 view_pos;
 		GLfloat view_yaw, view_pitch;
@@ -47,14 +56,27 @@ namespace sneka {
 		 * 'nullptr' otherwise. */
 		RenderObject* popObject();
 		RenderObject* getObject(uid_t);
+		const RenderObject * getObject(uid_t) const;
 		void putObject(RenderObject& object);
 		void removeObject(RenderObject& object);
 		void removeObject(uid_t);
-		std::size_t size();
+		std::size_t getObjectsCount() const;
 
 		FloorObject & getFloorObject();
 
-		void setLightDirection(glm::vec3);
+		/* The maximum number of lights is defined in WorldRenderer::max_lights;
+		 * trying to add more lights than that will have no effect.
+		 * Returns 'true' if the light was successfully added. */
+		bool addLight(glm::vec3 direction);
+		/* Sets the 'index'th light to the specified value;
+		 * if the index is out of bounds with an offset of 1 a new
+		 * light is added; otherwise 'false' is returned and
+		 * the light is not set. */
+		bool setLight(std::size_t index, glm::vec3 direction);
+		void clearLights();
+		std::vector<glm::vec3> getLights() const;
+		std::size_t getLightsCount() const;
+
 		void setView(glm::vec3 position, GLfloat yaw, GLfloat pitch);
 
 		void setWorldPerspective(

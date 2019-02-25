@@ -35,7 +35,6 @@ namespace sneka::pool {
 	extern GLuint
 			uniform_proj,
 			uniform_view,
-			uniform_light_dir,
 			uniform_view_pos,
 			uniform_model,
 			uniform_model_pos,
@@ -45,9 +44,13 @@ namespace sneka::pool {
 			uniform_drugs,
 			uniform_fog,
 
+			uniform_light_dir,
+			uniform_light_count,
+
 			uniform_shade,
 			uniform_reflect,
 			uniform_reflect_falloff,
+			uniform_reflect_opaque,
 
 			in_position,
 			in_color,

@@ -42,7 +42,7 @@ namespace sneka {
 	public:
 		const uid_t uid;
 
-		GLfloat shade, reflect, reflect_falloff;
+		GLfloat shade, reflect, reflect_falloff, reflect_opaque;
 
 		RenderObject(Mesh&);
 		RenderObject(std::string mesh_name);
