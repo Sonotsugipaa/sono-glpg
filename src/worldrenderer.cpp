@@ -37,7 +37,7 @@ namespace {
 	void gl_features_enable(bool blend) {
 		if(blend) {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glAlphaFunc(GL_GREATER, 0.1f);
+			glAlphaFunc(GL_GREATER, 0.05f);
 			glEnable(GL_BLEND);
 			glEnable(GL_ALPHA_TEST);
 		}
@@ -208,7 +208,7 @@ namespace sneka {
 	void WorldRenderer::renderFrame() {
 		TRACE;
 
-		gl_features_enable(true);
+		gl_features_enable(false);
 
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
