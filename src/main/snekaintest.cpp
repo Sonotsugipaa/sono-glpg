@@ -44,14 +44,14 @@
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
-#define OBJECT_SHADE         (1.0)
-#define OBJECT_REFLECT       (8.0)
-#define OBJECT_REFLECT_FO    (3.0)
+#define OBJECT_SHADE         (0.8)
+#define OBJECT_REFLECT       (0.9)
+#define OBJECT_REFLECT_FO    (10.0)
 #define OBJECT_REFLECT_O     (1.0)
-#define FLOOR_SHADE          (0.9)
-#define FLOOR_REFLECT        (1.0)
+#define FLOOR_SHADE          (0.5)
+#define FLOOR_REFLECT        (0.3)
 #define FLOOR_REFLECT_FO     (30.0)
-#define FLOOR_REFLECT_O      (1.6)
+#define FLOOR_REFLECT_O      (1.0)
 
 using std::cout;
 using std::endl;
@@ -132,6 +132,26 @@ namespace {
 		head->setPosition(pos[0], 0.0f, pos[1]);
 	}
 
+
+	/*
+	std::ostream& operator << (std::ostream& stream, const glm::vec2 & vec) {
+		stream << '[' << vec[0] << ", " << vec[1] << ']';
+		return stream;
+	}
+	std::ostream& operator << (std::ostream& stream, const glm::vec3 & vec) {
+		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ']';
+		return stream;
+	}
+	*/
+	std::ostream& operator << (std::ostream& stream, const glm::vec4 & vec) {
+		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3] << ']';
+		return stream;
+	}
+
+	/* This is a comment followed by a semicolon used to fix Atom's poor
+	 * syntax coloring, please ignore this. */;
+
+
 	int unsigned hash_ivec2(glm::ivec2& v) {
 		return
 				((v[0] << (4 * sizeof(unsigned int))) >> (4 * sizeof(unsigned int))) |
@@ -156,6 +176,7 @@ namespace {
 			GridObject* newobj = new GridObject(mesh);
 
 			glm::ivec2 genpos;
+			glm::vec4 gencol;
 			int unsigned genhash;
 			int unsigned geni = 0;
 			do {
@@ -171,12 +192,16 @@ namespace {
 							" (too many attempts)" );
 			} while(grid_objects.find(genhash) != grid_objects.end());
 
+			gencol[0] = (float) gla::xorshift<unsigned char>(genj  );
+			gencol[1] = (float) gla::xorshift<unsigned char>(genj+1);
+			gencol[2] = (float) gla::xorshift<unsigned char>(genj+2);
+			gencol[3] = (float) gla::xorshift<unsigned char>(genj+3);
+			gencol = glm::normalize(gencol);
+			cout << "color " << gencol << endl;
+			gencol[3] = 1.0f;
+
 			newobj->setGridPosition(genpos);
-			newobj->setColor(glm::vec4(
-					(gla::xorshift(genj+1) / (float) 0xFFFFFFFF) / 3.0f,
-					(gla::xorshift(genj+2) / (float) 0xFFFFFFFF) / 3.0f,
-					(gla::xorshift(genj+3) / (float) 0xFFFFFFFF) / 3.0f,
-					(gla::xorshift(genj+4) / (float) 0xFFFFFFFF) ));
+			newobj->setColor(gencol);
 			newobj->shade = shade;
 			newobj->reflect = reflect;
 			newobj->reflect_falloff = reflect_falloff;
@@ -200,24 +225,6 @@ namespace {
 			iter = grid_objects.begin();
 		}
 	}
-
-	/*
-	std::ostream& operator << (std::ostream& stream, const glm::vec2 & vec) {
-		stream << '[' << vec[0] << ", " << vec[1] << ']';
-		return stream;
-	}
-	std::ostream& operator << (std::ostream& stream, const glm::vec3 & vec) {
-		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ']';
-		return stream;
-	}
-	std::ostream& operator << (std::ostream& stream, const glm::vec4 & vec) {
-		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3] << ']';
-		return stream;
-	}
-	*/
-
-	/* This is a comment followed by a semicolon used to fix Atom's poor
-	 * syntax coloring, please ignore this. */;
 
 }
 
@@ -285,8 +292,18 @@ int main(int argn, char** args) {
 	head = new RenderObject("assets/arrow.mesh");
 	renderer->putObject(*head);
 
-	genObjects(renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO, (float) OBJECT_REFLECT_O);
-	genObjects(renderer, "assets/bloc.mesh", OBJECTS / 2, TILES, (float) OBJECT_SHADE, (float) OBJECT_REFLECT, (float) OBJECT_REFLECT_FO, (float) OBJECT_REFLECT_O);
+	genObjects(
+			renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES,
+			(float) OBJECT_SHADE,
+			(float) OBJECT_REFLECT,
+			(float) OBJECT_REFLECT_FO,
+			(float) OBJECT_REFLECT_O );
+	genObjects(
+			renderer, "assets/bloc.mesh", OBJECTS / 2, TILES,
+			(float) OBJECT_SHADE,
+			(float) OBJECT_REFLECT,
+			(float) OBJECT_REFLECT_FO,
+			(float) OBJECT_REFLECT_O );
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		pool::set_viewport(x, y);

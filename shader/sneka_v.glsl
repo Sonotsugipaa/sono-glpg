@@ -21,6 +21,7 @@ in vec4 in_color;
 in vec3 in_normal;
 
 out vec4 ex_color;
+out vec3 ex_reflect;
 out vec3 screen_position;
 
 void main(void) {
@@ -58,7 +59,16 @@ void main(void) {
 	float shade_amount = 0;
 	float reflect_amount = 0;
 	for(int i=0; i < uni_light_count; i+=1) {
-		shade_amount += (dot(normal, uni_light_dir[i]) * uni_reflect_opaque) - uni_shade;
+		shade_amount +=
+				(
+					max(
+						0,
+						dot(
+							normal,
+							uni_light_dir[i]
+						) * uni_reflect_opaque
+					)
+				);
 		reflect_amount +=
 				uni_reflect *
 				pow (
@@ -77,7 +87,8 @@ void main(void) {
 					uni_reflect_falloff
 				);
 	}
-	shade_amount /= uni_light_count;
-	reflect_amount /= uni_light_count;
-	ex_color = in_color + vec4(vec3(shade_amount + reflect_amount), 1.0);
+	shade_amount = (shade_amount / uni_light_count) - uni_shade;
+	//reflect_amount /= uni_light_count;
+	ex_color = in_color;
+	ex_reflect = vec3(shade_amount + reflect_amount);
 }
