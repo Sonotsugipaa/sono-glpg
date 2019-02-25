@@ -73,7 +73,7 @@ namespace {
 		auto end = pool_meshes.end();
 
 		while(iter != end) {
-			std::cout << "Unloaded mesh " << iter->second->name << '.' << std::endl;
+			//std::cout << "Unloaded mesh " << iter->second->name << '.' << std::endl;
 			delete iter->second;
 			pool_meshes.erase(iter);
 			iter = pool_meshes.begin();

@@ -22,9 +22,19 @@ namespace gla {
 		time = steady_clock::now();
 	}
 
+	float Timer::s() {
+		duration<double, std::ratio<1>> micros = steady_clock::now() - time;
+		return micros.count();
+	}
+
 	float Timer::millis() {
+		duration<double, std::milli> micros = steady_clock::now() - time;
+		return micros.count();
+	}
+
+	float Timer::micros() {
 		duration<double, std::micro> micros = steady_clock::now() - time;
-		return micros.count() / 1000.0;
+		return micros.count();
 	}
 
 }

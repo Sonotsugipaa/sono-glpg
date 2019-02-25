@@ -18,7 +18,9 @@ namespace gla {
 		Timer(Timer&&) = default;
 
 		void reset();
+		float s();
 		float millis();
+		float micros();
 
 		Timer& operator = (const Timer &) = default;
 		Timer& operator = (Timer&&) = default;

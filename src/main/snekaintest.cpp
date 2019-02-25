@@ -329,7 +329,7 @@ int main(int argn, char** args) {
 		TRACE;
 		while(cycle_frame_timer) {
 			TRACE;
-			float delta = speed_total * frame_timer.millis() / 1000.0f;
+			float delta = speed_total * frame_timer.s();
 			frame_timer.reset();
 			cycle_frame_timer = movement_tr.advance(delta);
 
