@@ -172,7 +172,11 @@ namespace {
 			} while(grid_objects.find(genhash) != grid_objects.end());
 
 			newobj->setGridPosition(genpos);
-			newobj->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+			newobj->setColor(glm::vec4(
+					(gla::xorshift(genj+1) / (float) 0xFFFFFFFF) / 3.0f,
+					(gla::xorshift(genj+2) / (float) 0xFFFFFFFF) / 3.0f,
+					(gla::xorshift(genj+3) / (float) 0xFFFFFFFF) / 3.0f,
+					(gla::xorshift(genj+4) / (float) 0xFFFFFFFF) ));
 			newobj->shade = shade;
 			newobj->reflect = reflect;
 			newobj->reflect_falloff = reflect_falloff;
