@@ -34,6 +34,27 @@ namespace {
 		return glm::translate(retn, pos);
 	}
 
+	void gl_features_enable(bool blend) {
+		if(blend) {
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glAlphaFunc(GL_GREATER, 0.1f);
+			glEnable(GL_BLEND);
+			glEnable(GL_ALPHA_TEST);
+		}
+
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+
+		glDepthFunc(GL_LEQUAL);
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	void gl_features_disable() {
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
+	}
+
 }
 
 
@@ -187,6 +208,8 @@ namespace sneka {
 	void WorldRenderer::renderFrame() {
 		TRACE;
 
+		gl_features_enable(true);
+
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -272,6 +295,8 @@ namespace sneka {
 		}
 
 		SDL_GL_SwapWindow(sneka::pool::runtime()->window);
+
+		gl_features_disable();
 	}
 
 }
