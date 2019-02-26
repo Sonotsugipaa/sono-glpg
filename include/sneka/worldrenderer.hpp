@@ -37,13 +37,15 @@ namespace sneka {
 
 		std::vector<glm::vec3> lights;
 
+		glm::vec3 light_color;
+		glm::vec3 clear_color;
+
 		glm::vec3 view_pos;
 		GLfloat view_yaw, view_pitch;
 
 		GLfloat proj_fov_y, proj_z_near, proj_z_far;
 
 	public:
-		glm::vec3 clear_color;
 		GLfloat fog_intensity;
 
 		WorldRenderer(
@@ -76,6 +78,11 @@ namespace sneka {
 		void clearLights();
 		std::vector<glm::vec3> getLights() const;
 		std::size_t getLightsCount() const;
+
+		glm::vec3 getLightColor() const;
+		glm::vec3 getClearColor() const;
+		void setLightColor(glm::vec3);
+		void setClearColor(glm::vec3);
 
 		void setView(glm::vec3 position, GLfloat yaw, GLfloat pitch);
 

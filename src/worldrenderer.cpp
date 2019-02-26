@@ -85,10 +85,11 @@ namespace sneka {
 			repeat_stride(repeat_stride),
 			curvature(curv),
 			drugs(drugs),
+			light_color(glm::vec3(1.0f, 1.0f, 1.0f)),
+			clear_color(glm::vec3(0.05f, 0.05f, 0.05f)),
 			view_pos(glm::vec3(0.0f, 0.0f, 0.0f)),
 			view_yaw(0.0f), view_pitch(0.0f),
 			proj_fov_y(90.0f), proj_z_near(0.2f), proj_z_far(100.0f),
-			clear_color(glm::vec3(0.05f, 0.05f, 0.05f)),
 			fog_intensity(0.0f)
 	{ TRACE; }
 
@@ -186,6 +187,24 @@ namespace sneka {
 	}
 
 
+	glm::vec3 WorldRenderer::getLightColor() const {
+		return light_color;
+	}
+
+	void WorldRenderer::setLightColor(glm::vec3 col) {
+		light_color = col;
+	}
+
+	glm::vec3 WorldRenderer::getClearColor() const {
+		return clear_color;
+	}
+
+	void WorldRenderer::setClearColor(glm::vec3 col) {
+		clear_color = col;
+	}
+
+
+
 	void WorldRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
 		TRACE;
 		view_pos = pos;
@@ -252,6 +271,7 @@ namespace sneka {
 		*/
 
 		lights_cache_compute();
+		glUniform3fv(pool::uniform_light_color, 1, &light_color[0]);
 		glUniform3fv(pool::uniform_light_dir, lights.size(), lights_cache);
 		glUniform1i(pool::uniform_light_count, lights.size());
 

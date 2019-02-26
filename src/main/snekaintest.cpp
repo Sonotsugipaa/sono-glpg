@@ -44,14 +44,19 @@
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
-#define OBJECT_SHADE         (0.8)
+#define OBJECT_SHADE         (0.6)
 #define OBJECT_REFLECT       (0.9)
-#define OBJECT_REFLECT_FO    (10.0)
+#define OBJECT_REFLECT_FO    (3.0)
 #define OBJECT_REFLECT_O     (1.0)
-#define FLOOR_SHADE          (0.5)
+#define OBJECT_REFLECT_N     (-0.2)
+#define FLOOR_SHADE          (0.8)
 #define FLOOR_REFLECT        (0.3)
-#define FLOOR_REFLECT_FO     (30.0)
-#define FLOOR_REFLECT_O      (1.0)
+#define FLOOR_REFLECT_FO     (10.0)
+#define FLOOR_REFLECT_O      (1.5)
+#define FLOOR_REFLECT_N      (-0.0)
+
+#define COLOR_SKY            0.4,0.4,0.7
+#define COLOR_LIGHT          0.7,0.7,1.0
 
 using std::cout;
 using std::endl;
@@ -164,7 +169,8 @@ namespace {
 			std::string mesh, std::size_t count,
 			int unsigned tiles,
 			GLfloat shade,
-			GLfloat reflect, GLfloat reflect_falloff, GLfloat reflect_opaque
+			GLfloat reflect, GLfloat reflect_falloff,
+			GLfloat reflect_opaque, GLfloat reflect_negative
 	) {
 		using namespace std::chrono;
 
@@ -205,6 +211,7 @@ namespace {
 			newobj->reflect = reflect;
 			newobj->reflect_falloff = reflect_falloff;
 			newobj->reflect_opaque = reflect_opaque;
+			newobj->reflect_negative = reflect_negative;
 			grid_objects[genhash] = newobj;
 			renderer->putObject(*newobj);
 		}
@@ -271,12 +278,14 @@ int main(int argn, char** args) {
 	renderer = new WorldRenderer(
 			floor, TILES,
 			CURVATURE, DRUGS, W, H );  TRACE;
-	renderer->clear_color = glm::vec3(0.4f, 0.4f, 0.7f);
+	renderer->setClearColor(glm::vec3(COLOR_SKY));
+	renderer->setLightColor(glm::vec3(COLOR_LIGHT));
 	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
 	renderer->getFloorObject().shade = (float) FLOOR_SHADE;
 	renderer->getFloorObject().reflect = (float) FLOOR_REFLECT;
 	renderer->getFloorObject().reflect_falloff = (float) FLOOR_REFLECT_FO;
 	renderer->getFloorObject().reflect_opaque = (float) FLOOR_REFLECT_O;
+	renderer->getFloorObject().reflect_negative = (float) FLOOR_REFLECT_N;
 	renderer->addLight(glm::vec3(3.0f, 3.0f, 3.0f));
 	renderer->addLight(glm::vec3(-3.0f, 0.5f, 3.0f));
 	renderer->addLight(glm::vec3(0.5f, 1.0f, -3.0f));
@@ -296,13 +305,15 @@ int main(int argn, char** args) {
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
-			(float) OBJECT_REFLECT_O );
+			(float) OBJECT_REFLECT_O,
+			(float) OBJECT_REFLECT_N);
 	genObjects(
 			renderer, "assets/bloc.mesh", OBJECTS / 2, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
-			(float) OBJECT_REFLECT_O );
+			(float) OBJECT_REFLECT_O,
+			(float) OBJECT_REFLECT_N);
 
 	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
 		pool::set_viewport(x, y);

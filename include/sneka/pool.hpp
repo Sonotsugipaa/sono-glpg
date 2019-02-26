@@ -44,6 +44,7 @@ namespace sneka::pool {
 			uniform_drugs,
 			uniform_fog,
 
+			uniform_light_color,
 			uniform_light_dir,
 			uniform_light_count,
 
@@ -51,6 +52,7 @@ namespace sneka::pool {
 			uniform_reflect,
 			uniform_reflect_falloff,
 			uniform_reflect_opaque,
+			uniform_reflect_negative,
 
 			in_position,
 			in_color,

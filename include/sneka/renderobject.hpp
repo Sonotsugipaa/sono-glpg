@@ -42,7 +42,22 @@ namespace sneka {
 	public:
 		const uid_t uid;
 
-		GLfloat shade, reflect, reflect_falloff, reflect_opaque;
+		GLfloat
+			/* darkens the object */
+			shade,
+			/* reflection intensity */
+			reflect,
+			/* exponent for the reflection; higher values
+			 * result in sharper reflections */
+			reflect_falloff,
+			/* reflect light regardless of the viewer's
+			 * position */
+			reflect_opaque,
+			/* lower limit for the reflection
+			 * (decrease for a metallic feel, increase for
+			 * a "forced reflection" (which doesn't really
+			 * make sense)) */
+			reflect_negative;
 
 		RenderObject(Mesh&);
 		RenderObject(std::string mesh_name);
