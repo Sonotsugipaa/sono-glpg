@@ -50,13 +50,13 @@
 #define OBJECT_REFLECT_O     (1.0)
 #define OBJECT_REFLECT_N     (-0.2)
 #define FLOOR_SHADE          (0.8)
-#define FLOOR_REFLECT        (0.3)
-#define FLOOR_REFLECT_FO     (10.0)
-#define FLOOR_REFLECT_O      (1.5)
+#define FLOOR_REFLECT        (0.2)
+#define FLOOR_REFLECT_FO     (1.0)
+#define FLOOR_REFLECT_O      (2.0)
 #define FLOOR_REFLECT_N      (-0.0)
 
-#define COLOR_SKY            0.4,0.4,0.7
-#define COLOR_LIGHT          0.7,0.7,1.0
+#define COLOR_SKY            0.2,0.1,0.0
+#define COLOR_LIGHT          1.0,1.0,1.0
 
 using std::cout;
 using std::endl;
@@ -198,10 +198,13 @@ namespace {
 							" (too many attempts)" );
 			} while(grid_objects.find(genhash) != grid_objects.end());
 
-			gencol[0] = (float) gla::xorshift<unsigned char>(genj  );
-			gencol[1] = (float) gla::xorshift<unsigned char>(genj+1);
-			gencol[2] = (float) gla::xorshift<unsigned char>(genj+2);
-			gencol[3] = (float) gla::xorshift<unsigned char>(genj+3);
+			//gencol[0] = (float) gla::xorshift<unsigned char>(genj  );
+			//gencol[1] = (float) gla::xorshift<unsigned char>(genj+1);
+			//gencol[2] = (float) gla::xorshift<unsigned char>(genj+2);
+			//gencol[3] = (float) gla::xorshift<unsigned char>(genj+3);
+			gencol[0] = 1.0f;
+			gencol[1] = 0.8f;
+			gencol[2] = 0.0f;
 			gencol = glm::normalize(gencol);
 			gencol[3] = 1.0f;
 
@@ -280,7 +283,7 @@ int main(int argn, char** args) {
 			CURVATURE, DRUGS, W, H );  TRACE;
 	renderer->setClearColor(glm::vec3(COLOR_SKY));
 	renderer->setLightColor(glm::vec3(COLOR_LIGHT));
-	renderer->getFloorObject().setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
+	renderer->getFloorObject().setColor(glm::vec4(0.2f, 0.1f, 0.0f, 1.0f));
 	renderer->getFloorObject().shade = (float) FLOOR_SHADE;
 	renderer->getFloorObject().reflect = (float) FLOOR_REFLECT;
 	renderer->getFloorObject().reflect_falloff = (float) FLOOR_REFLECT_FO;

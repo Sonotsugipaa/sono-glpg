@@ -19,7 +19,7 @@ namespace sneka {
 	class WorldRenderer : public Renderer {
 	public:
 		// this value depends on the vertex shader
-		static constexpr GLint max_lights = 4;
+		static constexpr GLint max_lights = 8;
 
 	private:
 		GLfloat lights_cache[max_lights * 3];

@@ -15,7 +15,7 @@ uniform float uni_curvature;
 uniform float uni_drugs;
 
 uniform vec3 uni_light_color;
-uniform vec3 uni_light_dir[4];
+uniform vec3 uni_light_dir[8];
 uniform int uni_light_count;
 
 in vec3 in_position;
@@ -24,6 +24,7 @@ in vec3 in_normal;
 
 out vec4 ex_color;
 out vec3 ex_reflect;
+out vec3 ex_absorb;
 out vec3 screen_position;
 
 float falloff(float x) {
@@ -95,6 +96,18 @@ void main(void) {
 				);
 	}
 	shade_amount = (shade_amount / uni_light_count) - uni_shade;
+
+	/* Is using 3 times the max function better than if-branching?
+	 * The internet says so. */
 	ex_color = in_color;
+	ex_color.r = max(0, ex_color.r);
+	ex_color.g = max(0, ex_color.g);
+	ex_color.b = max(0, ex_color.b);
+
+	ex_absorb = in_color.xyz;
+	ex_absorb.r = min(0, ex_absorb.r);
+	ex_absorb.g = min(0, ex_absorb.g);
+	ex_absorb.b = min(0, ex_absorb.b);
+
 	ex_reflect = reflect_amount + vec3(shade_amount);
 }
