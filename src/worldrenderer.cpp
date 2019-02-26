@@ -34,13 +34,13 @@ namespace {
 		return glm::translate(retn, pos);
 	}
 
-	void gl_features_enable(bool blend) {
-		if(blend) {
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glAlphaFunc(GL_GREATER, 0.05f);
-			glEnable(GL_BLEND);
-			glEnable(GL_ALPHA_TEST);
-		}
+	void gl_features_enable() {
+		/*
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glAlphaFunc(GL_GREATER, 0.05f);
+		glEnable(GL_BLEND);
+		glEnable(GL_ALPHA_TEST);
+		*/
 
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
@@ -151,7 +151,7 @@ namespace sneka {
 
 
 	bool WorldRenderer::addLight(glm::vec3 dir) {
-		if(lights.size() > max_lights) return false;
+		if(lights.size() >= max_lights) return false;
 		lights_cache_changed = true;
 
 		lights.push_back(dir);
@@ -227,7 +227,7 @@ namespace sneka {
 	void WorldRenderer::renderFrame() {
 		TRACE;
 
-		gl_features_enable(false);
+		gl_features_enable();
 
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

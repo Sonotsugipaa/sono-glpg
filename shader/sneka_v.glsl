@@ -95,7 +95,7 @@ void main(void) {
 					)
 				);
 	}
-	shade_amount = (shade_amount / uni_light_count) - uni_shade;
+	shade_amount = (shade_amount / max(1, uni_light_count)) - uni_shade;
 
 	/* Is using 3 times the max function better than if-branching?
 	 * The internet says so. */
