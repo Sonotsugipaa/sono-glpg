@@ -142,11 +142,11 @@ namespace {
 		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ']';
 		return stream;
 	}
-	*/
 	std::ostream& operator << (std::ostream& stream, const glm::vec4 & vec) {
 		stream << '[' << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3] << ']';
 		return stream;
 	}
+	*/
 
 	/* This is a comment followed by a semicolon used to fix Atom's poor
 	 * syntax coloring, please ignore this. */;
@@ -197,7 +197,6 @@ namespace {
 			gencol[2] = (float) gla::xorshift<unsigned char>(genj+2);
 			gencol[3] = (float) gla::xorshift<unsigned char>(genj+3);
 			gencol = glm::normalize(gencol);
-			cout << "color " << gencol << endl;
 			gencol[3] = 1.0f;
 
 			newobj->setGridPosition(genpos);
