@@ -182,7 +182,7 @@ namespace {
 			GridObject* newobj = new GridObject(mesh);
 
 			glm::ivec2 genpos;
-			glm::vec4 gencol;
+			glm::vec4 gencol;  gencol[3] = 1.0f;
 			int unsigned genhash;
 			int unsigned geni = 0;
 			do {
@@ -202,11 +202,9 @@ namespace {
 			//gencol[1] = (float) gla::xorshift<unsigned char>(genj+1);
 			//gencol[2] = (float) gla::xorshift<unsigned char>(genj+2);
 			//gencol[3] = (float) gla::xorshift<unsigned char>(genj+3);
-			gencol[0] = 1.0f;
-			gencol[1] = 0.8f;
+			gencol[0] = 0.7f;
+			gencol[1] = 0.5f;
 			gencol[2] = 0.0f;
-			gencol = glm::normalize(gencol);
-			gencol[3] = 1.0f;
 
 			newobj->setGridPosition(genpos);
 			newobj->setColor(gencol);
@@ -310,7 +308,7 @@ int main(int argn, char** args) {
 			(float) OBJECT_REFLECT_O,
 			(float) OBJECT_REFLECT_N);
 	genObjects(
-			renderer, "assets/bloc.mesh", OBJECTS / 2, TILES,
+			renderer, "assets/bloc.mesh", OBJECTS - (OBJECTS / 2), TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
