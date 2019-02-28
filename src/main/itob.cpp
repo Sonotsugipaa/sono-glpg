@@ -10,6 +10,7 @@ int main(int argn, char** args) {
 	bool error = false;
 
 	args += 1;
+	if(argn == 1) return EXIT_SUCCESS;
 
 	while(*args != NULL) {
 		error |= ! read_dec_int(*args, &read);

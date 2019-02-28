@@ -76,7 +76,7 @@ namespace gla {
 			glDrawArrays(GL_LINE_LOOP, 0, vectors_n);
 		}
 
-		void setPos(glm::vec3 pos, float rotation) {
+		void setPos(glm::vec3 pos) {
 			std::cout << "set pos " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
 			/*
 			trans = glm::rotate(
@@ -116,8 +116,7 @@ namespace gla {
 				glm::vec3(
 					( (float) x) / STEPS,
 					( (float) y) / STEPS,
-					(((float) z) / STEPS) -1.0f ),
-				0 );
+					(((float) z) / STEPS) -1.0f ) );
 
 		render(runtime, shape, 1);
 
@@ -155,8 +154,7 @@ namespace gla {
 						glm::vec3(
 							( (float) x) / STEPS,
 							( (float) y) / STEPS,
-							(((float) z) / STEPS) -1.0f ),
-						0 );
+							(((float) z) / STEPS) -1.0f ) );
 				render(runtime, shape, 1);
 
 				SDL_Delay(FRAMES_SECOND);
@@ -188,6 +186,10 @@ namespace gla {
 
 int main(int argn, char** argv) {
 	using namespace gla;
+
+	printf("Arguments: ");
+	for(int i=1; i < argn; i+=1)
+		printf("[%s]\n", argv[i]);
 
 	const GLint
 		WIDTH = 600,
