@@ -24,6 +24,10 @@ int main(int argc, char** argv) {
 	SDL_Surface* image;
 	SDL_Texture* texture;
 
+	printf("Arguments: ");
+	for(int i=1; i < argc; i+=1)
+		printf("[%s]\n", argv[i]);
+
 	SDL_Init(SDL_INIT_EVERYTHING);
 
 	// window creation

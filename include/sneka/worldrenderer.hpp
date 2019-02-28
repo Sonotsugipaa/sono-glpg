@@ -50,8 +50,7 @@ namespace sneka {
 
 		WorldRenderer(
 				FloorObject& floor, GLuint repeat_stride,
-				GLfloat curvature, GLfloat drugs,
-				GLuint screen_width, GLuint screen_height );
+				GLfloat curvature, GLfloat drugs );
 		virtual ~WorldRenderer();
 
 		/* Returns the pointer to a random object, if there is any;

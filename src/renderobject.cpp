@@ -78,9 +78,13 @@ namespace sneka {
 		mat_changed = true;
 	}
 
-	const glm::vec4 RenderObject::getColor() const {
+	glm::vec4 RenderObject::getColor() const {
 		if(color_mul) return color;
 		return glm::vec4(1.0f);
+	}
+
+	bool RenderObject::isColorEnabled() const {
+		return color_mul;
 	}
 
 	void RenderObject::setColor(glm::vec4 col) {
@@ -90,10 +94,6 @@ namespace sneka {
 
 	void RenderObject::setColorEnabled(bool value) {
 		color_mul = value;
-	}
-
-	const bool RenderObject::isColorEnabled() const {
-		return color_mul;
 	}
 
 	const Mesh * RenderObject::getMesh() const {

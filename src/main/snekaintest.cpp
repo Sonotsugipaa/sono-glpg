@@ -153,9 +153,6 @@ namespace {
 	}
 	*/
 
-	/* This is a comment followed by a semicolon used to fix Atom's poor
-	 * syntax coloring, please ignore this. */;
-
 
 	int unsigned hash_ivec2(glm::ivec2& v) {
 		return
@@ -278,7 +275,7 @@ int main(int argn, char** args) {
 
 	renderer = new WorldRenderer(
 			floor, TILES,
-			CURVATURE, DRUGS, W, H );  TRACE;
+			CURVATURE, DRUGS );  TRACE;
 	renderer->setClearColor(glm::vec3(COLOR_SKY));
 	renderer->setLightColor(glm::vec3(COLOR_LIGHT));
 	renderer->getFloorObject().setColor(glm::vec4(0.2f, 0.1f, 0.0f, 1.0f));
@@ -320,7 +317,7 @@ int main(int argn, char** args) {
 	} );  TRACE;
 
 	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
-		if(! released) {
+		if(! ((mod == KMOD_NONE) || released)) {
 			switch(keycode) {
 				//case SDLK_w:  direction += Direction::FORWARD;   break;
 				//case SDLK_s:  direction += Direction::BACKWARD;  break;

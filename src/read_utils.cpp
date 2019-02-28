@@ -17,7 +17,7 @@ int ch_to_digit(char ch) {
 }
 
 char digit_to_ch(unsigned int n) {
-	if(n >= 0 && n <= 9)
+	if(n <= 9)
 		return n + '0';
 
 	if(n <= (10 + 'Z' - 'A'))

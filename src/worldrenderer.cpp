@@ -75,8 +75,7 @@ namespace sneka {
 
 	WorldRenderer::WorldRenderer(
 			FloorObject& floor, GLuint repeat_stride,
-			GLfloat curv, GLfloat drugs,
-			GLuint scr_w, GLuint scr_h
+			GLfloat curv, GLfloat drugs
 	):
 			lights_cache_changed(true),
 			floor(&floor),

@@ -86,7 +86,7 @@ namespace {
 }
 
 
-void main_body(WorldRenderer&, FloorObject&);
+void main_body(WorldRenderer&);
 
 int main(int argn, char** argv) {
 	using namespace sneka;
@@ -128,7 +128,7 @@ int main(int argn, char** argv) {
 
 	WorldRenderer* renderer = new WorldRenderer(
 			floor, TILES,
-			CURVATURE, DRUGS, W, H );  TRACE;
+			CURVATURE, DRUGS );  TRACE;
 
 	renderer->setView(vec3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f);
 	renderer->setWorldPerspective(
@@ -136,12 +136,12 @@ int main(int argn, char** argv) {
 					(GLfloat) WORLD_MIN_Z,
 					(GLfloat) WORLD_MAX_Z);
 
-	renderer->setLightDirection(glm::vec3(2.0f, 1.0f, 1.0f));
+	renderer->addLight(glm::vec3(2.0f, 1.0f, 1.0f));
 
 /* ------ BODY ------------------------------------------------------------- */
 	try {
 		TRACE;
-		main_body(*renderer, floor);
+		main_body(*renderer);
 		TRACE;
 	} catch(std::runtime_error ex) {
 		std::cerr
@@ -159,8 +159,7 @@ int main(int argn, char** argv) {
 
 
 void main_body(
-		WorldRenderer& renderer,
-		FloorObject& floor
+		WorldRenderer& renderer
 ) {
 	TRACE;
 	TestObject obj1 = TestObject();  TRACE;

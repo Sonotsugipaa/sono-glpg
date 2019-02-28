@@ -70,8 +70,8 @@ namespace sneka {
 		GLfloat getRotation() const;
 		void setRotation(GLfloat);
 
-		const glm::vec4 getColor() const;
-		const bool isColorEnabled() const;
+		glm::vec4 getColor() const;
+		bool isColorEnabled() const;
 		void setColorEnabled(bool);
 		void setColor(glm::vec4);
 

@@ -38,9 +38,9 @@ namespace {
 
 				for(int i=0; i < tile_mesh->size(); i += 1) {
 					int at = i * SNEKA_VERTEX_SIZE;
-					new_array_cur[at+0] = (*tile_mesh)[at+0] + x;
+					new_array_cur[at+0] = (*tile_mesh)[at+0] + (x * tile_size);
 					new_array_cur[at+1] = (*tile_mesh)[at+1];
-					new_array_cur[at+2] = (*tile_mesh)[at+2] + z;
+					new_array_cur[at+2] = (*tile_mesh)[at+2] + (z * tile_size);
 
 					for(GLsizei j=3; j < SNEKA_VERTEX_SIZE; j += 1) {
 						new_array_cur[at+j] = (*tile_mesh)[at+j];

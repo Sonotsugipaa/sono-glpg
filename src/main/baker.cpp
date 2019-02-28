@@ -41,6 +41,8 @@ namespace {
 #else // #ifndef _POSIX_C_SOURCE
 
 	int main(int argn, char** args) {
+		if(argn == 1) return EXIT_SUCCESS;
+
 		try {
 			str_map map;
 			const char * arg;

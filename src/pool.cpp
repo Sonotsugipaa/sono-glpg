@@ -63,7 +63,7 @@ namespace {
 		}
 		fclose(f);
 
-		sneka::Mesh* retn = new sneka::Mesh(path, vertices, len, true);
+		sneka::Mesh* retn = new sneka::Mesh(path, vertices, len, need_vertices);
 		delete[] vertices;
 		return retn;
 	}

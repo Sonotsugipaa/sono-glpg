@@ -2,7 +2,7 @@
 
 
 
-int main(int n, char** c) {
+int main() {
 	gla::trace_sigaction_init();  TRACE;
 
 	return *((int*) nullptr);

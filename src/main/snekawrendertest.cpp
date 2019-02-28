@@ -32,6 +32,10 @@ int main(int argn, char** args) {
 	using namespace sneka;
 	using namespace gla;
 
+	printf("Arguments: ");
+	for(int i=1; i < argn; i+=1)
+		printf("[%s]\n", args[i]);
+
 	const int W = 600, H = 600 * 9 / 16;
 
 	pool::runtime_init(
@@ -43,8 +47,8 @@ int main(int argn, char** args) {
 
 	WorldRenderer renderer = WorldRenderer(
 			floor, TILES,
-			-0.02f, 0, W, H );
-	renderer.clear_color = glm::vec3(0.05f, 0.05f, 0.15f);
+			-0.02f, 0 );
+	renderer.setClearColor(glm::vec3(0.05f, 0.05f, 0.15f));
 
 	GLfloat rot = 0.0f;
 
