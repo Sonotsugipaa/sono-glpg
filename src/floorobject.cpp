@@ -70,7 +70,7 @@ namespace sneka {
 		Mesh* nmesh;
 		expand_floor(
 				tile_mesh,
-				&pool::get_mesh(tile_mesh), 1.0f,
+				&pool::get_mesh(tile_mesh, true), 1.0f,
 				&nmesh,
 				side_length );
 		RenderObject::mesh = nmesh;
