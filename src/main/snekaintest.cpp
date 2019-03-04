@@ -316,8 +316,12 @@ int main(int argn, char** args) {
 		pool::set_viewport(x, y);
 	} );  TRACE;
 
-	pool::set_key_callback( [](unsigned int keycode, unsigned int mod, bool released) {
-		if(! ((mod == KMOD_NONE) || released)) {
+	pool::set_key_callback( [](
+			unsigned int keycode,
+			unsigned int mod [[maybe_unused]],
+			bool released
+	) {
+		if(! released) {
 			switch(keycode) {
 				//case SDLK_w:  direction += Direction::FORWARD;   break;
 				//case SDLK_s:  direction += Direction::BACKWARD;  break;
