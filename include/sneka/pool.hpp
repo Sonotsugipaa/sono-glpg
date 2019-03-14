@@ -86,6 +86,9 @@ namespace sneka::pool {
 	 * changed - TL;DR, use this for cached values only). */
 	GLuint64 viewport_change();
 
+	ShaderProgram & getWorldShader();
+	ShaderProgram & getHudShader();
+
 	/* If need_vertices = true, ensures that the mesh contains
 	 * the vertices; if they don't, the file is reloaded and the
 	 * mesh is invalidated.

@@ -1,6 +1,6 @@
-COMMON_FLAGS = -g -Wall -I./include -Llib -mwindows
+COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include -Llib -mwindows
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
-CPPFLAGS = -std=c++17 $(COMMON_FLAGS)
+CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
 ALL_MAIN_SRCS =\
 	$(patsubst src/main/%.c, wbin/%, $(wildcard src/main/*.c))\
 	$(patsubst src/main/%.cpp, wbin/%, $(wildcard src/main/*.cpp))

@@ -7,6 +7,9 @@
 
 #include "shader.hpp"
 
+#define COL_ERR   "\033[1;91m"
+#define COL_NONE  "\033[m"
+
 
 
 namespace {
@@ -24,7 +27,7 @@ namespace {
 		return buffer.str();
 	}
 
-	void printShaderLinkingError(GLuint shaderProgram) {
+	void shaderLinkingError(GLuint shaderProgram) {
 		int maxLength;
 		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
 
@@ -36,7 +39,7 @@ namespace {
 		throw ex;
 	}
 
-	void printShaderCompilationErrorInfo(GLuint shaderId, const char * shaderName) {
+	void shaderCompilationErrorInfo(GLuint shaderId, const char * shaderName) {
 		int maxLength;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &maxLength);
 
@@ -74,10 +77,9 @@ namespace {
 					shader_name = "Geometry";  break;
 				default: shader_name = "Unknown(?)";
 			}
-			printShaderCompilationErrorInfo(
+			shaderCompilationErrorInfo(
 					*target_shader,
 					shader_name );
-			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -100,13 +102,15 @@ namespace gla {
 		GLint isLinked;
 		glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
 		if(! isLinked) {
-			printShaderLinkingError(program);
-			exit(EXIT_FAILURE);
+			shaderLinkingError(program);
 		}
+
+		use();
 	}
 
 	ShaderProgram::~ShaderProgram() {
 		glUseProgram(0);
+
 		glDetachShader(program, vertex);
 		glDetachShader(program, fragment);
 
@@ -115,6 +119,23 @@ namespace gla {
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
 	}
+
+
+	GLint ShaderProgram::getAttrib(const char * name) const {
+		return glGetAttribLocation(program, name);
+	}
+	GLint ShaderProgram::getAttrib(const std::string & name) const {
+		return getAttrib(name.c_str());
+	}
+
+	GLint ShaderProgram::getUniform(const char * name) const {
+		return glGetUniformLocation(program, name);
+	}
+	GLint ShaderProgram::getUniform(const std::string & name) const {
+		return getUniform(name.c_str());
+	}
+
+
 
 	void ShaderProgram::use() {
 		glUseProgram(program);
@@ -125,17 +146,17 @@ namespace gla {
 			const char * message
 	) {
 		msg =
-				std::string("\033[1;91mShader linking error.\n") +
-				message + "\033[m\n";
+				std::string(COL_ERR "Shader linking error.\n") +
+				message + COL_NONE "\n";
 	}
 
 	CompilationException::CompilationException(
 			const char * sh, const char * message
 	) {
 		msg =
-				std::string("\033[1;91m") +
+				std::string(COL_ERR) +
 				sh+" shader compilation error.\n" +
-				message + "\033[m\n";
+				message + COL_NONE "\n";
 	}
 
 	const char * CompilationException::what() const noexcept {

@@ -87,6 +87,9 @@ namespace sneka::pool {
 
 	using namespace gla;
 
+	ShaderProgram * shader_world;
+	ShaderProgram * shader_hud;
+
 	GLuint
 		uniform_proj = -1,
 		uniform_view = -1,
@@ -131,13 +134,16 @@ namespace sneka::pool {
 		runtime_inst = new Runtime(
 				window_name,
 				x, y, width, height,
-				resizable, vsync,
-				"shader/sneka_v.glsl", "shader/sneka_f.glsl" );
+				resizable, vsync );
 
 		set_viewport(width, height);
 
-		#define GET_UNI(NAME)     glGetUniformLocation(runtime_inst->shader->program,NAME);
-		#define GET_ATTRIB(NAME)  glGetAttribLocation(runtime_inst->shader->program,NAME);
+		#pragma GCC warning "Temporary HUD shader initialization"
+		shader_world = new ShaderProgram("shader/sneka_v.glsl", "shader/sneka_f.glsl");
+		shader_hud = new ShaderProgram("shader/sneka_v.glsl", "shader/sneka_f.glsl");
+
+		#define GET_UNI(NAME)     shader_world->getUniform(NAME);
+		#define GET_ATTRIB(NAME)  shader_world->getAttrib(NAME);
 			uniform_proj =              GET_UNI("uni_proj");
 			uniform_view =              GET_UNI("uni_view");
 			uniform_view_pos =          GET_UNI("uni_view_pos");
@@ -173,6 +179,8 @@ namespace sneka::pool {
 
 		unload_meshes();
 
+		delete shader_world;
+		delete shader_hud;
 		delete runtime_inst;
 		runtime_inst = nullptr;
 
