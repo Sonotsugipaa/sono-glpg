@@ -199,12 +199,12 @@ int main(int argn, char** argv) {
 		"glatest",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		WIDTH, HEIGHT,
-		true, true,
-		"shader/gltest_v.glsl",
-		"shader/gltest_f.glsl" );
+		true, true);
 
-	uniform_trans = glGetUniformLocation(runtime.shader->program, "uni_trans");
-	uniform_proj = glGetUniformLocation(runtime.shader->program, "uni_proj");
+	ShaderProgram* shaders = new ShaderProgram("shader/gltest_v.glsl", "shader/gltest_f.glsl");
+
+	uniform_trans = shaders->getUniform("uni_trans");
+	uniform_proj = shaders->getUniform("uni_proj");
 	std::cout << "uni_trans " << uniform_trans << std::endl;
 	std::cout << "uni_proj  " << uniform_proj << std::endl;
 	{
@@ -218,12 +218,14 @@ int main(int argn, char** argv) {
 	vb_color.bufferData(data_color, 5*4*sizeof(GLfloat));
 
 	std::cout
-			<< "pos attrib " << glGetAttribLocation(runtime.shader->program, "in_position") << std::endl
-			<< "col attrib " << glGetAttribLocation(runtime.shader->program, "in_color") << std::endl;
+			<< "pos attrib " << shaders->getAttrib("in_position") << std::endl
+			<< "col attrib " << shaders->getAttrib("in_color") << std::endl;
 
 	Shape shape = Shape(vb_vertex, vb_color, 5);
 
 	run(&runtime, &shape);
+
+	delete shaders;
 
 	return EXIT_SUCCESS;
 }
