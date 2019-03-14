@@ -1,4 +1,4 @@
-#include "sneka/worldobject.hpp"
+#include "sneka/levelobject.hpp"
 
 #include <string>
 
@@ -6,20 +6,20 @@
 
 namespace {
 
-	sneka::WorldObjectCounter shcounter;
+	sneka::LevelObjectCounter shcounter;
 
 }
 
 
 namespace sneka {
 
-	WorldObject::WorldObject(WorldObjectCounter& counter, Mesh& mesh):
+	LevelObject::LevelObject(LevelObjectCounter& counter, Mesh& mesh):
 			GridObject::GridObject(mesh),
 			counter(counter),
 			counter_shared(shcounter)
 	{ }
 
-	WorldObject::WorldObject(WorldObjectCounter& counter, std::string mesh_name):
+	LevelObject::LevelObject(LevelObjectCounter& counter, std::string mesh_name):
 			GridObject::GridObject(mesh_name),
 			counter(counter),
 			counter_shared(shcounter)

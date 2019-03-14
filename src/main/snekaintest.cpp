@@ -11,7 +11,7 @@
 #include "sneka/renderobject.hpp"
 #include "sneka/direction.hpp"
 #include "sneka/gridobject.hpp"
-#include "sneka/worldrenderer.hpp"
+#include "sneka/levelrenderer.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -76,7 +76,7 @@ namespace {
 	GLfloat rot = 0.0f;
 	Direction direction;
 
-	WorldRenderer* renderer;
+	LevelRenderer* renderer;
 
 	gla::Timer frame_timer;
 
@@ -162,7 +162,7 @@ namespace {
 
 	// Generates random objects through the map.
 	void genObjects(
-			WorldRenderer* renderer,
+			LevelRenderer* renderer,
 			std::string mesh, std::size_t count,
 			int unsigned tiles,
 			GLfloat shade,
@@ -215,7 +215,7 @@ namespace {
 		}
 	}
 
-	void destroyObjects(WorldRenderer* renderer) {
+	void destroyObjects(LevelRenderer* renderer) {
 		RenderObject* obj;
 		auto iter = grid_objects.begin();
 		auto end = grid_objects.end();
@@ -267,13 +267,13 @@ int main(int argn, char** args) {
 	trace_sigaction_init();  TRACE;
 
 	pool::runtime_init(
-			"sneka world render test",
+			"sneka level render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true);  TRACE;
 
 	FloorObject floor = FloorObject("assets/tile_caved.mesh", 40);
 
-	renderer = new WorldRenderer(
+	renderer = new LevelRenderer(
 			floor, TILES,
 			CURVATURE, DRUGS );  TRACE;
 	renderer->setClearColor(glm::vec3(COLOR_SKY));
@@ -287,7 +287,7 @@ int main(int argn, char** args) {
 	renderer->addLight(glm::vec3( 1.0f, 0.5f,  3.0f));
 	renderer->addLight(glm::vec3( 3.0f, 0.5f, -3.0f));
 	renderer->addLight(glm::vec3(-1.0f, 1.0f,  0.0f));
-	renderer->setWorldPerspective(
+	renderer->setPerspective(
 					90.0f,
 					(GLfloat) WORLD_MIN_Z,
 					(GLfloat) WORLD_MAX_Z);

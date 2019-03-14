@@ -7,7 +7,9 @@
 
 #include "sneka/pool.hpp"
 #include "sneka/renderobject.hpp"
-#include "sneka/world.hpp"
+#include "sneka/levelrenderer.hpp"
+#include "sneka/floorobject.hpp"
+#include "sneka/gridobject.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -39,13 +41,13 @@ int main(int argn, char** args) {
 	const int W = 600, H = 600 * 9 / 16;
 
 	pool::runtime_init(
-			"sneka world render test",
+			"sneka level render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true);
 
 	FloorObject floor = FloorObject("assets/tile.mesh", 40);
 
-	WorldRenderer renderer = WorldRenderer(
+	LevelRenderer renderer = LevelRenderer(
 			floor, TILES,
 			-0.02f, 0 );
 	renderer.setClearColor(glm::vec3(0.05f, 0.05f, 0.15f));

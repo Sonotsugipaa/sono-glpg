@@ -1,4 +1,4 @@
-#include "sneka/worldrenderer.hpp"
+#include "sneka/levelrenderer.hpp"
 
 #include "sneka/renderobject.hpp"
 #include "sneka/mesh.hpp"
@@ -61,7 +61,7 @@ namespace {
 
 namespace sneka {
 
-	void WorldRenderer::lights_cache_compute() {
+	void LevelRenderer::lights_cache_compute() {
 		if(! lights_cache_changed) return;
 
 		for(std::size_t i=0; i < lights.size(); i+=1) {
@@ -73,7 +73,7 @@ namespace sneka {
 	}
 
 
-	WorldRenderer::WorldRenderer(
+	LevelRenderer::LevelRenderer(
 			FloorObject& floor, GLuint repeat_stride,
 			GLfloat curv, GLfloat drugs
 	):
@@ -92,10 +92,10 @@ namespace sneka {
 			fog_intensity(0.0f)
 	{ TRACE; }
 
-	WorldRenderer::~WorldRenderer() { TRACE; }
+	LevelRenderer::~LevelRenderer() { TRACE; }
 
 
-	RenderObject* WorldRenderer::popObject() {
+	RenderObject* LevelRenderer::popObject() {
 		TRACE;
 		auto iter = objects.begin();
 		if(iter == objects.end())
@@ -104,7 +104,7 @@ namespace sneka {
 		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
-	RenderObject* WorldRenderer::getObject(uid_t uid) {
+	RenderObject* LevelRenderer::getObject(uid_t uid) {
 		TRACE;
 		auto iter = objects.find(uid);
 		if(iter == objects.end())
@@ -114,42 +114,42 @@ namespace sneka {
 	}
 
 	// this NEEDS to be tested, the getObject(uid_t) call could be ambiguous
-	const RenderObject * WorldRenderer::getObject(uid_t uid) const {
+	const RenderObject * LevelRenderer::getObject(uid_t uid) const {
 		return const_cast<const RenderObject *>(getObject(uid));
 	}
 
-	void WorldRenderer::putObject(RenderObject& obj) {
+	void LevelRenderer::putObject(RenderObject& obj) {
 		TRACE;
 		objects[obj.uid] = &obj;
 		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
-	void WorldRenderer::removeObject(RenderObject& obj) {
+	void LevelRenderer::removeObject(RenderObject& obj) {
 		TRACE;
 		removeObject(obj.uid);
 		//std::cout << "not rendering " << obj.uid << std::endl;
 	}
 
-	void WorldRenderer::removeObject(uid_t uid) {
+	void LevelRenderer::removeObject(uid_t uid) {
 		TRACE;
 		auto iter = objects.find(uid);
 		if(iter != objects.end())
 			objects.erase(iter);
 	}
 
-	std::size_t WorldRenderer::getObjectsCount() const {
+	std::size_t LevelRenderer::getObjectsCount() const {
 		TRACE;
 		return objects.size();
 	}
 
 
-	FloorObject & WorldRenderer::getFloorObject() {
+	FloorObject & LevelRenderer::getFloorObject() {
 		TRACE;
 		return *floor;
 	}
 
 
-	bool WorldRenderer::addLight(glm::vec3 dir) {
+	bool LevelRenderer::addLight(glm::vec3 dir) {
 		if(lights.size() >= max_lights) return false;
 		lights_cache_changed = true;
 
@@ -158,7 +158,7 @@ namespace sneka {
 	}
 
 	// this might need some proper testing
-	bool WorldRenderer::setLight(std::size_t i, glm::vec3 dir) {
+	bool LevelRenderer::setLight(std::size_t i, glm::vec3 dir) {
 		lights_cache_changed = true;
 
 		std::size_t size = lights.size();
@@ -172,39 +172,39 @@ namespace sneka {
 		return false;
 	}
 
-	void WorldRenderer::clearLights() {
+	void LevelRenderer::clearLights() {
 		lights_cache_changed = true;
 		lights.resize(0);
 	}
 
-	std::vector<glm::vec3> WorldRenderer::getLights() const {
+	std::vector<glm::vec3> LevelRenderer::getLights() const {
 		return lights;
 	}
 
-	std::size_t WorldRenderer::getLightsCount() const {
+	std::size_t LevelRenderer::getLightsCount() const {
 		return lights.size();
 	}
 
 
-	glm::vec3 WorldRenderer::getLightColor() const {
+	glm::vec3 LevelRenderer::getLightColor() const {
 		return light_color;
 	}
 
-	void WorldRenderer::setLightColor(glm::vec3 col) {
+	void LevelRenderer::setLightColor(glm::vec3 col) {
 		light_color = col;
 	}
 
-	glm::vec3 WorldRenderer::getClearColor() const {
+	glm::vec3 LevelRenderer::getClearColor() const {
 		return clear_color;
 	}
 
-	void WorldRenderer::setClearColor(glm::vec3 col) {
+	void LevelRenderer::setClearColor(glm::vec3 col) {
 		clear_color = col;
 	}
 
 
 
-	void WorldRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
+	void LevelRenderer::setView(glm::vec3 pos, GLfloat yaw, GLfloat pitch) {
 		TRACE;
 		view_pos = pos;
 		view_yaw = yaw;
@@ -212,7 +212,7 @@ namespace sneka {
 	}
 
 
-	void WorldRenderer::setWorldPerspective(
+	void LevelRenderer::setPerspective(
 			GLfloat fov_y,
 			GLfloat zNear, GLfloat zFar
 	) {
@@ -223,7 +223,7 @@ namespace sneka {
 
 
 	// Watch out, we got a big one over here!
-	void WorldRenderer::renderFrame() {
+	void LevelRenderer::renderFrame() {
 		TRACE;
 
 		gl_features_enable();

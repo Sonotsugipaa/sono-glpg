@@ -11,8 +11,8 @@
 #include "sneka/renderobject.hpp"
 #include "sneka/direction.hpp"
 #include "sneka/gridobject.hpp"
-#include "sneka/worldrenderer.hpp"
-#include "sneka/worldobject.hpp"
+#include "sneka/levelrenderer.hpp"
+#include "sneka/levelobject.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -53,23 +53,16 @@ using namespace gla;
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
-#define OBJECT_SHADE         (0.7)
-#define OBJECT_REFLECT       (4.0)
-#define OBJECT_REFLECT_FO    (3.0)
-#define FLOOR_SHADE          (0.8)
-#define FLOOR_REFLECT        (1.0)
-#define FLOOR_REFLECT_FO     (30.0)
-
 
 
 namespace {
 
-	class TestObject : public WorldObject {
+	class TestObject : public LevelObject {
 	private:
-		static WorldObjectCounter counter_test;
+		static LevelObjectCounter counter_test;
 	public:
 		TestObject():
-				WorldObject::WorldObject(counter_test, "assets/arrow.mesh")
+				LevelObject::LevelObject(counter_test, "assets/arrow.mesh")
 		{
 			TRACE;
 			cout << "Created test object" << endl;
@@ -81,12 +74,12 @@ namespace {
 		}
 	};
 
-	WorldObjectCounter TestObject::counter_test;
+	LevelObjectCounter TestObject::counter_test;
 
 }
 
 
-void main_body(WorldRenderer&);
+void main_body(LevelRenderer&);
 
 int main(int argn, char** argv) {
 	using namespace sneka;
@@ -115,23 +108,23 @@ int main(int argn, char** argv) {
 
 
 	pool::runtime_init(
-			"sneka world render test",
+			"sneka level render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true);  TRACE;
 
 
 	FloorObject floor = FloorObject("assets/tile_caved.mesh", 40);
 	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
-	floor.shade = (float) FLOOR_SHADE;
-	floor.reflect = (float) FLOOR_REFLECT;
-	floor.reflect_falloff = (float) FLOOR_REFLECT_FO;
+	//floor.shade = (float) FLOOR_SHADE;
+	//floor.reflect = (float) FLOOR_REFLECT;
+	//floor.reflect_falloff = (float) FLOOR_REFLECT_FO;
 
-	WorldRenderer* renderer = new WorldRenderer(
+	LevelRenderer* renderer = new LevelRenderer(
 			floor, TILES,
 			CURVATURE, DRUGS );  TRACE;
 
 	renderer->setView(vec3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f);
-	renderer->setWorldPerspective(
+	renderer->setPerspective(
 					90.0f,
 					(GLfloat) WORLD_MIN_Z,
 					(GLfloat) WORLD_MAX_Z);
@@ -159,7 +152,7 @@ int main(int argn, char** argv) {
 
 
 void main_body(
-		WorldRenderer& renderer
+		LevelRenderer& renderer
 ) {
 	TRACE;
 	TestObject obj1 = TestObject();  TRACE;

@@ -1,5 +1,5 @@
-#ifndef SNEKA_WORLDRENDERER_HPP
-#define SNEKA_WORLDRENDERER_HPP
+#ifndef SNEKA_LEVELRENDERER_HPP
+#define SNEKA_LEVELRENDERER_HPP
 
 #define GL3_PROTOTYPES 1
 #include <GL/glew.h>
@@ -16,7 +16,7 @@
 
 namespace sneka {
 
-	class WorldRenderer : public Renderer {
+	class LevelRenderer : public Renderer {
 	public:
 		// this value depends on the vertex shader
 		static constexpr GLint max_lights = 8;
@@ -48,10 +48,10 @@ namespace sneka {
 	public:
 		GLfloat fog_intensity;
 
-		WorldRenderer(
+		LevelRenderer(
 				FloorObject& floor, GLuint repeat_stride,
 				GLfloat curvature, GLfloat drugs );
-		virtual ~WorldRenderer();
+		virtual ~LevelRenderer();
 
 		/* Returns the pointer to a random object, if there is any;
 		 * 'nullptr' otherwise. */
@@ -65,7 +65,7 @@ namespace sneka {
 
 		FloorObject & getFloorObject();
 
-		/* The maximum number of lights is defined in WorldRenderer::max_lights;
+		/* The maximum number of lights is defined in LevelRenderer::max_lights;
 		 * trying to add more lights than that will have no effect.
 		 * Returns 'true' if the light was successfully added. */
 		bool addLight(glm::vec3 direction);
@@ -85,7 +85,7 @@ namespace sneka {
 
 		void setView(glm::vec3 position, GLfloat yaw, GLfloat pitch);
 
-		void setWorldPerspective(
+		void setPerspective(
 				GLfloat fov_y,
 				GLfloat zNear, GLfloat zFar
 		);
