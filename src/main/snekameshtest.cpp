@@ -7,6 +7,7 @@
 
 #include "sneka/pool.hpp"
 #include "sneka/renderobject.hpp"
+#include "sneka/shaders.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -48,7 +49,7 @@ namespace {
 				glm::vec3(0.0f, 1.0f, 0.0f) );
 
 		glUniformMatrix4fv(
-				sneka::pool::uniform_view, /* uniform location   */
+				sneka::shader::level::uniform_view, /* uniform location   */
 				1,             /* number of matrices */
 				GL_FALSE,      /* transpose          */
 				&mat_view[0][0]   /* first value        */ );
@@ -146,7 +147,7 @@ int main(int argn, char** args) {
 	if(argn < 2) throw argn;
 
 	mat_proj = glm::perspective(90.0f, (GLfloat) W / H, 0.2f, 100.0f);
-	glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &mat_proj[0][0]);
+	glUniformMatrix4fv(shader::level::uniform_proj, 1, GL_FALSE, &mat_proj[0][0]);
 
 	Mesh& square_mesh = pool::get_mesh(args[1]);
 	pool::get_mesh(args[1]);

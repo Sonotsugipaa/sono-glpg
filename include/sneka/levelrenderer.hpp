@@ -7,6 +7,7 @@
 #include "sneka/renderer.hpp"
 #include "sneka/renderobject.hpp"
 #include "sneka/floorobject.hpp"
+#include "sneka/shaders.hpp"
 
 #include "utils.tpp"
 

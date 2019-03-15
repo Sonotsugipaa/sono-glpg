@@ -8,6 +8,7 @@
 #include <cstdio>
 
 #include "sneka/pool.hpp"
+#include "sneka/shaders.hpp"
 #include "sneka/renderobject.hpp"
 #include "sneka/direction.hpp"
 #include "sneka/gridobject.hpp"

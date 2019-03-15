@@ -5,6 +5,8 @@
  * already happening, soooo...) */
 #include "sneka/pool.hpp"
 
+#include "sneka/shaders.hpp"
+
 #include <stdexcept>
 
 #include <glm/geometric.hpp>
@@ -94,16 +96,16 @@ namespace sneka {
 		vb_normal.bufferData(normals, n * 3 * sizeof(GLfloat));
 
 		va.assignVertexBuffer(
-				vb, pool::in_position,
+				vb, shader::level::in_position,
 				3, GL_FLOAT, GL_FALSE,
 				SNEKA_VERTEX_SIZE * sizeof(GLfloat), (GLfloat*) (0 * sizeof(GLfloat)) );
 		va.assignVertexBuffer(
-				vb, pool::in_color,
+				vb, shader::level::in_color,
 				4, GL_FLOAT, GL_FALSE,
 				SNEKA_VERTEX_SIZE * sizeof(GLfloat), (GLfloat*) (3 * sizeof(GLfloat)) );
 
 		va.assignVertexBuffer(
-				vb_normal, pool::in_normal,
+				vb_normal, shader::level::in_normal,
 				3, GL_FLOAT, GL_FALSE,
 				3 * sizeof(GLfloat), 0 );
 

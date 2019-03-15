@@ -3,10 +3,9 @@
 #include <stdexcept>
 
 #include "sneka/pool.hpp"
+#include "sneka/shaders.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "debug.hpp"
 
 
 
@@ -103,20 +102,20 @@ namespace sneka {
 	void RenderObject::draw() {
 		if(! color_mul)
 			color = glm::vec4(1.0f);
-		glUniform4fv(pool::uniform_mul_col, 1, &color[0]);
+		glUniform4fv(shader::level::uniform_mul_col, 1, &color[0]);
 
 		if(mat_changed) {
 			mat_compute();
 		}
 
-		glUniform3fv(pool::uniform_model_pos, 1, &position[0]);
-		glUniform1f(pool::uniform_shade, shade);
-		glUniform1f(pool::uniform_reflect, reflect);
-		glUniform1f(pool::uniform_reflect_falloff, reflect_falloff);
-		glUniform1f(pool::uniform_reflect_opaque, reflect_opaque);
-		glUniform1f(pool::uniform_reflect_negative, reflect_negative);
+		glUniform3fv(shader::level::uniform_model_pos, 1, &position[0]);
+		glUniform1f(shader::level::uniform_shade, shade);
+		glUniform1f(shader::level::uniform_reflect, reflect);
+		glUniform1f(shader::level::uniform_reflect_falloff, reflect_falloff);
+		glUniform1f(shader::level::uniform_reflect_opaque, reflect_opaque);
+		glUniform1f(shader::level::uniform_reflect_negative, reflect_negative);
 		glUniformMatrix4fv(
-				sneka::pool::uniform_model,
+				sneka::shader::level::uniform_model,
 				1,
 				GL_FALSE,
 				&mat_model[0][0] );

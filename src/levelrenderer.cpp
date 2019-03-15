@@ -90,7 +90,9 @@ namespace sneka {
 			view_yaw(0.0f), view_pitch(0.0f),
 			proj_fov_y(90.0f), proj_z_near(0.2f), proj_z_far(100.0f),
 			fog_intensity(0.0f)
-	{ TRACE; }
+	{
+		TRACE;
+	}
 
 	LevelRenderer::~LevelRenderer() { TRACE; }
 
@@ -224,8 +226,11 @@ namespace sneka {
 
 	// Watch out, we got a big one over here!
 	void LevelRenderer::renderFrame() {
+		using namespace shader::level;
+
 		TRACE;
 
+		pool::getWorldShader().use();
 		gl_features_enable();
 
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
@@ -239,11 +244,11 @@ namespace sneka {
 					proj_z_near,
 					proj_z_far );
 
-			glUniform4fv(pool::uniform_fog, 1, &fog[0]);
-			glUniform1f(pool::uniform_time, time.millis() / 1000.0f);
-			glUniform1f(pool::uniform_curvature, curvature);
-			glUniform1f(pool::uniform_drugs, drugs);
-			glUniformMatrix4fv(pool::uniform_proj, 1, GL_FALSE, &proj_mat[0][0]);
+			glUniform4fv(uniform_fog, 1, &fog[0]);
+			glUniform1f(uniform_time, time.millis() / 1000.0f);
+			glUniform1f(uniform_curvature, curvature);
+			glUniform1f(uniform_drugs, drugs);
+			glUniformMatrix4fv(uniform_proj, 1, GL_FALSE, &proj_mat[0][0]);
 		}
 
 		glm::mat4 mat_view = get_view(
@@ -270,9 +275,9 @@ namespace sneka {
 		*/
 
 		lights_cache_compute();
-		glUniform3fv(pool::uniform_light_color, 1, &light_color[0]);
-		glUniform3fv(pool::uniform_light_dir, lights.size(), lights_cache);
-		glUniform1i(pool::uniform_light_count, lights.size());
+		glUniform3fv(uniform_light_color, 1, &light_color[0]);
+		glUniform3fv(uniform_light_dir, lights.size(), lights_cache);
+		glUniform1i(uniform_light_count, lights.size());
 
 		// draw the floor with a matrix that translates back every tile
 		glm::mat4 mat_view_tr = glm::translate(
@@ -283,8 +288,8 @@ namespace sneka {
 					-(floor_tiles_half + floor_tile_size * glm::floor(view_pos[2] / floor_tile_size))
 				) );
 		glm::vec3 pos = mat_view_tr * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		glUniform3fv(pool::uniform_view_pos, 1, &pos[0]);
-		glUniformMatrix4fv(pool::uniform_view, 1, GL_FALSE, &mat_view_tr[0][0]);
+		glUniform3fv(uniform_view_pos, 1, &pos[0]);
+		glUniformMatrix4fv(uniform_view, 1, GL_FALSE, &mat_view_tr[0][0]);
 
 		TRACE;
 		floor->draw();
@@ -301,8 +306,8 @@ namespace sneka {
 							static_cast<GLfloat>(z) * repeat_stride
 						) );
 				glm::vec3 pos = - (mat_view_tr * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-				glUniform3fv(pool::uniform_view_pos, 1, &pos[0]);
-				glUniformMatrix4fv(pool::uniform_view, 1, GL_FALSE, &mat_view_tr[0][0]);
+				glUniform3fv(uniform_view_pos, 1, &pos[0]);
+				glUniformMatrix4fv(uniform_view, 1, GL_FALSE, &mat_view_tr[0][0]);
 
 				auto iter = objects.begin();
 				while(iter != objects.end()) {

@@ -1,5 +1,7 @@
 #include "sneka/pool.hpp"
 
+#include "sneka/shaders.hpp"
+
 #include <map>
 
 #include <iostream> // Debug only
@@ -20,6 +22,9 @@ namespace {
 	GLuint vp_w, vp_h;
 	GLuint64 vp_change = 0;
 	GLfloat vp_r;
+
+	gla::ShaderProgram * shader_world;
+	gla::ShaderProgram * shader_hud;
 
 
 	void assert_runtime_init(bool init_state) {
@@ -87,35 +92,6 @@ namespace sneka::pool {
 
 	using namespace gla;
 
-	ShaderProgram * shader_world;
-	ShaderProgram * shader_hud;
-
-	GLuint
-		uniform_proj = -1,
-		uniform_view = -1,
-		uniform_view_pos = -1,
-		uniform_model = -1,
-		uniform_model_pos = -1,
-		uniform_mul_col = -1,
-		uniform_time = -1,
-		uniform_curvature = -1,
-		uniform_drugs = -1,
-		uniform_fog = -1,
-
-		uniform_light_color = -1,
-		uniform_light_dir = -1,
-		uniform_light_count = -1,
-
-		uniform_shade = -1,
-		uniform_reflect = -1,
-		uniform_reflect_falloff = -1,
-		uniform_reflect_opaque = -1,
-		uniform_reflect_negative = -1,
-
-		in_position = -1,
-		in_color = -1,
-		in_normal = -1;
-
 
 	const Runtime * runtime() {
 		assert_runtime_init(true);
@@ -142,36 +118,7 @@ namespace sneka::pool {
 		shader_world = new ShaderProgram("shader/sneka_v.glsl", "shader/sneka_f.glsl");
 		shader_hud = new ShaderProgram("shader/sneka_v.glsl", "shader/sneka_f.glsl");
 
-		#define GET_UNI(NAME)     shader_world->getUniform(NAME);
-		#define GET_ATTRIB(NAME)  shader_world->getAttrib(NAME);
-			uniform_proj =              GET_UNI("uni_proj");
-			uniform_view =              GET_UNI("uni_view");
-			uniform_view_pos =          GET_UNI("uni_view_pos");
-			uniform_model =             GET_UNI("uni_model");
-			uniform_model =             GET_UNI("uni_model");
-			uniform_model_pos =         GET_UNI("uni_model_pos");
-			uniform_mul_col =           GET_UNI("uni_mul_col");
-			uniform_time =              GET_UNI("uni_time");
-			uniform_curvature =         GET_UNI("uni_curvature");
-			uniform_drugs =             GET_UNI("uni_drugs");
-			uniform_fog =               GET_UNI("uni_fog");
-
-			uniform_light_color =       GET_UNI("uni_light_color");
-			uniform_light_dir =         GET_UNI("uni_light_dir");
-			uniform_light_count =       GET_UNI("uni_light_count");
-
-			uniform_shade =             GET_UNI("uni_shade");
-			uniform_reflect =           GET_UNI("uni_reflect");
-			uniform_reflect_falloff =   GET_UNI("uni_reflect_falloff");
-			uniform_reflect_opaque =    GET_UNI("uni_reflect_opaque");
-			uniform_reflect_negative =  GET_UNI("uni_reflect_negative");
-
-			in_position = GET_ATTRIB("in_position");
-			in_color =    GET_ATTRIB("in_color");
-			in_normal =   GET_ATTRIB("in_normal");
-			//in_random =   GET_ATTRIB("in_random");
-		#undef GET_UNI
-		#undef GET_ATTRIB
+		shader::init();
 	}
 
 	void runtime_destroy() {
@@ -199,6 +146,9 @@ namespace sneka::pool {
 	}
 
 	GLuint64 viewport_change() { return vp_change; }
+
+	ShaderProgram& getWorldShader() { return *shader_world; }
+	ShaderProgram& getHudShader() { return *shader_hud; }
 
 	Mesh& get_mesh(std::string name, bool need_vertices) {
 		assert_runtime_init(true);

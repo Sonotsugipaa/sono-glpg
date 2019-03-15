@@ -31,32 +31,6 @@ namespace sneka::pool {
 			bool released );
 
 	using resize_callback_t = void (*)(unsigned int width, unsigned int height);
-
-	extern GLuint
-			uniform_proj,
-			uniform_view,
-			uniform_view_pos,
-			uniform_model,
-			uniform_model_pos,
-			uniform_mul_col,
-			uniform_time,
-			uniform_curvature,
-			uniform_drugs,
-			uniform_fog,
-
-			uniform_light_color,
-			uniform_light_dir,
-			uniform_light_count,
-
-			uniform_shade,
-			uniform_reflect,
-			uniform_reflect_falloff,
-			uniform_reflect_opaque,
-			uniform_reflect_negative,
-
-			in_position,
-			in_color,
-			in_normal;
 			//in_random;
 
 	const Runtime * runtime();
@@ -86,8 +60,8 @@ namespace sneka::pool {
 	 * changed - TL;DR, use this for cached values only). */
 	GLuint64 viewport_change();
 
-	ShaderProgram & getWorldShader();
-	ShaderProgram & getHudShader();
+	ShaderProgram& getWorldShader();
+	ShaderProgram& getHudShader();
 
 	/* If need_vertices = true, ensures that the mesh contains
 	 * the vertices; if they don't, the file is reloaded and the
