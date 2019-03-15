@@ -1,6 +1,8 @@
 #ifndef SNEKA_POOL_HPP
 #define SNEKA_POOL_HPP
 
+#pragma GCC error "Deprecated header - use sneka/snekaruntime.hpp"
+
 #define GL3_PROTOTYPES 1
 #include <GL/glew.h>
 
@@ -31,7 +33,6 @@ namespace sneka::pool {
 			bool released );
 
 	using resize_callback_t = void (*)(unsigned int width, unsigned int height);
-			//in_random;
 
 	const Runtime * runtime();
 

@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "sneka/pool.hpp"
 #include "sneka/shaders.hpp"
 #include "sneka/renderobject.hpp"
 #include "sneka/direction.hpp"
@@ -56,7 +55,7 @@
 #define FLOOR_REFLECT_O      (1.7)
 #define FLOOR_REFLECT_N      (-0.0)
 
-#define COLOR_SKY            0.2,0.1,0.0
+#define COLOR_SKY            0.1,0.1,0.1
 #define COLOR_LIGHT          1.0,1.0,1.0
 
 using std::cout;
@@ -163,6 +162,7 @@ namespace {
 
 	// Generates random objects through the map.
 	void genObjects(
+			const SnekaRuntime & runtime,
 			LevelRenderer* renderer,
 			std::string mesh, std::size_t count,
 			int unsigned tiles,
@@ -177,7 +177,7 @@ namespace {
 		unsigned int genj = 0;
 
 		for(std::size_t i=0; i < count; i+=1) {
-			GridObject* newobj = new GridObject(mesh);
+			GridObject* newobj = new GridObject(runtime, mesh);
 
 			glm::ivec2 genpos;
 			glm::vec4 gencol;  gencol[3] = 1.0f;
@@ -267,19 +267,26 @@ int main(int argn, char** args) {
 
 	trace_sigaction_init();  TRACE;
 
+	SnekaRuntime runtime = SnekaRuntime(
+			"sneka level render test",
+			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+			W, H, true, true );  TRACE;
+	/*
 	pool::runtime_init(
 			"sneka level render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true);  TRACE;
+	*/
 
-	FloorObject floor = FloorObject("assets/tile_caved.mesh", 40);
+	FloorObject floor = FloorObject(runtime, "assets/tile_caved.mesh", 40);
 
 	renderer = new LevelRenderer(
+			runtime,
 			floor, TILES,
 			CURVATURE, DRUGS );  TRACE;
 	renderer->setClearColor(glm::vec3(COLOR_SKY));
 	renderer->setLightColor(glm::vec3(COLOR_LIGHT));
-	renderer->getFloorObject().setColor(glm::vec4(0.2f, 0.1f, 0.0f, 1.0f));
+	renderer->getFloorObject().setColor(glm::vec4(COLOR_SKY, 1.0f));
 	renderer->getFloorObject().shade = (float) FLOOR_SHADE;
 	renderer->getFloorObject().reflect = (float) FLOOR_REFLECT;
 	renderer->getFloorObject().reflect_falloff = (float) FLOOR_REFLECT_FO;
@@ -295,29 +302,32 @@ int main(int argn, char** args) {
 	TRACE;
 
 	// is deallocated automatically by destroyObjects(...)
-	head = new RenderObject("assets/arrow.mesh");
+	head = new RenderObject(runtime, "assets/arrow.mesh");
 	renderer->putObject(*head);
 
 	genObjects(
+			runtime,
 			renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
 			(float) OBJECT_REFLECT_O,
-			(float) OBJECT_REFLECT_N);
+			(float) OBJECT_REFLECT_N );
 	genObjects(
+			runtime,
 			renderer, "assets/bloc.mesh", OBJECTS - (OBJECTS / 2), TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
 			(float) OBJECT_REFLECT_O,
-			(float) OBJECT_REFLECT_N);
+			(float) OBJECT_REFLECT_N );
 
-	pool::set_resize_callback( [](unsigned int x, unsigned int y) {
-		pool::set_viewport(x, y);
+	runtime.setResizeCallback( [](SnekaRuntime& rt, unsigned int x, unsigned int y) {
+		rt.setViewport(x, y);
 	} );  TRACE;
 
-	pool::set_key_callback( [](
+	runtime.setKeyCallback( [](
+			SnekaRuntime& rt [[maybe_unused]],
 			unsigned int keycode,
 			unsigned int mod [[maybe_unused]],
 			bool released
@@ -338,7 +348,7 @@ int main(int argn, char** args) {
 			transition_pos,
 			1.0f );  TRACE;
 
-	while(pool::poll_events()) {
+	while(runtime.pollEvents()) {
 		if(direction == Direction::FORWARD)  ipos_target[1] -= 1; else
 		if(direction == Direction::BACKWARD) ipos_target[1] += 1; else
 		if(direction == Direction::RIGHT)    ipos_target[0] += 1; else
@@ -413,6 +423,6 @@ int main(int argn, char** args) {
 	delete renderer;
 
 	TRACE;
-	pool::runtime_destroy();
+	//pool::runtime_destroy();
 	return EXIT_SUCCESS;
 }

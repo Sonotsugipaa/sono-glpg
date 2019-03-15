@@ -50,6 +50,7 @@ namespace sneka {
 		GLfloat fog_intensity;
 
 		LevelRenderer(
+				const SnekaRuntime & runtime,
 				FloorObject& floor, GLuint repeat_stride,
 				GLfloat curvature, GLfloat drugs );
 		virtual ~LevelRenderer();

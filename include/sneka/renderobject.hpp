@@ -11,6 +11,7 @@
 #include "globject.hpp"
 
 #include "sneka/mesh.hpp"
+#include "sneka/snekaruntime.hpp"
 
 
 
@@ -60,7 +61,7 @@ namespace sneka {
 			reflect_negative;
 
 		RenderObject(Mesh&);
-		RenderObject(std::string mesh_name);
+		RenderObject(const SnekaRuntime &, std::string mesh_name);
 		virtual ~RenderObject() = default;
 
 		glm::vec3 getPosition() const;

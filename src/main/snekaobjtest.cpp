@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include "sneka/pool.hpp"
+#include "sneka/snekaruntime.hpp"
 #include "sneka/renderobject.hpp"
 #include "sneka/direction.hpp"
 #include "sneka/gridobject.hpp"
@@ -61,8 +61,8 @@ namespace {
 	private:
 		static LevelObjectCounter counter_test;
 	public:
-		TestObject():
-				LevelObject::LevelObject(counter_test, "assets/arrow.mesh")
+		TestObject(const sneka::SnekaRuntime & rt):
+				LevelObject::LevelObject(counter_test, rt, "assets/arrow.mesh")
 		{
 			TRACE;
 			cout << "Created test object" << endl;
@@ -79,7 +79,7 @@ namespace {
 }
 
 
-void main_body(LevelRenderer&);
+void main_body(SnekaRuntime&, LevelRenderer&);
 
 int main(int argn, char** argv) {
 	using namespace sneka;
@@ -107,19 +107,20 @@ int main(int argn, char** argv) {
 	trace_sigaction_init();  TRACE;
 
 
-	pool::runtime_init(
+	SnekaRuntime runtime = SnekaRuntime(
 			"sneka level render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true);  TRACE;
 
 
-	FloorObject floor = FloorObject("assets/tile_caved.mesh", 40);
+	FloorObject floor = FloorObject(runtime, "assets/tile_caved.mesh", 40);
 	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
 	//floor.shade = (float) FLOOR_SHADE;
 	//floor.reflect = (float) FLOOR_REFLECT;
 	//floor.reflect_falloff = (float) FLOOR_REFLECT_FO;
 
 	LevelRenderer* renderer = new LevelRenderer(
+			runtime,
 			floor, TILES,
 			CURVATURE, DRUGS );  TRACE;
 
@@ -134,7 +135,7 @@ int main(int argn, char** argv) {
 /* ------ BODY ------------------------------------------------------------- */
 	try {
 		TRACE;
-		main_body(*renderer);
+		main_body(runtime, *renderer);
 		TRACE;
 	} catch(std::runtime_error ex) {
 		std::cerr
@@ -145,27 +146,27 @@ int main(int argn, char** argv) {
 /* ------ END -------------------------------------------------------------- */
 	TRACE;
 	delete renderer;  TRACE;
-	pool::runtime_destroy();
 
 	return EXIT_SUCCESS;
 }
 
 
 void main_body(
+		SnekaRuntime& runtime,
 		LevelRenderer& renderer
 ) {
 	TRACE;
-	TestObject obj1 = TestObject();  TRACE;
+	TestObject obj1 = TestObject(runtime);  TRACE;
 	obj1.setGridPosition(-1, -5);  TRACE;
 	renderer.putObject(obj1);
-	TestObject obj2 = TestObject();  TRACE;
+	TestObject obj2 = TestObject(runtime);  TRACE;
 	obj2.setGridPosition(1, -5);  TRACE;
 	renderer.putObject(obj2);
 
 	Timer timer;
 
 	TRACE;
-	while(pool::poll_events()) {
+	while(runtime.pollEvents()) {
 		std::this_thread::sleep_for(std::chrono::milliseconds((int) FRAMERATE));
 		renderer.renderFrame();
 	}

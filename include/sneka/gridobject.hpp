@@ -26,7 +26,7 @@ namespace sneka {
 	public:
 
 		GridObject(Mesh&);
-		GridObject(std::string mesh_name);
+		GridObject(const SnekaRuntime &, std::string mesh_name);
 		virtual ~GridObject() = default;
 
 		void setHeight(float);

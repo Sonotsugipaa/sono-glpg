@@ -2,7 +2,7 @@
 
 #include "sneka/renderobject.hpp"
 #include "sneka/mesh.hpp"
-#include "sneka/pool.hpp"
+//#include "sneka/pool.hpp"
 
 #include "utils.tpp"
 #include "trace.hpp"
@@ -74,9 +74,11 @@ namespace sneka {
 
 
 	LevelRenderer::LevelRenderer(
+			const SnekaRuntime & runtime,
 			FloorObject& floor, GLuint repeat_stride,
 			GLfloat curv, GLfloat drugs
 	):
+			Renderer(runtime),
 			lights_cache_changed(true),
 			floor(&floor),
 			floor_tiles(floor.side_length), floor_tiles_half(floor_tiles / 2.0f),
@@ -230,7 +232,7 @@ namespace sneka {
 
 		TRACE;
 
-		pool::getWorldShader().use();
+		runtime.getWorldShader().use();
 		gl_features_enable();
 
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], 0.0f);
@@ -240,7 +242,7 @@ namespace sneka {
 			glm::vec4 fog = glm::vec4(clear_color, fog_intensity);
 			glm::mat4 proj_mat = glm::perspective(
 					proj_fov_y,
-					pool::viewport_ratio(),
+					runtime.getViewportRatio(),
 					proj_z_near,
 					proj_z_far );
 
@@ -318,7 +320,7 @@ namespace sneka {
 			}
 		}
 
-		SDL_GL_SwapWindow(sneka::pool::runtime()->window);
+		SDL_GL_SwapWindow(runtime.window);
 
 		gl_features_disable();
 	}

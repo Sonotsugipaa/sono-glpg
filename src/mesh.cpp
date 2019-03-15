@@ -3,7 +3,7 @@
 /* do NOT move this inclusion to sneka/mesh.hpp, that
  * would create a circular dependency (which is sort of
  * already happening, soooo...) */
-#include "sneka/pool.hpp"
+//#include "sneka/pool.hpp"
 
 #include "sneka/shaders.hpp"
 

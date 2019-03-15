@@ -1,5 +1,7 @@
-#include "sneka/pool.hpp"
+#include "sneka/snekaruntime.hpp"
 #include "sneka/shaders.hpp"
+
+#pragma GCC warning "header needs const-correct, reentrant redesign"
 
 
 
@@ -9,7 +11,7 @@ namespace {
 
 
 namespace sneka::shader {
-	
+
 	namespace level {
 
 		unsigned int
@@ -40,12 +42,12 @@ namespace sneka::shader {
 
 	}
 
-	void init() {
-		using namespace sneka::shader::level;
+	void init(const SnekaRuntime & runtime) {
+		using namespace shader::level;
 		if(shaderInit) {
-			throw pool::PoolException("shaders initialized twice");
+			throw SnekaRuntimeException(runtime, "shaders initialized twice");
 		} else {
-			gla::ShaderProgram& sh = sneka::pool::getWorldShader();
+			gla::ShaderProgram& sh = runtime.getWorldShader();
 			#define GET_UNI(NAME)     sh.getUniform(NAME);
 			#define GET_ATTRIB(NAME)  sh.getAttrib(NAME);
 				uniform_proj =              GET_UNI("uni_proj");

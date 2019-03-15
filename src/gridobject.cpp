@@ -10,8 +10,8 @@ namespace sneka {
 			offset_pos(0.0f)
 	{ }
 
-	GridObject::GridObject(std::string mesh_name):
-			RenderObject::RenderObject(mesh_name),
+	GridObject::GridObject(const SnekaRuntime & rt, std::string mesh_name):
+			RenderObject::RenderObject(rt, mesh_name),
 			grid_pos(0),
 			offset_pos(0.0f)
 	{ }

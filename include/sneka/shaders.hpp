@@ -1,3 +1,4 @@
+#include "sneka/SnekaRuntime.hpp"
 // Definitions must be in the shader's respective renderer
 
 namespace sneka::shader {
@@ -33,6 +34,6 @@ namespace sneka::shader {
 	}
 
 
-	void init();
+	void init(const SnekaRuntime & runtime);
 
 }

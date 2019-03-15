@@ -19,7 +19,7 @@ namespace sneka {
 		const LevelObjectCounter counter_shared;
 
 		LevelObject(LevelObjectCounter&, Mesh&);
-		LevelObject(LevelObjectCounter&, std::string);
+		LevelObject(LevelObjectCounter&, const SnekaRuntime &, std::string);
 		virtual ~LevelObject() = default;
 	};
 

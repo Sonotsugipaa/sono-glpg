@@ -13,14 +13,19 @@ namespace {
 
 namespace sneka {
 
-	LevelObject::LevelObject(LevelObjectCounter& counter, Mesh& mesh):
+	LevelObject::LevelObject(
+			LevelObjectCounter& counter, Mesh& mesh
+	):
 			GridObject::GridObject(mesh),
 			counter(counter),
 			counter_shared(shcounter)
 	{ }
 
-	LevelObject::LevelObject(LevelObjectCounter& counter, std::string mesh_name):
-			GridObject::GridObject(mesh_name),
+	LevelObject::LevelObject(
+			LevelObjectCounter& counter,
+			const SnekaRuntime & rt, std::string mesh_name
+	):
+			GridObject::GridObject(rt, mesh_name),
 			counter(counter),
 			counter_shared(shcounter)
 	{ }

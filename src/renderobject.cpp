@@ -2,7 +2,6 @@
 
 #include <stdexcept>
 
-#include "sneka/pool.hpp"
 #include "sneka/shaders.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -38,8 +37,8 @@ namespace sneka {
 		mesh = &_mesh;
 	}
 
-	RenderObject::RenderObject(std::string mesh_name):
-			RenderObject::RenderObject(pool::get_mesh(mesh_name))
+	RenderObject::RenderObject(const SnekaRuntime & rt, std::string mesh_name):
+			RenderObject::RenderObject(rt.getMesh(mesh_name))
 	{ }
 
 
