@@ -1,3 +1,6 @@
+#ifndef SNEKA_SHADERS_HPP
+#define SNEKA_SHADERS_HPP
+
 #include "sneka/SnekaRuntime.hpp"
 // Definitions must be in the shader's respective renderer
 
@@ -37,3 +40,5 @@ namespace sneka::shader {
 	void init(const SnekaRuntime & runtime);
 
 }
+
+#endif
