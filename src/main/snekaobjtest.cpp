@@ -57,6 +57,7 @@ using namespace gla;
 
 namespace {
 
+	/*
 	class TestObject : public LevelObject {
 	private:
 		static LevelObjectCounter counter_test;
@@ -75,11 +76,12 @@ namespace {
 	};
 
 	LevelObjectCounter TestObject::counter_test;
+	*/
 
 }
 
 
-void main_body(SnekaRuntime&, MeshLoader&, LevelRenderer&);
+void main_body(SnekaRuntime&, MeshLoader&, LevelObjectLoader&, LevelRenderer&);
 
 int main(int argn, char** argv) {
 	using namespace sneka;
@@ -113,7 +115,10 @@ int main(int argn, char** argv) {
 			W, H, true, true );  TRACE;
 
 	MeshLoader mesh_loader;
+	//FileChunkLoader chunk_loader;
+	LevelObjectLoader lvl_loader = LevelObjectLoader(mesh_loader);
 
+	//Chunk chunk = chunk_loader.get("assets/0_0.chunk");
 
 	FloorObject floor = FloorObject(mesh_loader.get("assets/tile_caved.mesh"), 40);
 	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
@@ -123,7 +128,7 @@ int main(int argn, char** argv) {
 			floor, TILES,
 			CURVATURE, DRUGS );  TRACE;
 
-	renderer->setView(vec3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f);
+	renderer->setView(vec3(0.0f, -2.0f, 0.0f), 0.0f, 0.0f);
 	renderer->setPerspective(
 					90.0f,
 					(GLfloat) WORLD_MIN_Z,
@@ -134,7 +139,7 @@ int main(int argn, char** argv) {
 /* ------ BODY ------------------------------------------------------------- */
 	try {
 		TRACE;
-		main_body(runtime, mesh_loader, *renderer);
+		main_body(runtime, mesh_loader, lvl_loader, *renderer);
 		TRACE;
 	} catch(std::runtime_error ex) {
 		std::cerr
@@ -153,15 +158,16 @@ int main(int argn, char** argv) {
 void main_body(
 		SnekaRuntime& runtime,
 		MeshLoader& mesh_loader,
+		LevelObjectLoader& lvl_loader,
 		LevelRenderer& renderer
 ) {
 	(void) runtime;
 
 	TRACE;
-	TestObject obj1 = TestObject(mesh_loader.get("assets/arrow.mesh"));  TRACE;
+	LevelObject obj1 = lvl_loader.get("assets/obj/bloc.obj");  TRACE;
 	obj1.setGridPosition(-1, -5);  TRACE;
 	renderer.putObject(obj1);
-	TestObject obj2 = TestObject(mesh_loader.get("assets/arrow.mesh"));  TRACE;
+	LevelObject obj2 = lvl_loader.get("assets/obj/bloc.obj");  TRACE;
 	obj2.setGridPosition(1, -5);  TRACE;
 	renderer.putObject(obj2);
 

@@ -4,7 +4,7 @@
 
 namespace sneka {
 
-	GridObject::GridObject(Mesh& mesh):
+	GridObject::GridObject(const Mesh & mesh):
 			RenderObject::RenderObject(mesh),
 			grid_pos(0),
 			offset_pos(0.0f)

@@ -18,6 +18,7 @@ namespace {
 namespace sneka {
 
 	RenderObject::RenderObject():
+			mesh(nullptr),
 			mat_changed(true),
 			color_mul(false),
 			position(0.0f),
@@ -31,7 +32,7 @@ namespace sneka {
 			reflect_negative(0.0f)
 	{ }
 
-	RenderObject::RenderObject(Mesh& _mesh):
+	RenderObject::RenderObject(const Mesh & _mesh):
 			RenderObject::RenderObject()
 	{
 		mesh = &_mesh;

@@ -3,6 +3,7 @@
 #include "read_utils.hpp"
 
 #include <limits>
+#include <regex>
 
 
 
@@ -63,6 +64,7 @@ namespace sneka {
 				int n;
 				float df;
 				{
+					#pragma GCC warning "incorrect value if frac. part < 0.1"
 					int d;
 					if(! read_dec_int(sm[1].str().c_str(), &n))  n = 0;
 					if(! read_dec_int(sm[3].str().c_str(), &d))  d = 0;

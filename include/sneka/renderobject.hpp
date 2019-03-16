@@ -21,7 +21,7 @@ namespace sneka {
 
 	class RenderObject {
 	protected:
-		Mesh* mesh;
+		const Mesh * mesh;
 		glm::mat4 mat_model;
 		bool mat_changed;
 		bool color_mul;
@@ -60,7 +60,7 @@ namespace sneka {
 			 * make sense)) */
 			reflect_negative;
 
-		RenderObject(Mesh&);
+		RenderObject(const Mesh &);
 		virtual ~RenderObject() = default;
 
 		glm::vec3 getPosition() const;

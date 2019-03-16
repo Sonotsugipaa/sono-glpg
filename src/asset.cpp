@@ -8,7 +8,7 @@ namespace sneka {
 			const std::string & asset,
 			const std::string & cause
 	):
-			msg("couldn't load "+asset+" - "+cause)
+			msg("couldn't load \""+asset+"\" - "+cause)
 	{ }
 
 	AssetLoadException::AssetLoadException(
