@@ -61,7 +61,6 @@ namespace sneka {
 			reflect_negative;
 
 		RenderObject(Mesh&);
-		RenderObject(const SnekaRuntime &, std::string mesh_name);
 		virtual ~RenderObject() = default;
 
 		glm::vec3 getPosition() const;

@@ -2,68 +2,12 @@
 
 #include "sneka/shaders.hpp"
 
-#include <map>
-
-#include <cstdio>
-
 
 
 namespace {
 
-	std::map<std::string, sneka::Mesh*> pool_meshes;
 	gla::ObjectCounter<> runtime_instances_counter;
 
-
-	void read_int_to(FILE* file, GLfloat* dest) {
-		int i=0;
-		fread(&i, sizeof(int), 1, file);
-		*dest = (GLfloat) i / POOL_MESH_FILE_PRECISION;
-	}
-
-	sneka::Mesh* load_mesh(const sneka::SnekaRuntime & rt, std::string path, bool need_vertices) {
-		GLfloat* vertices;
-		GLsizei len;
-
-		FILE* f = fopen(path.c_str(), "rb");
-		if(! f)
-			throw sneka::SnekaRuntimeException(rt, "couldn't open \"" + path + "\".");
-
-		fseek(f, 0, SEEK_END);
-		len = ftell(f);
-		fseek(f, 0, SEEK_SET);
-
-		if(len % (sizeof(int) * SNEKA_VERTEX_SIZE) != 0) {
-			throw sneka::SnekaRuntimeException(
-					rt,
-					"\"" + path + "\": invalid file size (" +
-					std::to_string(len) + ")" );
-		}
-		len /= (sizeof(int) * SNEKA_VERTEX_SIZE);
-
-		vertices = new GLfloat[len * SNEKA_VERTEX_SIZE];
-
-		for(GLsizei i=0; i<len; i+=1) {
-			for(GLsizei j=0; j < SNEKA_VERTEX_SIZE; j+=1)
-				read_int_to(f, vertices + j + (i * SNEKA_VERTEX_SIZE));
-		}
-		fclose(f);
-
-		sneka::Mesh* retn = new sneka::Mesh(path, vertices, len, need_vertices);
-		delete[] vertices;
-		return retn;
-	}
-
-	void unload_meshes() {
-		auto iter = pool_meshes.begin();
-		auto end = pool_meshes.end();
-
-		while(iter != end) {
-			//std::cout << "Unloaded mesh " << iter->second->name << '.' << std::endl;
-			delete iter->second;
-			pool_meshes.erase(iter);
-			iter = pool_meshes.begin();
-		}
-	}
 
 	const unsigned char * keyboard = nullptr;
 
@@ -100,10 +44,7 @@ namespace sneka {
 		glViewport(0, 0, width, height);
 	}
 
-	SnekaRuntime::~SnekaRuntime() {
-		if(runtime_instances.value() == 1)
-			unload_meshes();
-	}
+	SnekaRuntime::~SnekaRuntime() { }
 
 
 	GLuint SnekaRuntime::getViewportWidth() const {
@@ -139,49 +80,10 @@ namespace sneka {
 	}
 
 
-	Mesh& SnekaRuntime::getMesh(std::string name, bool need_vertices) const {
-		std::map<std::string, Mesh*>::iterator iter;
-
-		iter = pool_meshes.find(name);
-
-		if(iter != pool_meshes.end() && need_vertices) {
-			if(! iter->second->hasVertices()) {
-				delete iter->second;
-				pool_meshes.erase(iter);
-				iter = pool_meshes.end();
-			}
-		}
-
-		if(iter == pool_meshes.end()) {
-
-			pool_meshes[name] = load_mesh(*this, name, need_vertices);
-
-			iter = pool_meshes.find(name);
-			if(iter == pool_meshes.end()) {
-				throw SnekaRuntimeException(*this, "could not load mesh \""+name+"\"");
-			}
-		}
-
-		return *(iter->second);
-	}
-
-
 	SnekaRuntimeException::SnekaRuntimeException(
 			const SnekaRuntime & rt, const std::string & msg
 	):
 			runtime(rt), msg(msg)
-	{ }
-
-	SnekaRuntimeException::SnekaRuntimeException(
-			const SnekaRuntime & rt, const std::string && msg
-	):
-			SnekaRuntimeException::SnekaRuntimeException(rt, msg)
-	{ }
-
-	SnekaRuntimeException::SnekaRuntimeException(
-			const SnekaRuntime & rt, char* msg
-	):
-			SnekaRuntimeException::SnekaRuntimeException(rt, std::string(msg))
 	{ }
 
 	SnekaRuntimeException::SnekaRuntimeException(

@@ -61,8 +61,8 @@ namespace {
 	private:
 		static LevelObjectCounter counter_test;
 	public:
-		TestObject(const sneka::SnekaRuntime & rt):
-				LevelObject::LevelObject(counter_test, rt, "assets/arrow.mesh")
+		TestObject(Mesh& mesh):
+				LevelObject::LevelObject(counter_test, mesh)
 		{
 			TRACE;
 			cout << "Created test object" << endl;
@@ -79,7 +79,7 @@ namespace {
 }
 
 
-void main_body(SnekaRuntime&, LevelRenderer&);
+void main_body(SnekaRuntime&, MeshLoader&, LevelRenderer&);
 
 int main(int argn, char** argv) {
 	using namespace sneka;
@@ -110,14 +110,13 @@ int main(int argn, char** argv) {
 	SnekaRuntime runtime = SnekaRuntime(
 			"sneka level render test",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			W, H, true, true);  TRACE;
+			W, H, true, true );  TRACE;
+
+	MeshLoader mesh_loader;
 
 
-	FloorObject floor = FloorObject(runtime, "assets/tile_caved.mesh", 40);
+	FloorObject floor = FloorObject(mesh_loader.get("assets/tile_caved.mesh"), 40);
 	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
-	//floor.shade = (float) FLOOR_SHADE;
-	//floor.reflect = (float) FLOOR_REFLECT;
-	//floor.reflect_falloff = (float) FLOOR_REFLECT_FO;
 
 	LevelRenderer* renderer = new LevelRenderer(
 			runtime,
@@ -128,14 +127,14 @@ int main(int argn, char** argv) {
 	renderer->setPerspective(
 					90.0f,
 					(GLfloat) WORLD_MIN_Z,
-					(GLfloat) WORLD_MAX_Z);
+					(GLfloat) WORLD_MAX_Z );
 
 	renderer->addLight(glm::vec3(2.0f, 1.0f, 1.0f));
 
 /* ------ BODY ------------------------------------------------------------- */
 	try {
 		TRACE;
-		main_body(runtime, *renderer);
+		main_body(runtime, mesh_loader, *renderer);
 		TRACE;
 	} catch(std::runtime_error ex) {
 		std::cerr
@@ -153,21 +152,23 @@ int main(int argn, char** argv) {
 
 void main_body(
 		SnekaRuntime& runtime,
+		MeshLoader& mesh_loader,
 		LevelRenderer& renderer
 ) {
+	(void) runtime;
+
 	TRACE;
-	TestObject obj1 = TestObject(runtime);  TRACE;
+	TestObject obj1 = TestObject(mesh_loader.get("assets/arrow.mesh"));  TRACE;
 	obj1.setGridPosition(-1, -5);  TRACE;
 	renderer.putObject(obj1);
-	TestObject obj2 = TestObject(runtime);  TRACE;
+	TestObject obj2 = TestObject(mesh_loader.get("assets/arrow.mesh"));  TRACE;
 	obj2.setGridPosition(1, -5);  TRACE;
 	renderer.putObject(obj2);
-
-	Timer timer;
 
 	TRACE;
 	while(runtime.pollEvents()) {
 		std::this_thread::sleep_for(std::chrono::milliseconds((int) FRAMERATE));
 		renderer.renderFrame();
 	}
+	TRACE;
 }

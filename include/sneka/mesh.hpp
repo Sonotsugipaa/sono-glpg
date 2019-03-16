@@ -8,13 +8,15 @@
 
 #include "globject.hpp"
 
+#include "sneka/asset.hpp"
+
 #define SNEKA_VERTEX_SIZE  (3+4)
 
 
 
 namespace sneka {
 
-	class Mesh {
+	class Mesh : public virtual Asset {
 	protected:
 		gla::VertexBuffer vb, vb_normal;
 		gla::VertexArray va;
@@ -22,12 +24,11 @@ namespace sneka {
 		const GLsizei vertices_n;
 
 	public:
-		const std::string name;
-
 		Mesh(
 				std::string name,
 				GLfloat* vertices_ptr, GLsizei vertices_count,
-				bool keep = false);
+				bool keep = false );
+
 		Mesh(Mesh&) = delete;
 		Mesh(Mesh&&) = delete;
 		~Mesh();
@@ -47,6 +48,16 @@ namespace sneka {
 
 		Mesh& operator = (Mesh&) = delete;
 		Mesh& operator = (Mesh&&) = delete;
+	};
+
+
+	class MeshLoader : public AssetLoader<Mesh> {
+		friend Mesh;
+	protected:
+		virtual Mesh* load(std::string mesh_name);
+
+	public:
+		virtual void cleanup();
 	};
 
 }

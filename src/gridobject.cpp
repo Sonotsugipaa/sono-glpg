@@ -10,12 +10,6 @@ namespace sneka {
 			offset_pos(0.0f)
 	{ }
 
-	GridObject::GridObject(const SnekaRuntime & rt, std::string mesh_name):
-			RenderObject::RenderObject(rt, mesh_name),
-			grid_pos(0),
-			offset_pos(0.0f)
-	{ }
-
 
 	void GridObject::setHeight(float h) {
 		height = h;

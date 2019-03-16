@@ -83,12 +83,6 @@ namespace sneka {
 		gla::ShaderProgram& getWorldShader() const;
 		gla::ShaderProgram& getHudShader() const;
 
-		/* If need_vertices = true, ensures that the mesh contains
-		 * the vertices; if they don't, the file is reloaded and the
-		 * mesh is invalidated.
-		 * NOTE: doing this might give a significant performance hit. */
-		Mesh& getMesh(std::string name, bool need_vertices = false) const;
-
 		/* Processes all the events, until none are left to process;
 		 * returns 'false' if the application should exit, 'true'
 		 * otherwise. */
@@ -117,10 +111,8 @@ namespace sneka {
 		const SnekaRuntime & runtime;
 		const std::string msg;
 
-		SnekaRuntimeException(const SnekaRuntime & runtime, char*);
 		SnekaRuntimeException(const SnekaRuntime & runtime, const char *);
 		SnekaRuntimeException(const SnekaRuntime & runtime, const std::string &);
-		SnekaRuntimeException(const SnekaRuntime & runtime, const std::string &&);
 
 		const char * what() const noexcept;
 	};

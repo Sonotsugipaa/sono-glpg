@@ -12,8 +12,7 @@ namespace sneka {
 	public:
 		const unsigned int side_length;
 		FloorObject(
-				const SnekaRuntime & runtime,
-				const std::string & tile_mesh_name, int unsigned side_length );
+				Mesh& tile_mesh, int unsigned side_length );
 		virtual ~FloorObject();
 	};
 

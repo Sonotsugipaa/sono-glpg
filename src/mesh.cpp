@@ -12,7 +12,7 @@
 #include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
 
-#include <iostream> // Debug only
+#include <cstdio>
 
 
 
@@ -63,6 +63,13 @@ namespace {
 		}
 	}
 
+	// used for MeshLoader::load(...)
+	inline void read_int_to(FILE* file, GLfloat* dest) {
+		int i=0;
+		fread(&i, sizeof(int), 1, file);
+		*dest = (GLfloat) i / POOL_MESH_FILE_PRECISION;
+	}
+
 }
 
 
@@ -70,17 +77,16 @@ namespace sneka {
 
 	using namespace gla;
 
-	/*
-	Mesh::Mesh(const char * nm, GLfloat* vertices, GLsizei n):
-			Mesh::Mesh(std::string(nm), vertices, n)
-	{ }
-	*/
+
+	// -----  MeshLoader  -----
+
 
 	Mesh::Mesh(std::string nm, GLfloat* vertices, GLsizei n, bool keep):
+			Asset::Asset(nm),
 			vb(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW),
 			vb_normal(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW),
 			vertices_raw(nullptr),
-			vertices_n(n), name(nm)
+			vertices_n(n)
 	{
 		if(keep) {
 			vertices_raw = new GLfloat[n * SNEKA_VERTEX_SIZE];
@@ -148,6 +154,55 @@ namespace sneka {
 
 	const VertexArray & Mesh::getVertexArray() const {
 		return const_cast<const VertexArray &>(va);
+	}
+
+
+	// -----  MeshLoader  -----
+
+
+	/* TODO: vertices are always remembered by the mesh,
+	 * even though that is a waste of memory 99% of the time.
+	 * This should be optimized, perhaps with a cleanup function. */
+	Mesh* MeshLoader::load(std::string path) {
+		GLfloat* vertices;
+		GLsizei len;
+
+		FILE* f = fopen(path.c_str(), "rb");
+		if(! f)
+			throw sneka::AssetLoadException(path, "couldn't open the file.");
+
+		fseek(f, 0, SEEK_END);
+		len = ftell(f);
+		fseek(f, 0, SEEK_SET);
+
+		if(len % (sizeof(int) * SNEKA_VERTEX_SIZE) != 0) {
+			throw sneka::AssetLoadException(
+					path,
+					"invalid file size (" + std::to_string(len) + ")" );
+		}
+		len /= (sizeof(int) * SNEKA_VERTEX_SIZE);
+
+		vertices = new GLfloat[len * SNEKA_VERTEX_SIZE];
+
+		for(GLsizei i=0; i<len; i+=1) {
+			for(GLsizei j=0; j < SNEKA_VERTEX_SIZE; j+=1)
+				read_int_to(f, vertices + j + (i * SNEKA_VERTEX_SIZE));
+		}
+		fclose(f);
+
+		sneka::Mesh* retn = new sneka::Mesh(path, vertices, len, true);
+		delete[] vertices;
+		return retn;
+	}
+
+	void MeshLoader::cleanup() {
+		auto iter = assets.begin();
+
+		while(iter != assets.end()) {
+			iter->second->forgetVertices();
+
+			iter++;
+		}
 	}
 
 }

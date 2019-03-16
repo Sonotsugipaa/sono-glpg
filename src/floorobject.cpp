@@ -23,7 +23,6 @@ namespace {
 	*/
 
 	void expand_floor(
-			std::string name,
 			Mesh* tile_mesh, GLfloat tile_size,
 			Mesh** dest, GLsizei floor_size_length
 	) {
@@ -49,7 +48,7 @@ namespace {
 		}
 
 		*dest = new Mesh(
-				name+":"+std::to_string(floor_size_length),
+				(tile_mesh->asset_name)+":"+std::to_string(floor_size_length),
 				new_array,
 				area * tile_mesh->size() );
 		delete[] new_array;
@@ -60,17 +59,12 @@ namespace {
 
 namespace sneka {
 
-	FloorObject::FloorObject(
-			const SnekaRuntime & runtime,
-			const std::string & tile_mesh,
-			int unsigned side_length
-	):
+	FloorObject::FloorObject(Mesh& mesh, int unsigned side_length):
 			side_length(side_length)
 	{
 		Mesh* nmesh;
 		expand_floor(
-				tile_mesh,
-				&runtime.getMesh(tile_mesh, true), 1.0f,
+				&mesh, 1.0f,
 				&nmesh,
 				side_length );
 		RenderObject::mesh = nmesh;

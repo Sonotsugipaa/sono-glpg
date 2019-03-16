@@ -37,10 +37,6 @@ namespace sneka {
 		mesh = &_mesh;
 	}
 
-	RenderObject::RenderObject(const SnekaRuntime & rt, std::string mesh_name):
-			RenderObject::RenderObject(rt.getMesh(mesh_name))
-	{ }
-
 
 	void RenderObject::mat_compute() {
 		mat_model = glm::rotate(

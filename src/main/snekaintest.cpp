@@ -12,6 +12,7 @@
 #include "sneka/direction.hpp"
 #include "sneka/gridobject.hpp"
 #include "sneka/levelrenderer.hpp"
+#include "sneka/asset.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -77,6 +78,7 @@ namespace {
 	Direction direction;
 
 	LevelRenderer* renderer;
+	MeshLoader mesh_loader;
 
 	gla::Timer frame_timer;
 
@@ -162,9 +164,8 @@ namespace {
 
 	// Generates random objects through the map.
 	void genObjects(
-			const SnekaRuntime & runtime,
 			LevelRenderer* renderer,
-			std::string mesh, std::size_t count,
+			Mesh& mesh, std::size_t count,
 			int unsigned tiles,
 			GLfloat shade,
 			GLfloat reflect, GLfloat reflect_falloff,
@@ -177,7 +178,7 @@ namespace {
 		unsigned int genj = 0;
 
 		for(std::size_t i=0; i < count; i+=1) {
-			GridObject* newobj = new GridObject(runtime, mesh);
+			GridObject* newobj = new GridObject(mesh);
 
 			glm::ivec2 genpos;
 			glm::vec4 gencol;  gencol[3] = 1.0f;
@@ -278,7 +279,7 @@ int main(int argn, char** args) {
 			W, H, true, true);  TRACE;
 	*/
 
-	FloorObject floor = FloorObject(runtime, "assets/tile_caved.mesh", 40);
+	FloorObject floor = FloorObject(mesh_loader.get("assets/tile_caved.mesh"), 40);
 
 	renderer = new LevelRenderer(
 			runtime,
@@ -302,20 +303,20 @@ int main(int argn, char** args) {
 	TRACE;
 
 	// is deallocated automatically by destroyObjects(...)
-	head = new RenderObject(runtime, "assets/arrow.mesh");
+	head = new RenderObject(mesh_loader.get("assets/arrow.mesh"));
 	renderer->putObject(*head);
 
 	genObjects(
-			runtime,
-			renderer, "assets/pyr.mesh",  OBJECTS / 2, TILES,
+			renderer,
+			mesh_loader.get("assets/pyr.mesh"),  OBJECTS / 2, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
 			(float) OBJECT_REFLECT_O,
 			(float) OBJECT_REFLECT_N );
 	genObjects(
-			runtime,
-			renderer, "assets/bloc.mesh", OBJECTS - (OBJECTS / 2), TILES,
+			renderer,
+			mesh_loader.get("assets/bloc.mesh"), OBJECTS - (OBJECTS / 2), TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
