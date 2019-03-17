@@ -165,10 +165,10 @@ void main_body(
 
 	TRACE;
 	LevelObject obj1 = lvl_loader.get("assets/obj/bloc.obj");  TRACE;
-	obj1.setGridPosition(-1, -5);  TRACE;
+	obj1.setGridPosition(-1, -3);  TRACE;
 	renderer.putObject(obj1);
-	LevelObject obj2 = lvl_loader.get("assets/obj/bloc.obj");  TRACE;
-	obj2.setGridPosition(1, -5);  TRACE;
+	LevelObject obj2 = lvl_loader.get("assets/obj/pyr.obj");  TRACE;
+	obj2.setGridPosition(1, -3);  TRACE;
 	renderer.putObject(obj2);
 
 	TRACE;

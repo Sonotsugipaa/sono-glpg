@@ -19,12 +19,6 @@ namespace {
 		"(\\s+(\\d+(\\.(\\d+))?))?"  // 11, 13
 	);
 
-	float temp_parse_float(const std::string str) {
-		int i;
-		read_dec_int(str.c_str(), &i);
-		return static_cast<float>(i) / 100.0f;
-	}
-
 }
 
 
@@ -75,15 +69,18 @@ namespace sneka {
 			if(color_str.size() > 0) {
 				std::smatch sm;
 				if(std::regex_search(color_str, sm, color_regex)) {
-					#pragma GCC warning "missing float parser, using a temp subst"
-					color = glm::vec4(
-							temp_parse_float(sm[1].str()),
-							temp_parse_float(sm[4].str()),
-							temp_parse_float(sm[7].str()),
-							1.0f );
-					std::string alpha = sm[11].str();
-					if(alpha.size() > 0)
-						color[3] = temp_parse_float(sm[11].str());
+					try {
+						color = glm::vec4(
+								std::stof(sm[1].str()),
+								std::stof(sm[4].str()),
+								std::stof(sm[7].str()),
+								1.0f );
+						std::string alpha = sm[11].str();
+						if(alpha.size() > 0)
+							color[3] = std::stof(sm[11].str());
+					} catch(std::logic_error err) {
+						color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					}
 				}
 			}
 		}

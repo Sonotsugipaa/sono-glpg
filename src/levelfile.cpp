@@ -61,22 +61,13 @@ namespace sneka {
 
 		{ // parse float
 			if(std::regex_match(value, sm, float_regex)) {
-				int n;
-				float df;
-				{
-					#pragma GCC warning "incorrect value if frac. part < 0.1"
-					int d;
-					if(! read_dec_int(sm[1].str().c_str(), &n))  n = 0;
-					if(! read_dec_int(sm[3].str().c_str(), &d))  d = 0;
-					df = d;
-					while(df >= 1.0f) {
-						df /= 10.0f;
-					}
+				try {
+					value_float = std::stof(value);
+				} catch(std::logic_error err) {
+					value_float = std::numeric_limits<float>::signaling_NaN();
 				}
-
-				value_float = static_cast<float>(n) + df;
 			} else {
-				value_float = std::numeric_limits<float>::quiet_NaN();
+				value_float = std::numeric_limits<float>::signaling_NaN();
 			}
 		}
 
