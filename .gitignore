@@ -10,7 +10,6 @@ no-git/
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -34,3 +33,6 @@ lib*.so*
 *.exe
 *.out
 *.app
+
+# Windows Links
+*.lnk
