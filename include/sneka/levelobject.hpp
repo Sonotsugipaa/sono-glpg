@@ -41,7 +41,13 @@ namespace sneka {
 	};
 
 
-	#pragma GCC warning "Why 'LevelObjectTEMPLATE'? Explain and document."
+	/* LevelObjectLoader handles LevelObjectTemplates instead of
+	 * plain LevelObjects, because AssetLoaders provide references
+	 * to already existing objects;
+	 * each LevelObject is actually a distinct object in the level
+	 * that shares the loaded properties.
+	 * To instantiate a LevelObject, use LevelObjectTemplate's
+	 * cast operator. */
 	class LevelObjectLoader : public AssetLoader<LevelObjectTemplate> {
 	private:
 		MeshLoader& mesh_loader;

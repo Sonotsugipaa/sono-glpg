@@ -41,13 +41,16 @@ namespace sneka {
 
 	class LevelFileException : public std::exception {
 	public:
-		const std::vector<std::string> msg;
+		const std::vector<std::string> error_messages;
+		char const * const message;
 
 		LevelFileException(
-				const std::string & file_name,
-				std::vector<std::string> errors);
+				const char * msg,
+				const std::vector<std::string> & errors );
 
-		const char * what() const noexcept;
+		constexpr const char * what() const noexcept {
+			return message;
+		}
 	};
 
 }

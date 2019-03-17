@@ -14,6 +14,9 @@
 #include "sneka/levelrenderer.hpp"
 #include "sneka/levelobject.hpp"
 
+// only for LevelFileException, should not be included
+#include "sneka/levelfile.hpp"
+
 #include "runtime.hpp"
 #include "shader.hpp"
 #include "globject.hpp"
@@ -81,7 +84,7 @@ namespace {
 }
 
 
-void main_body(SnekaRuntime&, MeshLoader&, LevelObjectLoader&, LevelRenderer&);
+void main_body(SnekaRuntime&, LevelObjectLoader&, LevelRenderer&);
 
 int main(int argn, char** argv) {
 	using namespace sneka;
@@ -139,7 +142,7 @@ int main(int argn, char** argv) {
 /* ------ BODY ------------------------------------------------------------- */
 	try {
 		TRACE;
-		main_body(runtime, mesh_loader, lvl_loader, *renderer);
+		main_body(runtime, lvl_loader, *renderer);
 		TRACE;
 	} catch(std::runtime_error ex) {
 		std::cerr
@@ -157,19 +160,28 @@ int main(int argn, char** argv) {
 
 void main_body(
 		SnekaRuntime& runtime,
-		MeshLoader& mesh_loader,
 		LevelObjectLoader& lvl_loader,
 		LevelRenderer& renderer
 ) {
 	(void) runtime;
-
 	TRACE;
-	LevelObject obj1 = lvl_loader.get("assets/obj/bloc.obj");  TRACE;
-	obj1.setGridPosition(-1, -3);  TRACE;
-	renderer.putObject(obj1);
-	LevelObject obj2 = lvl_loader.get("assets/obj/pyr.obj");  TRACE;
-	obj2.setGridPosition(1, -3);  TRACE;
-	renderer.putObject(obj2);
+
+	LevelObject* obj1;
+	LevelObject* obj2;
+	try {
+		obj1 = new LevelObject(lvl_loader.get("assets/obj/bloc.obj"));  TRACE;
+		obj1->setGridPosition(-1, -3);  TRACE;
+		renderer.putObject(*obj1);  TRACE;
+		obj2 = new LevelObject(lvl_loader.get("assets/obj/pyr.obj"));  TRACE;
+		obj2->setGridPosition(1, -3);  TRACE;
+		renderer.putObject(*obj2);  TRACE;
+	} catch(LevelFileException& ex) {
+		std::cerr << "LevelFileException: " << ex.message << std::endl;
+		for(std::size_t i=0; i < ex.error_messages.size(); i += 1) {
+			std::cerr << "\t" << ex.error_messages[i] << std::endl;
+		}
+		exit(EXIT_FAILURE);
+	}
 
 	TRACE;
 	while(runtime.pollEvents()) {

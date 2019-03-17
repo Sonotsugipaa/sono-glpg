@@ -38,7 +38,7 @@ namespace sneka {
 
 	class AssetLoadException : public std::exception {
 	public:
-		const std::string msg;
+		const std::string message, asset_name, description;
 
 		AssetLoadException(const std::string & asset_name, const char * cause_descr);
 		AssetLoadException(const std::string & asset_name, const std::string & cause_descr);

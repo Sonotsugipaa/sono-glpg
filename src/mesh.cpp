@@ -19,7 +19,7 @@
 namespace {
 
 	void invalid_access() {
-		throw std::logic_error("Tried to access forgotten or non-existent data from a mesh.");
+		throw std::logic_error("tried to access forgotten or non-existent data from a mesh");
 	}
 
 	/* only works for GL_TRIANGLE meshes, don't try this on GL_TRIANGLE_FAN
@@ -169,7 +169,7 @@ namespace sneka {
 
 		FILE* f = fopen(path.c_str(), "rb");
 		if(! f)
-			throw sneka::AssetLoadException(path, "couldn't open the file.");
+			throw sneka::AssetLoadException(path, "couldn't open the file");
 
 		fseek(f, 0, SEEK_END);
 		len = ftell(f);

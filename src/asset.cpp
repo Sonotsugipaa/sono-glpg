@@ -8,7 +8,8 @@ namespace sneka {
 			const std::string & asset,
 			const std::string & cause
 	):
-			msg("couldn't load \""+asset+"\" - "+cause)
+			message("couldn't load \""+asset+"\" - "+cause),
+			asset_name(asset), description(cause)
 	{ }
 
 	AssetLoadException::AssetLoadException(
@@ -19,7 +20,7 @@ namespace sneka {
 	{ }
 
 	const char * AssetLoadException::what() const noexcept {
-		return msg.c_str();
+		return message.c_str();
 	}
 
 

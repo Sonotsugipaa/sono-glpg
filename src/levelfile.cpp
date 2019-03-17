@@ -5,6 +5,8 @@
 #include <limits>
 #include <regex>
 
+#define ERROR_KEY "\033error"
+
 
 
 namespace {
@@ -33,9 +35,7 @@ namespace {
 			LevelFile::map_t& values,
 			LevelFile::Line& ln
 	) {
-		if(ln.key == "\033error") {
-			#pragma GCC warning "add proper error handling"
-		} else if(ln.key.size() > 0) {
+		if(ln.key.size() > 0) {
 			values[ln.key] = ln;
 		}
 	}
@@ -55,7 +55,7 @@ namespace sneka {
 		if(std::regex_match(str, sm, null_regex)) {
 			key = value = "";
 		} else {
-			key = "\033error";
+			key = ERROR_KEY;
 			value = "could not parse \"" + str + "\"";
 		}
 
@@ -89,14 +89,13 @@ namespace sneka {
 
 	LevelFile::LevelFile(std::istream& is) {
 		unsigned int pos = 0;
+		unsigned int line = 1;
 		std::stringstream* buffer = new std::stringstream();
+		std::vector<std::string> errors;
 		char c;
 
 		while(is) {
-			while(is) {
-				c = is.get();
-				if(c == -1) break;
-
+			while(is.get(c)) {
 				if(c_delim(c)) {
 					break;
 				} else {
@@ -104,17 +103,29 @@ namespace sneka {
 				}
 
 				pos += 1;
+				if(is.bad())
+					throw LevelFileException("corrupt input stream", errors);
 			}
 
 			if(*buffer) {
 				Line ln = Line(buffer->str());
-				add_line(values, ln);
+				if(ln.key == ERROR_KEY) {
+					errors.push_back(
+							"invalid line \""+ln.value+"\""
+							" ("+std::to_string(line)+")" );
+				} else {
+					add_line(values, ln);
+				}
 				delete buffer;
 				if(is) {
 					buffer = new std::stringstream();
+					line += 1;
 				}
 			}
 		}
+
+		if(errors.size() > 0)
+			throw LevelFileException("invalid file format", errors);
 	}
 
 	const LevelFile::Line & LevelFile::operator [] (std::string k) {
@@ -125,5 +136,10 @@ namespace sneka {
 			return iter->second;
 		}
 	}
+
+
+	LevelFileException::LevelFileException(const char * msg, const std::vector<std::string>& errors):
+			error_messages(errors), message(msg)
+	{ }
 
 }
