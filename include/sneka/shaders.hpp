@@ -1,7 +1,7 @@
 #ifndef SNEKA_SHADERS_HPP
 #define SNEKA_SHADERS_HPP
 
-#include "sneka/SnekaRuntime.hpp"
+#include "sneka/snekaruntime.hpp"
 // Definitions must be in the shader's respective renderer
 
 namespace sneka::shader {
