@@ -23,8 +23,10 @@ namespace sneka {
 	 * or forward slashes. Spaces are not forbidden, but any
 	 * AssetLoader is allowed not to accept them. */
 	class Asset {
+	protected:
+		std::string asset_name;
+
 	public:
-		const std::string asset_name;
 
 		Asset(const char * type);
 		Asset(const std::string & name);
@@ -34,6 +36,8 @@ namespace sneka {
 		 * the same as the right operand - inheriting classes
 		 * might choose to change or extend this behaviour. */
 		virtual bool operator == (Asset&);
+
+		inline std::string getAssetName() const { return asset_name; }
 	};
 
 	class AssetLoadException : public std::exception {

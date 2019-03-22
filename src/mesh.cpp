@@ -118,6 +118,17 @@ namespace sneka {
 		delete[] normals;
 	}
 
+	Mesh::Mesh(Mesh&& mov):
+			Asset::Asset(mov.getAssetName()),
+			vb(std::move(mov.vb)),
+			vb_normal(std::move(mov.vb_normal)),
+			va(std::move(mov.va)),
+			vertices_raw(mov.vertices_raw),
+			vertices_n(mov.vertices_n)
+	{
+		mov.vertices_raw = nullptr;
+	}
+
 	Mesh::~Mesh() {
 		if(vertices_raw != nullptr) {
 			delete[] vertices_raw;

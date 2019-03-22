@@ -48,7 +48,7 @@ namespace {
 		}
 
 		*dest = new Mesh(
-				(tile_mesh->asset_name)+":"+std::to_string(floor_size_length),
+				(tile_mesh->getAssetName())+":"+std::to_string(floor_size_length),
 				new_array,
 				area * tile_mesh->size() );
 		delete[] new_array;

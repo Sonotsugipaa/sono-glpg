@@ -21,7 +21,7 @@ namespace sneka {
 		gla::VertexBuffer vb, vb_normal;
 		gla::VertexArray va;
 		GLfloat * vertices_raw;
-		const GLsizei vertices_n;
+		GLsizei vertices_n;
 
 	public:
 		Mesh(
@@ -30,7 +30,7 @@ namespace sneka {
 				bool keep = false );
 
 		Mesh(Mesh&) = delete;
-		Mesh(Mesh&&) = delete;
+		Mesh(Mesh&&);
 		~Mesh();
 
 		void draw() const;
