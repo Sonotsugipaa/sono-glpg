@@ -26,6 +26,10 @@ namespace gla {
 	GLint uniform_trans, uniform_proj;
 
 
+	VertexArray va_create() { return VertexArray(); }
+	VertexBuffer vb_create(GLuint tgt, GLenum usg) { return VertexBuffer(tgt, usg); }
+
+
 	class Shape {
 	protected:
 		VertexArray va;
@@ -53,6 +57,7 @@ namespace gla {
 				VertexBuffer& vertex_vb, VertexBuffer& color_vb,
 				std::size_t vectors_n
 		):
+				va(va_create()),
 				vectors_n(vectors_n)
 		{
 			va.assignVertexBuffer(
@@ -212,8 +217,8 @@ int main(int argn, char** argv) {
 		glUniformMatrix4fv(uniform_proj, 1, GL_FALSE, &proj[0][0]);
 	}
 
-	VertexBuffer vb_vertex = VertexBuffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
-	VertexBuffer vb_color =  VertexBuffer(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+	VertexBuffer vb_vertex = vb_create(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
+	VertexBuffer vb_color =  vb_create(GL_ARRAY_BUFFER, GL_DYNAMIC_DRAW);
 	vb_vertex.bufferData(data_vertex, 5*3*sizeof(GLfloat));
 	vb_color.bufferData(data_color, 5*4*sizeof(GLfloat));
 

@@ -19,19 +19,19 @@ namespace gla {
 	protected:
 		const GLenum target;
 		GLuint vbo_id;
+		GLenum usage;
 	public:
-		const GLenum usage;
 
 		VertexBuffer(GLuint target, GLenum usage);
-		VertexBuffer(VertexBuffer&) = delete;
-		VertexBuffer(VertexBuffer&&) = delete;
+		VertexBuffer(const VertexBuffer &) = delete;
+		VertexBuffer(VertexBuffer&&);
 		~VertexBuffer();
 
 		void bind() const;
 		GLuint id() const;
 		void bufferData(void* data_pointer, GLsizei data_size);
 
-		VertexBuffer& operator = (VertexBuffer&) = delete;
+		VertexBuffer& operator = (const VertexBuffer &) = delete;
 		VertexBuffer& operator = (VertexBuffer&&) = delete;
 	};
 
@@ -41,8 +41,8 @@ namespace gla {
 		GLuint vao_id;
 	public:
 		VertexArray();
-		VertexArray(VertexArray&) = delete;
-		VertexArray(VertexArray&&) = delete;
+		VertexArray(const VertexArray &) = delete;
+		VertexArray(VertexArray&&);
 		~VertexArray();
 
 		void assignVertexBuffer(
@@ -52,7 +52,7 @@ namespace gla {
 		void bind() const;
 		GLuint id() const;
 
-		VertexArray& operator = (VertexArray&) = delete;
+		VertexArray& operator = (const VertexArray &) = delete;
 		VertexArray& operator = (VertexArray&&) = delete;
 	};
 
