@@ -8,8 +8,15 @@ namespace gla {
 		glGenVertexArrays(1, &vao_id);
 	}
 
+	VertexArray::VertexArray(VertexArray&& mov):
+			vao_id(mov.vao_id)
+	{
+		mov.vao_id = 0;
+	}
+
 	VertexArray::~VertexArray() {
-		glDeleteVertexArrays(1, &vao_id);
+		if(vao_id != 0)
+			glDeleteVertexArrays(1, &vao_id);
 	}
 
 
