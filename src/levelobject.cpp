@@ -5,7 +5,8 @@
 
 #include "read_utils.hpp"
 
-#include "sneka/levelfile.hpp"
+#include "amscript/amscript.hpp"
+using amscript::Amscript;
 
 
 
@@ -57,25 +58,26 @@ namespace sneka {
 
 	LevelObjectTemplate* LevelObjectLoader::load(std::string nm) {
 		std::ifstream is = std::ifstream(nm);
-		LevelFile file = LevelFile(is);
 
 		if(! is.is_open()) {
 			throw AssetLoadException(nm, "could not open file \""+nm+"\"");
 		}
 
-		std::string mesh_str = file["mesh"];
-		if(mesh_str.size() <= 0) {
+		Amscript file = Amscript(is);
+
+		std::string mesh_str = file.resolveSymbol("mesh");
+		if(mesh_str.empty()) {
 			throw AssetLoadException(nm, "missing \"mesh\" value");
 		}
 
-		gla::Id32 type = (std::string) file["type"];
+		gla::Id32 type = file.resolveSymbol("type");
 		try {
 			Mesh& mesh = mesh_loader.get(mesh_str);
 
 			glm::vec4 color = glm::vec4(1.0f);
 
 			{
-				std::string color_str = file["color"];
+				std::string color_str = file.resolveSymbol("color");
 				if(color_str.size() > 0) {
 					std::smatch sm;
 					if(std::regex_search(color_str, sm, color_regex)) {
@@ -96,6 +98,8 @@ namespace sneka {
 			}
 
 			return new LevelObjectTemplate(nm, mesh, type, color);
+		} catch(amscript::) {
+
 		} catch(AssetLoadException& ex) {
 			throw AssetLoadException(
 					ex.asset_name,
