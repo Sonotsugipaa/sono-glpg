@@ -63,18 +63,18 @@ namespace sneka {
 			throw AssetLoadException(nm, "could not open file \""+nm+"\"");
 		}
 
-		Amscript file = Amscript(is);
-
-		std::string mesh_str = file.resolveSymbol("mesh");
-		if(mesh_str.empty()) {
-			throw AssetLoadException(nm, "missing \"mesh\" value");
-		}
-
-		gla::Id32 type = file.resolveSymbol("type");
 		try {
-			Mesh& mesh = mesh_loader.get(mesh_str);
+			Amscript file = Amscript(is);
 
-			glm::vec4 color = glm::vec4(1.0f);
+			std::string mesh_str = file.resolveSymbol("mesh");
+			if(mesh_str.empty()) {
+				throw AssetLoadException(nm, "missing \"mesh\" value");
+			}
+
+			gla::Id32 type = file.resolveSymbol("type");
+				Mesh& mesh = mesh_loader.get(mesh_str);
+
+				glm::vec4 color = glm::vec4(1.0f);
 
 			{
 				std::string color_str = file.resolveSymbol("color");
@@ -98,8 +98,8 @@ namespace sneka {
 			}
 
 			return new LevelObjectTemplate(nm, mesh, type, color);
-		} catch(amscript::) {
-
+		} catch(amscript::Exception& ex) {
+			throw AssetLoadException(nm, std::string("invalid amscript (")+ex.what()+")");
 		} catch(AssetLoadException& ex) {
 			throw AssetLoadException(
 					ex.asset_name,

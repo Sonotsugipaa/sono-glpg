@@ -1,5 +1,7 @@
-#ifndef SCRPN_AMSCRIPT_HPP
-#define SCRPN_AMSCRIPT_HPP
+#ifndef AMS_AMSCRIPT_HPP
+#define AMS_AMSCRIPT_HPP
+
+#define AMSCRIPT_VERSION "1.0.1"
 
 #include <exception>
 #include <string>
@@ -126,8 +128,35 @@ namespace amscript {
 		void parse(const std::string & str);
 
 	public:
+		class Getter {
+		private:
+			union {
+				Amscript* amscript;
+				const Amscript * amscript_const;
+			};
+			std::string reference;
+
+		public:
+			Getter(Amscript& amscript, std::string ref_name);
+			Getter(const Amscript & amscript, std::string ref_name);
+
+			std::vector<std::string> operator () (std::string arguments);
+			operator std::string() const;
+			operator const char *() const;
+			operator double() const;
+			operator long long int() const;
+			operator bool() const;
+		};
+
+		Amscript();
+
 		Amscript(
 				std::istream& input_stream,
+				std::size_t max_size = ASCRIPT_FILE_SIZE_MAX );
+
+		Amscript(
+				std::istream& input_tream,
+				const Amscript & import_source,
 				std::size_t max_size = ASCRIPT_FILE_SIZE_MAX );
 
 		/* Attempts to fetch all tokens in a function;
@@ -148,7 +177,8 @@ namespace amscript {
 		Function* getFunction(std::string name);
 		const Function * getFunction(std::string name) const;
 
-		void setSymbol(const Symbol * symbol);
+		void setSymbol(std::string symbol_name, Symbol symbol);
+		void removeSymbol(std::string symbol_name);
 
 		/* Returns the symbol pointed to by 'symbol_name'. */
 		Symbol getSymbol(
@@ -165,6 +195,11 @@ namespace amscript {
 		) const;
 
 		const map_t & getSymbols(bool get_indirect = false) const;
+
+		Getter operator [] (std::string reference_name);
+		const Getter operator [] (std::string reference_name) const;
+
+		Amscript& import(const Amscript & import_source);
 	};
 
 }
