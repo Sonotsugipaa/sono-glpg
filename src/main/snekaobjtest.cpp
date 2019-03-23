@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include <chrono>
 #include <map>
@@ -56,32 +57,6 @@ using namespace gla;
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
-
-
-namespace {
-
-	/*
-	class TestObject : public LevelObject {
-	private:
-		static LevelObjectCounter counter_test;
-	public:
-		TestObject(Mesh& mesh):
-				LevelObject::LevelObject(counter_test, mesh)
-		{
-			TRACE;
-			cout << "Created test object" << endl;
-		}
-
-		virtual ~TestObject() {
-			TRACE;
-			cout << "Destroyed test object" << endl;
-		}
-	};
-
-	LevelObjectCounter TestObject::counter_test;
-	*/
-
-}
 
 
 void main_body(SnekaRuntime&, LevelObjectLoader&, LevelRenderer&);
