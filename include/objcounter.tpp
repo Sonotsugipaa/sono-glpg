@@ -27,37 +27,60 @@ namespace gla {
 			ObjectCounter<value_t>* reference;
 		};
 
+		bool original;
+
 	public:
-		const bool isOriginal;
 
 		ObjectCounter(value_t init = value_t()):
 				counter(init),
-				isOriginal(true)
+				original(true)
 		{ }
 
 		ObjectCounter(ObjectCounter& cpy):
 				reference(&cpy),
-				isOriginal(false)
+				original(false)
 		{
-			if(! reference->isOriginal) {
+			if(! reference->original) {
 				reference = reference->reference;
 			}
 
 			reference->counter += 1;
 		}
 
-		ObjectCounter(ObjectCounter&&) = delete;
-
-		ObjectCounter& operator = (ObjectCounter&) = delete;
-		ObjectCounter& operator = (ObjectCounter&&) = delete;
+		ObjectCounter(ObjectCounter&&) = default;
 
 		~ObjectCounter() {
-			if(! isOriginal)
+			if(! original)
 				reference->counter -= 1;
 		}
 
+
+		ObjectCounter& operator = (ObjectCounter& cpy) {
+			if(original) {
+				--counter;
+			} else {
+				--(reference->counter);
+			}
+
+			if(cpy.original) {
+				reference = &cpy;
+			} else {
+				reference = cpy.reference;
+			}
+
+			original = false;
+			++(reference->counter);
+
+			return *this;
+		}
+
+		ObjectCounter& operator = (ObjectCounter&&) = default;
+
+
+		bool isOriginal() const { return original; }
+
 		value_t value() const {
-			if(isOriginal) return counter;
+			if(original) return counter;
 			return reference->counter;
 		}
 
