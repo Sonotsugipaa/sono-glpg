@@ -32,7 +32,7 @@ namespace sneka {
 			reflect_negative(0.0f)
 	{ }
 
-	RenderObject::RenderObject(const Mesh & _mesh):
+	RenderObject::RenderObject(Mesh& _mesh):
 			RenderObject::RenderObject()
 	{
 		mesh = &_mesh;

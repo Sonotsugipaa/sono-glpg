@@ -20,20 +20,21 @@ namespace sneka {
 		LevelObjectCounter counter;
 		const gla::Id32 type;
 
-		LevelObject(const Mesh &, gla::Id32 type);
+		LevelObject(Mesh&, gla::Id32 type);
+		LevelObject(LevelObject&&) = default;
 		virtual ~LevelObject() = default;
 	};
 
 
 	class LevelObjectTemplate : public virtual Asset {
 	public:
-		const Mesh & mesh;
-		const gla::Id32 type;
-		const glm::vec4 color;
+		Mesh& mesh;
+		gla::Id32 type;
+		glm::vec4 color;
 
 		LevelObjectTemplate(
 				std::string asset_name,
-				const Mesh & mesh,
+				Mesh& mesh,
 				gla::Id32 type,
 				glm::vec4 color = glm::vec4(1.0f) );
 

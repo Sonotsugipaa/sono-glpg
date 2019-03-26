@@ -27,7 +27,7 @@ namespace sneka {
 
 	LevelObjectTemplate::LevelObjectTemplate(
 		std::string asset,
-		const Mesh & mesh,
+		Mesh & mesh,
 		gla::Id32 type,
 		glm::vec4 color
 	):
@@ -43,7 +43,7 @@ namespace sneka {
 
 
 	LevelObject::LevelObject(
-			const Mesh & mesh, gla::Id32 type
+			Mesh& mesh, gla::Id32 type
 	):
 			GridObject::GridObject(mesh),
 			counter(shcounter),

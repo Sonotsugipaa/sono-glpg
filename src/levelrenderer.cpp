@@ -124,13 +124,13 @@ namespace sneka {
 
 	void LevelRenderer::putObject(RenderObject& obj) {
 		TRACE;
-		objects[obj.uid] = &obj;
+		objects[obj.getUid()] = &obj;
 		//std::cout << "now rendering " << obj.uid << std::endl;
 	}
 
 	void LevelRenderer::removeObject(RenderObject& obj) {
 		TRACE;
-		removeObject(obj.uid);
+		removeObject(obj.getUid());
 		//std::cout << "not rendering " << obj.uid << std::endl;
 	}
 
