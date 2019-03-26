@@ -1,0 +1,27 @@
+$output_file:    "assets/pyr.mesh"
+$output_format:  "binary32"
+
+color_l:       85
+color_h:      100
+color_alpha:  100
+
+pyr(neg pos hl hh) {
+	triangle(neg neg  neg pos  hl hh)
+	triangle(neg pos  pos pos  hl hh)
+	triangle(pos pos  pos neg  hl hh)
+	triangle(pos neg  neg neg  hl hh)
+}
+
+build() {
+	pyr(-50 50  0 40)
+}
+
+triangle(x1 z1  x2 z2  yl yh) {
+	v(x1 yl z1 color_l)
+	v(x2 yl z2 color_l)
+	v(0 yh 0 color_h)
+}
+
+v(x y z col) {
+	x y z col col col color_alpha
+}
