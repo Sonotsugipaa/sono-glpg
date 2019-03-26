@@ -1,7 +1,7 @@
 #ifndef AMS_AMSCRIPT_HPP
 #define AMS_AMSCRIPT_HPP
 
-#define AMSCRIPT_VERSION "1.0.1"
+#define AMSCRIPT_VERSION "1.0.2"
 
 #include <exception>
 #include <string>
@@ -81,7 +81,9 @@ namespace amscript {
 	class Function {
 		friend Amscript;  // needed for Amscript::setFunction(...)
 	public:
-		using ptr_t = std::vector<std::string> (*)(std::vector<std::string>);
+		using ptr_t = std::vector<std::string> (*)(
+				Amscript*,
+				std::vector<std::string> );
 
 	private:
 		std::string name;
@@ -103,16 +105,17 @@ namespace amscript {
 		inline const std::vector<std::string> & getBody() const { return body; }
 		inline ptr_t getFunctionPointer() const { return pointer; }
 		inline bool isBuiltin() const { return is_builtin; }
-		inline void setFunctionPointer(ptr_t ptr) { pointer = ptr; }
 		inline operator bool() const { return name.empty(); }
 
 		std::vector<std::string> eval(
 				Amscript& script,
-				const std::vector<std::string> & arguments );
+				const std::vector<std::string> & arguments,
+				std::map<std::string, std::string>* local_arguments = nullptr );
 
 		std::vector<std::string> eval(
 				Amscript& script,
-				std::string arguments );
+				std::string arguments,
+				std::map<std::string, std::string>* local_arguments = nullptr );
 	};
 
 
@@ -168,6 +171,10 @@ namespace amscript {
 		void setFunction(
 				std::string name,
 				unsigned int max_args,
+				Function::ptr_t function_ptr );
+
+		void setFunction(
+				std::string name,
 				Function::ptr_t function_ptr );
 
 		/* Try to remove a function; returns 'false' if the function

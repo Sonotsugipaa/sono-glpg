@@ -1,5 +1,5 @@
-#ifndef SCRPN_TOKEN_HPP
-#define SCRPN_TOKEN_HPP
+#ifndef AMS_TOKEN_HPP
+#define AMS_TOKEN_HPP
 
 #include <string>
 #include <vector>

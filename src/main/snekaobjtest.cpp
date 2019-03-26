@@ -14,9 +14,8 @@
 #include "sneka/gridobject.hpp"
 #include "sneka/levelrenderer.hpp"
 #include "sneka/levelobject.hpp"
-
-// only for LevelFileException, should not be included
-#include "sneka/levelfile.hpp"
+#include "sneka/amscript_ext.hpp"
+#include "sneka/chunk.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -59,12 +58,9 @@ using namespace gla;
 
 
 
-void main_body(SnekaRuntime&, LevelObjectLoader&, LevelRenderer&);
+void main_body(SnekaRuntime&, Chunk&, LevelRenderer&);
 
 int main(int argn, char** argv) {
-	using namespace sneka;
-	using namespace gla;
-
 /* ------ INIT -------------------------------------------------------------- */
 	int W = SCREEN_WIDTH, H = SCREEN_WIDTH * 9 / 16;
 
@@ -92,42 +88,81 @@ int main(int argn, char** argv) {
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			W, H, true, true );  TRACE;
 
-	MeshLoader mesh_loader;
+	amscript::Amscript level_ams;
+	{
+		std::ifstream is = std::ifstream("assets/lvl/1.lvl");
+		level_ams = amscript::Amscript(is);
+	}
+
+
+	MeshLoader* mesh_loader = new MeshLoader();
 	//FileChunkLoader chunk_loader;
-	LevelObjectLoader lvl_loader = LevelObjectLoader(mesh_loader);
+	LevelObjectLoader* lvl_loader = new LevelObjectLoader(*mesh_loader);
+	std::map<char, std::string> obj_map;
+	{
+		std::string path_to_obj = level_ams.resolveSymbol("$object_path");
+		if(path_to_obj[path_to_obj.size()-1] != '/')
+			path_to_obj.push_back('/');
+		std::vector<std::string> obj_enum = level_ams.compute("$object_enum", "");
+		std::size_t off = 0;
+		for(std::size_t i=0; i < obj_enum.size(); ++i) {
+			std::string obj_name = path_to_obj + obj_enum[i];
+			if(! obj_enum[i].empty()) {
+				char digit = digit_to_ch(i-off);
+				obj_map[digit] = obj_name;
+				cout << obj_name << " --> " << digit << endl;
+			} else {
+				++off;
+			}
+		}
+	}
+	FileChunkLoader* chunk_loader = new FileChunkLoader(*lvl_loader, obj_map);
+	Chunk* chunk_1_1 = &chunk_loader->get("assets/lvl/1_1.chunk");
 
-	//Chunk chunk = chunk_loader.get("assets/0_0.chunk");
-
-	FloorObject floor = FloorObject(mesh_loader.get("assets/tile_caved.mesh"), 40);
-	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 1.0f));
+	FloorObject floor = FloorObject(mesh_loader->get("assets/tile_caved.mesh"), 40);
+	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 0.5f));
 
 	LevelRenderer* renderer = new LevelRenderer(
 			runtime,
 			floor, TILES,
 			CURVATURE, DRUGS );  TRACE;
 
-	renderer->setView(vec3(0.0f, -2.0f, 0.0f), 0.0f, 0.0f);
+	std::cout << "chunk size: " << chunk_1_1->getSize() << std::endl;
+	renderer->setView(
+			vec3(
+				-static_cast<GLfloat>(chunk_1_1->getSize() / 2),
+				-2.0f,
+				-static_cast<GLfloat>(chunk_1_1->getSize())
+			),
+			0.0f,
+			0.75f );
 	renderer->setPerspective(
-					90.0f,
-					(GLfloat) WORLD_MIN_Z,
-					(GLfloat) WORLD_MAX_Z );
+			90.0f,
+			(GLfloat) WORLD_MIN_Z,
+			(GLfloat) WORLD_MAX_Z );
 
 	renderer->addLight(glm::vec3(2.0f, 1.0f, 1.0f));
 
 /* ------ BODY ------------------------------------------------------------- */
 	try {
 		TRACE;
-		main_body(runtime, lvl_loader, *renderer);
+		main_body(runtime, *chunk_1_1, *renderer);
 		TRACE;
 	} catch(std::runtime_error ex) {
 		std::cerr
-			<< "Error: " << ex.what()
-			<< " (\"" << gla_trace_file << "\", " << gla_trace_line << ")" << endl;
+				<< "Error: " << ex.what()
+				<< " (\"" << gla_trace_file << "\", " << gla_trace_line << ")" << endl;
 	}
 
 /* ------ END -------------------------------------------------------------- */
 	TRACE;
-	delete renderer;  TRACE;
+	delete renderer; TRACE;
+
+	// Exact order
+	//delete chunk_1_1; TRACE; // Don't delete this, it has been new'd by chunk_loader
+	delete chunk_loader; TRACE;
+	delete lvl_loader; TRACE;
+	delete mesh_loader; TRACE;
 
 	return EXIT_SUCCESS;
 }
@@ -135,27 +170,29 @@ int main(int argn, char** argv) {
 
 void main_body(
 		SnekaRuntime& runtime,
-		LevelObjectLoader& lvl_loader,
+		Chunk& chunk,
 		LevelRenderer& renderer
 ) {
 	(void) runtime;
 	TRACE;
 
+	/*
 	LevelObject* obj1;
 	LevelObject* obj2;
-	try {
-		obj1 = new LevelObject(lvl_loader.get("assets/obj/bloc.obj"));  TRACE;
-		obj1->setGridPosition(-1, -3);  TRACE;
-		renderer.putObject(*obj1);  TRACE;
-		obj2 = new LevelObject(lvl_loader.get("assets/obj/pyr.obj"));  TRACE;
-		obj2->setGridPosition(1, -3);  TRACE;
-		renderer.putObject(*obj2);  TRACE;
-	} catch(LevelFileException& ex) {
-		std::cerr << "LevelFileException: " << ex.message << std::endl;
-		for(std::size_t i=0; i < ex.error_messages.size(); i += 1) {
-			std::cerr << "\t" << ex.error_messages[i] << std::endl;
+	obj1 = new LevelObject(lvl_loader.get("assets/obj/bloc.obj"));  TRACE;
+	obj1->setGridPosition(-1, -3);  TRACE;
+	renderer.putObject(*obj1);  TRACE;
+	obj2 = new LevelObject(lvl_loader.get("assets/obj/pyr.obj"));  TRACE;
+	obj2->setGridPosition(1, -3);  TRACE;
+	renderer.putObject(*obj2);  TRACE;
+	*/
+	{
+		auto iter = chunk.getObjectMap().begin();
+		auto end = chunk.getObjectMap().end();
+		while(iter != end) {
+			renderer.putObject(*(iter->second));
+			++iter;
 		}
-		exit(EXIT_FAILURE);
 	}
 
 	TRACE;
