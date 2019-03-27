@@ -61,6 +61,27 @@ namespace sneka {
 	}
 
 
+	void Chunk::set(Chunk::ivec2 pos, LevelObject* o) {
+		hash_t hash = vecToHash(pos);
+		if(o == nullptr) {
+			map.erase(hash);
+			//std::cout << "[chunk] erased " << absPosition(pos)[0] << ", " << absPosition(pos)[1] << std::endl;
+		} else {
+			map[hash] = o;
+			o->setGridPosition(absPosition(pos));
+			//std::cout << "[chunk] set " << o << " at " << absPosition(pos)[0] << ", " << absPosition(pos)[1] << std::endl;
+		}
+	}
+
+	LevelObject* Chunk::at_nconst(Chunk::ivec2 pos) const {
+		auto iter = map.find(vecToHash(pos));
+		if(iter == map.end())
+			return nullptr;
+		else
+			return iter->second;
+	}
+
+
 	void Chunk::add(Chunk::ivec2 pos, LevelObjectTemplate& obj_template) {
 		changed = true;
 		hash_t hash = vecToHash(pos);
@@ -87,6 +108,33 @@ namespace sneka {
 		}
 	}
 
+	void Chunk::swap(ivec2 p1, ivec2 p2) {
+		changed = true;
+		LevelObject* o1 = at_nconst(p1);
+		LevelObject* o2 = at_nconst(p2);
+
+		set(p2, o1);
+		set(p1, o2);
+	}
+
+	bool Chunk::swap(ivec2 src, ivec2 dest, Chunk& dest_c) {
+		changed = true;
+
+		if(! (isInside(src) && dest_c.isInside(dest)))
+			return false;
+
+		src = relPosition(src);
+		dest = dest_c.relPosition(dest);
+		LevelObject* src_o = at_nconst(src);
+		LevelObject* dest_o = dest_c.at_nconst(dest);
+
+		set(src, nullptr);
+		set(dest, dest_o);
+		dest_c.set(src, src_o);
+		dest_c.set(dest, nullptr);
+
+		return true;
+	}
 
 	void Chunk::setOffset(Chunk::ivec2 off) {
 		changed = true;
@@ -104,16 +152,20 @@ namespace sneka {
 	}
 
 
-	const LevelObject * Chunk::operator [] (ivec2 pos) {
-		auto iter = map.find(vecToHash(pos));
-		if(iter == map.end())
-			return nullptr;
-		else
-			return iter->second;
+	const LevelObject * Chunk::operator [] (ivec2 pos) const {
+		return at_nconst(pos);
 	}
 
-	const LevelObject * Chunk::at(coord_t x, coord_t z) {
+	const LevelObject * Chunk::at(coord_t x, coord_t z) const {
 		return Chunk::operator [] (ivec2(x, z));
+	}
+
+
+	bool Chunk::isInside(ivec2 pos) const {
+		pos = relPosition(pos);
+		return
+				(pos[0] >= 0) && (pos[0] < static_cast<coord_t>(size)) &&
+				(pos[1] >= 0) && (pos[1] < static_cast<coord_t>(size));
 	}
 
 

@@ -124,7 +124,8 @@ int main(int argn, char** argv) {
 	Chunk** chunks = new Chunk*[2] {
 		chunk_0_0, chunk_0_m1
 	};
-	chunk_0_m1->setOffset(0, 0);
+	bool swapped = chunk_0_0->swap(glm::ivec2(0, 0), glm::ivec2(0, -5), *chunk_0_m1);
+	std::cout << "inter-chunk swap " << (swapped? "successful" : "failed") << std::endl;
 
 	FloorObject floor = FloorObject(mesh_loader->get("assets/tile_caved.mesh"), 40);
 	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 0.5f));
