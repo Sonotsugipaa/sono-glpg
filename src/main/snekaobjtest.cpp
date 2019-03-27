@@ -58,7 +58,7 @@ using namespace gla;
 
 
 
-void main_body(SnekaRuntime&, Chunk&, LevelRenderer&);
+void main_body(SnekaRuntime&, Chunk**, std::size_t, LevelRenderer&);
 
 int main(int argn, char** argv) {
 /* ------ INIT -------------------------------------------------------------- */
@@ -116,8 +116,15 @@ int main(int argn, char** argv) {
 			}
 		}
 	}
-	FileChunkLoader* chunk_loader = new FileChunkLoader(*lvl_loader, obj_map);
-	Chunk* chunk_1_1 = &chunk_loader->get("assets/lvl/1_1.chunk");
+	FolderChunkLoader* chunk_loader = new FolderChunkLoader(
+			*lvl_loader, obj_map,
+			"assets/lvl" );
+	Chunk* chunk_0_0 = &chunk_loader->get(0, 0);
+	Chunk* chunk_0_m1 = &chunk_loader->get(0, -1);
+	Chunk** chunks = new Chunk*[2] {
+		chunk_0_0, chunk_0_m1
+	};
+	chunk_0_m1->setOffset(0, 0);
 
 	FloorObject floor = FloorObject(mesh_loader->get("assets/tile_caved.mesh"), 40);
 	floor.setColor(glm::vec4(0.4f, 0.7f, 0.4f, 0.5f));
@@ -127,12 +134,12 @@ int main(int argn, char** argv) {
 			floor, TILES,
 			CURVATURE, DRUGS );  TRACE;
 
-	std::cout << "chunk size: " << chunk_1_1->getSize() << std::endl;
+	std::cout << "chunk size: " << chunk_0_0->getSize() << std::endl;
 	renderer->setView(
 			vec3(
-				-static_cast<GLfloat>(chunk_1_1->getSize() / 2),
+				-static_cast<GLfloat>(chunk_0_0->getSize() / 2),
 				-2.0f,
-				-static_cast<GLfloat>(chunk_1_1->getSize())
+				-static_cast<GLfloat>(chunk_0_0->getSize())
 			),
 			0.0f,
 			0.75f );
@@ -146,7 +153,7 @@ int main(int argn, char** argv) {
 /* ------ BODY ------------------------------------------------------------- */
 	try {
 		TRACE;
-		main_body(runtime, *chunk_1_1, *renderer);
+		main_body(runtime, chunks, 2, *renderer);
 		TRACE;
 	} catch(std::runtime_error ex) {
 		std::cerr
@@ -156,10 +163,11 @@ int main(int argn, char** argv) {
 
 /* ------ END -------------------------------------------------------------- */
 	TRACE;
+	delete chunks; TRACE; // just an array of pointers
 	delete renderer; TRACE;
 
 	// Exact order
-	//delete chunk_1_1; TRACE; // Don't delete this, it has been new'd by chunk_loader
+	//delete chunk_0_0; TRACE; // Don't delete this, it has been new'd by chunk_loader
 	delete chunk_loader; TRACE;
 	delete lvl_loader; TRACE;
 	delete mesh_loader; TRACE;
@@ -170,7 +178,7 @@ int main(int argn, char** argv) {
 
 void main_body(
 		SnekaRuntime& runtime,
-		Chunk& chunk,
+		Chunk** chunks,  std::size_t chunks_n,
 		LevelRenderer& renderer
 ) {
 	(void) runtime;
@@ -186,9 +194,9 @@ void main_body(
 	obj2->setGridPosition(1, -3);  TRACE;
 	renderer.putObject(*obj2);  TRACE;
 	*/
-	{
-		auto iter = chunk.getObjectMap().begin();
-		auto end = chunk.getObjectMap().end();
+	for(std::size_t i=0; i < chunks_n; ++i) {
+		auto iter = chunks[i]->getObjectMap().begin();
+		auto end = chunks[i]->getObjectMap().end();
 		while(iter != end) {
 			renderer.putObject(*(iter->second));
 			++iter;

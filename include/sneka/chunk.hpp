@@ -11,7 +11,9 @@
 
 namespace sneka {
 
+	class Chunk;
 	class FileChunkLoader;
+	class FolderChunkLoader;
 
 	class Chunk : public Asset {
 		friend FileChunkLoader;
@@ -23,7 +25,7 @@ namespace sneka {
 		 * the case for any respectable chunk). */
 		using hash_t = unsigned long long int;
 
-		using coord_t = unsigned short;
+		using coord_t = signed short;
 
 	private:
 		using ivec2 = glm::ivec2;
@@ -40,7 +42,7 @@ namespace sneka {
 		Chunk(ivec2 chunk_offset, const Chunk & cpy);
 
 	public:
-		Chunk(Chunk&);
+		Chunk(const Chunk &);
 		Chunk(Chunk&&) = default;
 		~Chunk();
 
@@ -50,8 +52,13 @@ namespace sneka {
 		void remove(coord_t, coord_t);
 		void remove(ivec2);
 
-		LevelObject* operator [] (ivec2);
-		LevelObject* at(coord_t, coord_t);
+		void swap(ivec2, ivec2);
+
+		void setOffset(ivec2);
+		void setOffset(coord_t, coord_t);
+
+		const LevelObject * operator [] (ivec2);
+		const LevelObject * at(coord_t, coord_t);
 
 		/* returns 'true' if and only if the chunk has been modified
 		 * after being loaded or saved (i.e. if the ChunkLoader
@@ -70,6 +77,7 @@ namespace sneka {
 
 	class FileChunkLoader : public AssetLoader<Chunk> {
 		friend Chunk;
+		friend FolderChunkLoader;
 
 	protected:
 		LevelObjectLoader& obj_loader;
@@ -80,8 +88,21 @@ namespace sneka {
 	public:
 		FileChunkLoader(
 				LevelObjectLoader& object_loader,
-				const std::map<char, std::string> & object_id_map // will be copied
+				const std::map<char, std::string> object_id_map
 		);
+	};
+
+	class FolderChunkLoader : public FileChunkLoader {
+	protected:
+		std::string prefix, suffix;
+	public:
+		FolderChunkLoader(
+				LevelObjectLoader& object_loader,
+				std::map<char, std::string> object_id_map,
+				std::string folder,
+				std::string prefix = "", std::string suffix = ".chunk" );
+
+		Chunk& get(Chunk::coord_t x, Chunk::coord_t z);
 	};
 
 }

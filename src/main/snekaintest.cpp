@@ -224,7 +224,7 @@ namespace {
 
 		while(iter != end) {
 			obj = iter->second;
-			renderer->removeObject(obj->uid);
+			renderer->removeObject(obj->getUid());
 			grid_objects.erase(iter);
 			delete obj;
 

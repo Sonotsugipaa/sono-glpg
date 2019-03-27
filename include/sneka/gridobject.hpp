@@ -33,8 +33,12 @@ namespace sneka {
 		void setGridPosition(glm::ivec2);
 		void setGridPosition(GLint x, GLint z);
 
+		inline glm::ivec2 getGridPosition() const { return grid_pos; }
+
 		void setOffsetPosition(glm::vec2);
 		void setOffsetPosition(float x, float z);
+
+		inline glm::vec2 getOffsetPosition() const { return offset_pos; }
 
 		virtual void draw();
 	};
