@@ -74,6 +74,7 @@ namespace {
 	RenderObject* head;
 	const GLfloat speed = 2.5f;
 	GLfloat speed_boost = 0.0f;
+	GLfloat accel = 0.0f;
 	GLfloat rot = 0.0f;
 	Direction direction;
 
@@ -346,10 +347,15 @@ int main(int argn, char** args) {
 			switch(keycode) {
 				//case SDLK_w:  direction += Direction::FORWARD;   break;
 				//case SDLK_s:  direction += Direction::BACKWARD;  break;
-				case SDLK_w:  speed_boost = speed *  6.0f;    break;
-				case SDLK_s:  speed_boost = speed * -0.7f;    break;
+				case SDLK_w:  accel =  1.3f;  break;
+				case SDLK_s:  accel = -0.5f;  break;
 				case SDLK_d:  direction += Direction::RIGHT;  break;
 				case SDLK_a:  direction += Direction::LEFT;   break;
+			}
+		} else {
+			switch(keycode) {
+			case SDLK_w:
+			case SDLK_s:  accel = 0.0f;  break;
 			}
 		}
 	} );  TRACE;
@@ -395,6 +401,7 @@ int main(int argn, char** args) {
 		if(speed_boost < 0.0f) {
 			speed_boost /= 1.7f;
 		}
+		speed_boost += accel;
 		TRACE;
 		/*
 		std::cout << "dir     " << direction.degrees() << std::endl;
