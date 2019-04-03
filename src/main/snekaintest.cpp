@@ -206,6 +206,7 @@ namespace {
 			gencol[2] = 0.0f;
 
 			newobj->setGridPosition(genpos);
+			newobj->setRotation((Direction::FORWARD + Direction::LEFT).radians() * genj);
 			newobj->setColor(gencol);
 			newobj->shade = shade;
 			newobj->reflect = reflect;
@@ -308,7 +309,7 @@ int main(int argn, char** args) {
 
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 2, TILES,
+			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 3, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
@@ -316,7 +317,15 @@ int main(int argn, char** args) {
 			(float) OBJECT_REFLECT_N );
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/blocg.mesh"), OBJECTS - (OBJECTS / 2), TILES,
+			mesh_loader.get("assets/blocg.mesh"), OBJECTS / 3, TILES,
+			(float) OBJECT_SHADE,
+			(float) OBJECT_REFLECT,
+			(float) OBJECT_REFLECT_FO,
+			(float) OBJECT_REFLECT_O,
+			(float) OBJECT_REFLECT_N );
+	genObjects(
+			renderer,
+			mesh_loader.get("assets/bloc.mesh"), OBJECTS / 3, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
