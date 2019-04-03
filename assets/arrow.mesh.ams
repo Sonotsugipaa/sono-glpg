@@ -17,11 +17,11 @@ build() {
 	 / / O \ \
 	 B/--D--\C
 */
-A(col) { v(  0   0 -50  col) }
-B(col) { v(-40   0  65  col) }
-C(col) { v( 40   0  65  col) }
-D(col) { v(  0   0  55  col) }
-O(col) { v(  0  35  30  col) }
+A(col) { v(  0   0 -60  col) }
+B(col) { v(-40   0  45  col) }
+C(col) { v( 40   0  45  col) }
+D(col) { v(  0   0  35  col) }
+O(col) { v(  0  35  20  col) }
 
 arrow(col_l col_h) {
 	A(col_h) B(col_l) O(col_h)

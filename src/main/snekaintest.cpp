@@ -309,7 +309,7 @@ int main(int argn, char** args) {
 
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 3, TILES,
+			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 2, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
@@ -317,7 +317,7 @@ int main(int argn, char** args) {
 			(float) OBJECT_REFLECT_N );
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/blocg.mesh"), OBJECTS / 3, TILES,
+			mesh_loader.get("assets/blocg.mesh"), OBJECTS / 4, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
@@ -325,7 +325,7 @@ int main(int argn, char** args) {
 			(float) OBJECT_REFLECT_N );
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/bloc.mesh"), OBJECTS / 3, TILES,
+			mesh_loader.get("assets/bloc.mesh"), OBJECTS / 4, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
