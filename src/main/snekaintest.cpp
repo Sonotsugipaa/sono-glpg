@@ -39,7 +39,7 @@
 #define CAM_HEIGHT           (2.0)
 #define CAM_PITCH            (1.1)
 #define CURVATURE            (-0.03)
-#define TILES                (25)
+#define TILES                (30)
 #define OBJECTS              (250)
 #define DRUGS                (0.0)
 #define WORLD_MIN_Z          (0.2)
@@ -56,6 +56,10 @@
 #define FLOOR_REFLECT_O      (1.7)
 #define FLOOR_REFLECT_N      (-0.0)
 
+#define OBJECT_COLOR_GOLD    glm::vec4(0.7f,0.5f,0.0f,1.0f)
+#define OBJECT_COLOR_BLACK   glm::vec4(0.4f,0.4f,0.4f,1.0f)
+
+#define COLOR_FLOOR          0.1,0.1,0.1
 #define COLOR_SKY            0.1,0.1,0.1
 #define COLOR_LIGHT          1.0,1.0,1.0
 
@@ -168,6 +172,7 @@ namespace {
 			LevelRenderer* renderer,
 			Mesh& mesh, std::size_t count,
 			int unsigned tiles,
+			glm::vec4 color,
 			GLfloat shade,
 			GLfloat reflect, GLfloat reflect_falloff,
 			GLfloat reflect_opaque, GLfloat reflect_negative
@@ -182,7 +187,6 @@ namespace {
 			GridObject* newobj = new GridObject(mesh);
 
 			glm::ivec2 genpos;
-			glm::vec4 gencol;  gencol[3] = 1.0f;
 			int unsigned genhash;
 			int unsigned geni = 0;
 			do {
@@ -198,17 +202,9 @@ namespace {
 							" (too many attempts)" );
 			} while(grid_objects.find(genhash) != grid_objects.end());
 
-			//gencol[0] = (float) gla::xorshift<unsigned char>(genj  );
-			//gencol[1] = (float) gla::xorshift<unsigned char>(genj+1);
-			//gencol[2] = (float) gla::xorshift<unsigned char>(genj+2);
-			//gencol[3] = (float) gla::xorshift<unsigned char>(genj+3);
-			gencol[0] = 0.7f;
-			gencol[1] = 0.5f;
-			gencol[2] = 0.0f;
-
 			newobj->setGridPosition(genpos);
 			newobj->setRotation((Direction::FORWARD + Direction::LEFT).radians() * genj);
-			newobj->setColor(gencol);
+			newobj->setColor(color);
 			newobj->shade = shade;
 			newobj->reflect = reflect;
 			newobj->reflect_falloff = reflect_falloff;
@@ -289,7 +285,7 @@ int main(int argn, char** args) {
 			CURVATURE, DRUGS );  TRACE;
 	renderer->setClearColor(glm::vec3(COLOR_SKY));
 	renderer->setLightColor(glm::vec3(COLOR_LIGHT));
-	renderer->getFloorObject().setColor(glm::vec4(COLOR_SKY, 1.0f));
+	renderer->getFloorObject().setColor(glm::vec4(COLOR_FLOOR, 1.0f));
 	renderer->getFloorObject().shade = (float) FLOOR_SHADE;
 	renderer->getFloorObject().reflect = (float) FLOOR_REFLECT;
 	renderer->getFloorObject().reflect_falloff = (float) FLOOR_REFLECT_FO;
@@ -310,7 +306,8 @@ int main(int argn, char** args) {
 
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 2, TILES,
+			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 4, TILES,
+			OBJECT_COLOR_GOLD,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
@@ -319,6 +316,7 @@ int main(int argn, char** args) {
 	genObjects(
 			renderer,
 			mesh_loader.get("assets/blocg.mesh"), OBJECTS / 4, TILES,
+			OBJECT_COLOR_GOLD,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
@@ -327,11 +325,21 @@ int main(int argn, char** args) {
 	genObjects(
 			renderer,
 			mesh_loader.get("assets/bloc.mesh"), OBJECTS / 4, TILES,
-			(float) OBJECT_SHADE,
-			(float) OBJECT_REFLECT,
-			(float) OBJECT_REFLECT_FO,
-			(float) OBJECT_REFLECT_O,
-			(float) OBJECT_REFLECT_N );
+			glm::vec4(COLOR_FLOOR, 1.0f),
+			(float) FLOOR_SHADE,
+			(float) FLOOR_REFLECT,
+			(float) FLOOR_REFLECT_FO,
+			(float) FLOOR_REFLECT_O,
+			(float) FLOOR_REFLECT_N );
+	genObjects(
+			renderer,
+			mesh_loader.get("assets/pyr.mesh"), OBJECTS / 4, TILES,
+			glm::vec4(COLOR_FLOOR, 1.0f),
+			(float) FLOOR_SHADE,
+			(float) FLOOR_REFLECT,
+			(float) FLOOR_REFLECT_FO,
+			(float) FLOOR_REFLECT_O,
+			(float) FLOOR_REFLECT_N );
 
 	runtime.setResizeCallback( [](SnekaRuntime& rt, unsigned int x, unsigned int y) {
 		rt.setViewport(x, y);
