@@ -1,0 +1,118 @@
+$output_file:    "assets/blocg.mesh"
+$output_format:  "binary32"
+
+color_l:       85
+color_h:      100
+color_alpha:  100
+
+/*
+	"Map"
+
+	width:  30, 20
+	x1 [-45 -40 -20 -15]
+	x1 [-15 -10  10  15]
+	x1 [ 15  20  40  45]
+	x2 [-30 -25  -5   0]
+	x2 [  0   5  25  30]
+	x3 [-15 -10  10  15]
+
+	length: 44.5, 36.5
+	z1 [-45 -40  -4   0]
+	z1 [  0   4   4  45]
+	z2 [-23 -18  18  23]
+	z3 ^^^
+*/
+
+build() {
+	ingots_1( 0 25)
+	ingots_2(25 50)
+	ingots_1(50 75)
+}
+
+ingots_1(L H) {
+	ingot(
+		-45 -40  40  45
+		-45 -42  -3   0
+		L H  color_h
+	)
+
+	ingot(
+		-45 -40  40  45
+		  0   3  42  45
+		L H  color_h
+	)
+}
+
+ingots_2(L H) {
+	ingot(
+		-45 -42  -3   0
+		-45 -40  40  45
+		L H  color_h
+	)
+
+	ingot(
+		  0   3  42  45
+  		-45 -40  40  45
+		L H  color_h
+	)
+}
+
+v(x y z col) {
+	x y z col col col color_alpha
+}
+
+/*
+	Triangle schema
+
+	1
+	| \
+	|  \
+	3---2
+*/
+tri(x1 y1 z1  x2 y2 z2  x3 y3 z3  color) {
+	v(x1 y1 z1 color)
+	v(x2 y2 z2 color)
+	v(x3 y3 z3 color)
+}
+
+/*
+	Square schema
+
+	1---4
+	| \ |
+	|  \|
+	3---2
+*/
+sq(x1 y1 z1  x2 y2 z2  x3 y3 z3  x4 y4 z4  color) {
+	tri(x1 y1 z1  x3 y3 z3  x2 y2 z2  color)
+	tri(x1 y1 z1  x2 y2 z2  x4 y4 z4  color)
+}
+
+
+/*
+	Ingot schema
+
+	h---------h  <---- z1
+	|\       /|
+	| H-----H |  <---- Z1
+	| |     | |
+	| |     | |
+	| |     | |
+	| H-----H |  <---- Z2
+	|/       \|
+	h---------h  <---- z2
+
+	^ ^     ^ ^
+	| |     | |
+	| |     | |
+	| X1   X2 |
+	x1       x2
+*/
+ingot(x1 X1 X2 x2  z1 Z1 Z2 z2  h H  color) {
+	sq(X1 H Z1  x1 h z2  x1 h z1  X1 H Z2  color)
+	sq(X1 H Z2  x2 h z2  x1 h z2  X2 H Z2  color)
+	sq(X2 H Z2  x2 h z1  x2 h z2  X2 H Z1  color)
+	sq(X2 H Z1  x1 h z1  x2 h z1  X1 H Z1  color)
+
+	sq(X1 H Z1  X2 H Z2  X1 H Z2  X2 H Z1  color)
+}

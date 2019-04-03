@@ -45,14 +45,14 @@
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
-#define OBJECT_SHADE         (0.6)
-#define OBJECT_REFLECT       (0.9)
+#define OBJECT_SHADE         (0.7)
+#define OBJECT_REFLECT       (0.99)
 #define OBJECT_REFLECT_FO    (3.0)
-#define OBJECT_REFLECT_O     (0.3)
+#define OBJECT_REFLECT_O     (0.2)
 #define OBJECT_REFLECT_N     (-0.0)
 #define FLOOR_SHADE          (0.6)
-#define FLOOR_REFLECT        (0.0)
-#define FLOOR_REFLECT_FO     (1.0)
+#define FLOOR_REFLECT        (0.2)
+#define FLOOR_REFLECT_FO     (2.0)
 #define FLOOR_REFLECT_O      (1.7)
 #define FLOOR_REFLECT_N      (-0.0)
 
@@ -308,7 +308,7 @@ int main(int argn, char** args) {
 
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/pyr.mesh"),  OBJECTS / 2, TILES,
+			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 2, TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
@@ -316,7 +316,7 @@ int main(int argn, char** args) {
 			(float) OBJECT_REFLECT_N );
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/bloc.mesh"), OBJECTS - (OBJECTS / 2), TILES,
+			mesh_loader.get("assets/blocg.mesh"), OBJECTS - (OBJECTS / 2), TILES,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
 			(float) OBJECT_REFLECT_FO,
