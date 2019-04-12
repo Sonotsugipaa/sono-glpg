@@ -1,7 +1,7 @@
 #ifndef AMS_AMSCRIPT_HPP
 #define AMS_AMSCRIPT_HPP
 
-#define AMSCRIPT_VERSION "1.0.2"
+#define AMSCRIPT_VERSION "1.1.4"
 
 #include <exception>
 #include <string>
@@ -25,6 +25,8 @@ namespace amscript {
 	class Amscript;
 
 
+	/* Thrown DIRECTLY if an unexpected internal error
+	 * occurs during the parsing phase */
 	class Exception : public std::exception {
 	private:
 		char * const message;
@@ -36,15 +38,19 @@ namespace amscript {
 	};
 
 
-	/* Thrown before parsing any script */
+	/* Thrown when the script has an invalid syntax */
 	class LogicException : public Exception {
+	private:
+		std::size_t _line;
+
 	public:
-		LogicException(const std::string &);
-		LogicException(const char *);
+		LogicException(const std::string &, std::size_t line = 0);
+		LogicException(const char *, std::size_t line = 0);
+		constexpr std::size_t line() const { return _line; }
 	};
 
 
-	/* Thrown when a script runtime encounters an error */
+	/* Thrown when a script function encounters an error */
 	class RuntimeException : public Exception {
 	public:
 		RuntimeException(const std::string &);
@@ -96,26 +102,26 @@ namespace amscript {
 		Function();
 		Function(
 				std::string name,
-				std::string arguments,
-				std::string body,
+				std::vector<std::string> arguments,
+				std::vector<std::string> body,
 				ptr_t func_ptr = nullptr );
 
 		inline std::string getName() const { return name; }
 		inline const std::vector<std::string> & getArguments() const { return args; }
 		inline const std::vector<std::string> & getBody() const { return body; }
-		inline ptr_t getFunctionPointer() const { return pointer; }
+		inline ptr_t getNative() const { return pointer; }
 		inline bool isBuiltin() const { return is_builtin; }
-		inline operator bool() const { return name.empty(); }
+		inline operator bool() const { return ! name.empty(); }
 
 		std::vector<std::string> eval(
 				Amscript& script,
 				const std::vector<std::string> & arguments,
-				std::map<std::string, std::string>* local_arguments = nullptr );
+				const std::map<std::string, std::string> * local_arguments = nullptr );
 
 		std::vector<std::string> eval(
 				Amscript& script,
 				std::string arguments,
-				std::map<std::string, std::string>* local_arguments = nullptr );
+				const std::map<std::string, std::string> * local_arguments = nullptr );
 	};
 
 
@@ -123,14 +129,6 @@ namespace amscript {
 	public:
 		using map_t = std::map<std::string, std::string>;
 
-	private:
-		map_t symbols_indirect;
-		map_t symbols_direct;
-		std::map<std::string, Function> functions;
-
-		void parse(const std::string & str);
-
-	public:
 		class Getter {
 		private:
 			union {
@@ -145,13 +143,27 @@ namespace amscript {
 
 			std::vector<std::string> operator () (std::string arguments);
 			operator std::string() const;
-			operator const char *() const;
 			operator double() const;
+			operator float() const;
 			operator long long int() const;
+			operator int() const;
 			operator bool() const;
 		};
 
+	private:
+		map_t symbols_indirect;
+		map_t symbols_direct;
+		std::map<std::string, Function> functions;
+
+		void parse(std::string str);
+
+	public:
+		unsigned short recursion_limit = 0xFFF;
+
 		Amscript();
+
+		Amscript(const std::string & input);
+		Amscript(std::string&& input);
 
 		Amscript(
 				std::istream& input_stream,
@@ -170,6 +182,11 @@ namespace amscript {
 
 		void setFunction(
 				std::string name,
+				std::vector<std::string> arguments,
+				std::vector<std::string> body );
+
+		void setFunction(
+				std::string name,
 				unsigned int max_args,
 				Function::ptr_t function_ptr );
 
@@ -181,8 +198,8 @@ namespace amscript {
 		 * was not found. */
 		bool removeFunction(std::string name);
 
-		Function* getFunction(std::string name);
-		const Function * getFunction(std::string name) const;
+		Function getFunction(std::string name);
+		const Function getFunction(std::string name) const;
 
 		void setSymbol(std::string symbol_name, Symbol symbol);
 		void removeSymbol(std::string symbol_name);
