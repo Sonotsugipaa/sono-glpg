@@ -1,3 +1,16 @@
 $object_path: "assets/obj/"
 
+// legacy
 $object_enum() { "pyr.obj" "bloc.obj" "pyrl.obj" }
+
+$load() {
+	$random: 'lvl1'
+	
+	$object_enum('0' 'pyr.obj')
+	$object_enum('1' 'bloc.obj')
+	$object_enum('2' 'pyrl.obj')
+	
+	$add($random_choose(0 1 2) 1 2)
+	$add($random_choose(0 1 2) 2 2)
+	$add($random_choose(0 1 2) 3 2)
+}
