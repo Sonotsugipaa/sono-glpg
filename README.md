@@ -1,16 +1,19 @@
 # Sonotsugipaa's OpenGL Playground
 
 <p>
-Small workspace to play around with OpenGL.
+A hobby project for a simple knock-off of a Snake game,
+<strong>Sneka3D</strong>.
 </p> <p>
-This project exists for the sake of a knock-off version of an old 3D Snake
-from Nokia.
-<br>
-Also for learning OpenGL.
+<strong>Sneka3D</strong> is inspired by a Nokia game called
+<strong>Snakes</strong>.<br>
+Conceptually, the game features moddable levels and objects, pre-defined small
+and big levels as well as procedurally generated worlds;<br>
+it's also supposed
+to be low-weight, although that depends on its quality.
 </p>
 
 
-# Requirements
+## Requirements
 
 1. <code>g++</code>, the C++ compiler
 2. GNU Make (<code>make</code>)
@@ -18,21 +21,21 @@ Also for learning OpenGL.
 4. Hardware that supports OpenGL 3
 
 
-# Dependencies
+## Dependencies
 
 - The ones mentioned in '<b>Requirements</b>'
-- OpenGL 3, GLEW, SDL2
-- GLM (only the headers, for vector and matrix operations)
-- Git (obviously)
+- <b>OpenGL 3</b>, <b>GLEW</b>, <b>SDL2</b>
+- <b>GLM</b> (only the headers, for vector and matrix operations)
+- <b>Amscript</b> library (https://github.com/Sonotsugipaa/Amscript)
 
 
-# Setup
+## Setup
 
 <p>
 First you need to install some dependencies: <i>OpenGL</i>, <i>GLEW</i> and
 <i>SDL2</i>.
 <br>
-On Ubuntu (and derivates), install these packages:<br>
+On <b>Debian</b>-based systems, install these packages:<br>
 
 <code>sudo apt-get update</code><br>
 <code>sudo apt-get install libsdl2-dev libgl1-mesa-dev libx11-dev libxrandr-dev</code><br>
@@ -46,130 +49,83 @@ and extract the header files, found in the folder <code>glm/glm/</code>, to
 <code>glm/glm/</code> folder (<i>NOT THE PARENT</i>, <code>glm/</code>!), open
 a terminal where you extracted the folder and enter
 <code>sudo mv ./glm /usr/include/.</code>.
-<br>
-If everything went according to my plan, you now have the file
-<code>/usr/include/glm/glm.hpp</code>, among others; you're going to have a
-stray <code>CMakeLists.txt</code>, you can safely remove that - at least for
-the scope of this workspace.
 </p> <p>
-That's it, for now.
+The last dependency is <b>Amscript</b>: it can be built and installed
+by following the instructions written in it's repository's <i>README.md</i>.
 </p>
 
 
-# Usage
+## Building the project
 
+### How to build
+
+Run the <code>make</code> command.
+
+### Makefile setup
 <p>
-To create an executable program, create a source file
-(ending with <code>.cpp</code>) in the <code>src/main/</code> folder - this
-file must contain the main function.
-If you want to create intermediate objects, create and write source files in
-<code>src/</code> with the aforementioned file extension, and it will
-automatically be compiled to <code>build/</code> and used when compiling
-executables, which can be found in <code>bin/</code>.<br>
-
-You will be able to #include everything in <code>include/</code>.
+Simply running <code>make</code> compiles each file in <code>src/</code>
+that ends with the <code>.cpp</code> extension to <code>build/</code>,
+and links every file in <code>src/main/</code> to <code>bin/</code> using
+<b>ALL</b> <code>.o</code> files from <code>build/</code>.
+</p> <p>
+<code>make bin/???</code> builds a single executable file.
 </p>
 
-<p>
-To compile and link everything, simply run <code>make make_exec</code> (or just <code>make</code>).
-<br>
-To clear compiled intermediate files, run <code>make clear</code>; if you want to delete
-executables too, run <code>make purge</code>.
-<br>
-To compile single executables or intermediate files, run <code>make bin/NAME</code> or
-<code>make build/NAME</code>, where 'NAME' is (obviously) the name of the file you want
-to compile/link.
-</p>
+Sometimes it may be necessary to recompile everything. In order to do that:
+
+- <code>make clean</code> deletes all intermediate files;
+- <code>make purge</code> deletes all intermediate <b>AND</b> executable files.
 
 ### Assets
 
-<p>
-The workspace includes some utility programs for creating binary files from
-decimal numbers, which should be stored in assets.<br>
-Those utilities, compiled (like everything else) to <code>bin/</code> are:
-</p>
+<strong>Sneka3D</strong> (like any respectable game) uses a variety of assets
+that are not compiled directly into the executable file.<br>
+Most of them are <b>amscript</b>s.
 
-1. itob <i>(<b>I</b>nteger <b>TO</b> <b>B</b>inary)</i>
-2. baker <i>(<b>B</b>inary m<b>AKER</b>)</i>
+#### Meshes
 
 <p>
-Itob simply converts all of its arguments to binary characters, and prints
-them to the output stream:
-<code>itob 97 98</code> will print <code>a...b...</code> (each period being
-the null character, ASCII 0).
+Meshes are binary files containing vertices.<br>
+Each vertex contains <b>7</b> 32-bit little-endian signed integer numbers,
+that are interpreted by <strong>Sneka3D</strong>'s asset loader as fixed-point
+numbers by dividing them by 100 - for example, a distance of <b>1</b> tile
+equals <b>100</b> in the mesh file.
 </p> <p>
-Baker simply prints every argument to the output stream, but allows the
-definition and replacement of character sequences.
+The values of the vertices are:<br><br>
+<b>1</b> to <b>3</b>: XYZ offset coordinates;<br>
+<b>4</b> to <b>6</b>: RGB color values;<br>
+<b>7</b>: Color transparency.
+</p> <p>
+A triangle is formed by <b>3</b> vertices, and their visible face is the one
+where the vertices are seen in a <b>counter-clockwise</b> order.
+</p> <p>
+To create a mesh, use the <code>amso</code> utility, included with the
+<b>Amscript</b> library.
 </p>
 
-- If an argument starts with <code>!</code>, a variable with that name (without
-  <code>!</code>) will be defined, for example<br>
-  <code>baker !abc STR</code><br>
-  will define <code>abc</code> as <code>STR</code> (without actually printing
-  anything);
-- If an argument starts with <code>?</code>, the variable with that name will
-  be used instead (unless it hasn't been defined), so<br>
-  <code>baker !abc STR Hello, ?abc ?undefined</code><br>
-  will print <code>Hello, STR</code>.
-- If a variable definition starts with <code>[</code> and ends with
-  <code>]</code>, everything between the tokens will be the variable's value.<br>
-  <b>IMPORTANT NOTE</b>: the closing bracket does <b>NOT</b> delimit a token,
-  and an argument such as <code>ABC]DE</code> will not end the variable's
-  definition. This may be useful for defining variables with brackets as
-  characters, such as <code>!key [[value1 value2]]</code> so that
-  <code>?key</code> expands to <code>[value1 value2]</code>, brackes included
-  (again, a space between the two <b>closing</b> brackets will result in the
-  end of the variable definition on the first one).
+
+## Licenses
 
 <p>
-The argument following a variable definition
-(<i>arg2</i> in <code>!arg1 arg2</code>) does not expand, therefore<br>
-<code>baker !! ! ?!</code> will print <code>!</code>, and<br>
-<code>baker !? ? ??</code> will print <code>?</code>.<br>
-These two examples are actually built-in variables.
+As of <i>2019 / 04 / 13</i>, the <strong>Sneka3D</strong> project is being
+developed by a single person, whom, for this section, will be addressed as
+"<b>me</b>" or "<b>I</b>" using the proper pronouns.<br>
 </p> <p>
-It is possible to combine the two programs, "compiling" a binary file using
-the GNU Make target <code>%: %.bake [...]</code>.
+I am an amateur developer, a Computer Science student and, most importantly,
+someone who has <b><i>not worked professionally</i></b> (or even in a team,
+excluding assignments about bubble-sorts) <b><i>yet</i></b>.<br>
+I don't know anything about licensing, other than "<i>it's important to have your
+software licensed</i>".
+</p> <p>
+This repository is under the
+<i><b>GNU LESSER GENERAL PUBLIC LICENSE (Version 3)</b></i>, a copy of which
+is included in the (repo's) root directory.<br>
+</p> <p>
+Other than that, I don't know how to address, or manage, licenses derived from
+the tools I used - as far as I know, this repository could be a violation of
+human rights from a legal perspective.<br>
+If you know anything about licensing more than I do (very likely) and are
+willing to help me not get sued into oblivion, please contact me via email
+(<i>mark.prl.97@gmail.com</i>) and tell me how to determine what other
+open-source licenses I should be aware of, or how to properly address them.
 </p>
-
-
-# Licenses
-
-GNU Lesser General Public License<br>
-<i>(included in the repository)</i>
-
-### GNU General Public License v3
-
-From GNU Make, G++:<br>
-<i>https://www.gnu.org/licenses/gpl-3.0.en.html</i>
-
-### GNU General Public License v2
-
-From Git;<br>
-<i>https://www.gnu.org/licenses/gpl-2.0.en.html</i>
-
-### zlib License
-
-From SDL2:<br>
-<i>https://www.zlib.net/zlib_license.html</i>
-
-### Modified BSD License
-
-From GLEW:<br>
-<i>http://glew.sourceforge.net/glew.txt</i>
-
-### Mesa 3-D License
-
-From GLEW:<br>
-<i>http://glew.sourceforge.net/mesa.txt</i>
-
-### Khronos License
-
-From GLEW:<br>
-<i>http://glew.sourceforge.net/khronos.txt</i>
-
-### Other Licenses
-
-I could not find the exact license used by OpenGL, although
-it *is* an open-source license, and this whole project is
-completely open-source.
