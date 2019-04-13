@@ -16,6 +16,10 @@ namespace {
 
 	std::string get_source(std::string& file) {
 		std::ifstream file_str(file);
+		if(file_str.fail()) {
+			throw gla::CompilationException(file.c_str(), ("Could not read the file \""+file+"\"").c_str());
+		}
+
 		std::stringstream buffer;
 
 		buffer << file_str.rdbuf();

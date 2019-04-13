@@ -22,15 +22,15 @@ namespace gla {
 	}
 
 
-	void VertexBuffer::bind() {
+	void VertexBuffer::bind() const {
 		glBindBuffer(target, vbo_id);
 	}
 
-	GLuint VertexBuffer::id() {
+	GLuint VertexBuffer::id() const {
 		return vbo_id;
 	}
 
-	void VertexBuffer::bufferData(void* data_pointer, size_t data_size) {
+	void VertexBuffer::bufferData(void* data_pointer, GLsizei data_size) {
 		glBindBuffer(target, vbo_id);
 		glBufferData(
 				target,
