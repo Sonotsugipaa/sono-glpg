@@ -1,4 +1,4 @@
-COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include -Llib
+COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
 CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
 ALL_MAIN_SRCS =\

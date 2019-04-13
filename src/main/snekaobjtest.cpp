@@ -90,28 +90,9 @@ int main(int argn, char** argv) {
 
 	amscript::Amscript level_ams;
 	{
-		using strvec = std::vector<std::string>;
 		std::ifstream is = std::ifstream("assets/lvl/1.lvl");
 		level_ams = load_amscript(is);
-		level_ams.setFunction(
-				"$add",
-				[](amscript::Amscript* scr, strvec args) -> strvec {
-					if(args.size() >= 3) {
-						std::cout
-								<< "SHOULD ADD OBJECT " << args[0] << " AT x"
-								<< args[1] << ", z" << args[2] << std::endl;
-					} else {
-						std::cout << "INVALID $add() ARGS COUNT" << std::endl;
-					}
-					return strvec();
-				} );
-		try {
-			level_ams.compute("$load", "");
-		} catch(amscript::UndefinedNameException& ex) {
-			/* This exception will not be thrown anymore in future
-			 * Amscript versions. */
-			std::cout << "assets/lvl/1.lvl: no $load() function" << std::endl;
-		}
+		level_ams.compute("$load", "");
 	}
 
 
