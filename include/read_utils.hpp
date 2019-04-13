@@ -13,3 +13,7 @@ bool read_int(const char * string, int* destination, int radix);
 bool read_dec_int(const char * string, int* destination);
 
 bool fprint_int(FILE* file, int number, int base);
+
+bool read_float(const char * string, float* destination, int radix);
+
+bool read_dec_float(const char * string, float* destination);

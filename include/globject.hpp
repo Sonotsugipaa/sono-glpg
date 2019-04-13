@@ -17,21 +17,21 @@ namespace gla {
 
 	class VertexBuffer {
 	protected:
-		GLenum target;
+		const GLenum target;
 		GLuint vbo_id;
+		GLenum usage;
 	public:
-		const GLenum usage;
 
 		VertexBuffer(GLuint target, GLenum usage);
-		VertexBuffer(VertexBuffer&) = delete;
-		VertexBuffer(VertexBuffer&&) = delete;
+		VertexBuffer(const VertexBuffer &) = delete;
+		VertexBuffer(VertexBuffer&&);
 		~VertexBuffer();
 
-		void bind();
-		GLuint id();
-		void bufferData(void* data_pointer, size_t data_size);
+		void bind() const;
+		GLuint id() const;
+		void bufferData(void* data_pointer, GLsizei data_size);
 
-		VertexBuffer& operator = (VertexBuffer&) = delete;
+		VertexBuffer& operator = (const VertexBuffer &) = delete;
 		VertexBuffer& operator = (VertexBuffer&&) = delete;
 	};
 
@@ -41,18 +41,18 @@ namespace gla {
 		GLuint vao_id;
 	public:
 		VertexArray();
-		VertexArray(VertexArray&) = delete;
-		VertexArray(VertexArray&&) = delete;
+		VertexArray(const VertexArray &) = delete;
+		VertexArray(VertexArray&&);
 		~VertexArray();
 
 		void assignVertexBuffer(
 				VertexBuffer& vertex_buffer, GLuint attrib_pos,
 				GLint size, GLenum datum_type, GLboolean normalized,
 				GLsizei stride, GLvoid* offset );
-		void bind();
-		GLuint id();
+		void bind() const;
+		GLuint id() const;
 
-		VertexArray& operator = (VertexArray&) = delete;
+		VertexArray& operator = (const VertexArray &) = delete;
 		VertexArray& operator = (VertexArray&&) = delete;
 	};
 

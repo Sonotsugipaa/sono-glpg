@@ -1,6 +1,6 @@
-COMMON_FLAGS = -g -Wall -I./include -Llib
+COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
-CPPFLAGS = -std=c++17 $(COMMON_FLAGS)
+CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
 ALL_MAIN_SRCS =\
 	$(patsubst src/main/%.c, bin/%, $(wildcard src/main/*.c))\
 	$(patsubst src/main/%.cpp, bin/%, $(wildcard src/main/*.cpp))

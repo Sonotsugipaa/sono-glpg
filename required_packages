@@ -1,0 +1,5 @@
+Debian:
+	sudo apt-get install libsdl2-2.0.0 libosmesa6 libgl1 libxi6 libglew2.0
+
+Fedora:
+	<?>

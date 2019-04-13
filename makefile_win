@@ -1,59 +1,71 @@
-COMMON_FLAGS = -g -Wall -I./include -Llib -mwindows
+COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include -Lwlib -mwindows -mconsole
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
-CPPFLAGS = -std=c++17 $(COMMON_FLAGS)
+CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
 ALL_MAIN_SRCS =\
-	$(patsubst src/main/%.c, bin/%, $(wildcard src/main/*.c))\
-	$(patsubst src/main/%.cpp, bin/%, $(wildcard src/main/*.cpp))
+	$(patsubst src/main/%.c, wbin/%, $(wildcard src/main/*.c))\
+	$(patsubst src/main/%.cpp, wbin/%, $(wildcard src/main/*.cpp))
 C_SRCS = $(wildcard src/*.c)
 CPP_SRCS = $(wildcard src/*.cpp)
 ALL_OBJS =\
-	$(patsubst src/%.c, build/%.o, $(C_SRCS))\
-	$(patsubst src/%.cpp, build/%.o, $(CPP_SRCS))
+	$(patsubst src/%.c, wbuild/%.o, $(C_SRCS))\
+	$(patsubst src/%.cpp, wbuild/%.o, $(CPP_SRCS))
 OPTS = $(shell cat make_opts_win)
 
 # compiles all objects, and creates executable files from ./src/main
 make_exec: $(ALL_MAIN_SRCS)
 
 # objects should not be removed automatically
-.PRECIOUS: build/%.o
+.PRECIOUS: wbuild/%.o
 
 # links all C source files from ./src/main
-bin/%: $(ALL_OBJS) src/main/%.c
+wbin/%: $(ALL_OBJS) src/main/%.c
 	#
 	# ----- C executable ----- #
 	gcc $(CFLAGS) -o"$@" $^ $(OPTS)
 
 # links all C++ source files from ./src/main
-bin/%: $(ALL_OBJS) src/main/%.cpp
+wbin/%: $(ALL_OBJS) src/main/%.cpp
 	#
 	# ----- C++ executable ----- #
 	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
 
 # compiles a C source file from ./src
-build/%.o: src/%.c
+wbuild/%.o: src/%.c
 	#
 	# ----- C object ----- #
 	gcc $(CFLAGS) $< -c -o $@
 
 # compiles a C++ source file from ./src
-build/%.o: src/%.cpp
+wbuild/%.o: src/%.cpp
 	#
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
 
-%.mesh: %.mesh.src bin/itob
-	bin/itob $(shell cat "$<") >"$@"
+wbin/baker: src/main/baker.cpp
+	#
+	# ----- .src processor ----- #
+	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
+
+# compiles decimal-to-binary converter
+wbin/itob: src/main/itob.cpp wbuild/read_utils.o
+	#
+	# ----- 10-to-2 converter ----- #
+	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
+
+
+%: %.bake wbin/itob wbin/baker
+	$(shell ./make_asset "$<" "$@")
 
 setup:
 	#
 	# ----- Workspace creation ----- #
-	mkdir -p src src/main build bin include
-	printf '' >>libraries
+	mkdir -p src src/main wbuild wbin include
+	printf '' >>make_opts_win
 
 clean:
-	rm -rf build
-	mkdir build
+	rm -rf wbuild
+	mkdir wbuild
 
 purge:
-	rm -rf bin build
-	mkdir bin build
+	rm -rf wbin wbuild
+	mkdir wbin wbuild

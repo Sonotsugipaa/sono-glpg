@@ -8,12 +8,19 @@ namespace gla {
 		glGenVertexArrays(1, &vao_id);
 	}
 
+	VertexArray::VertexArray(VertexArray&& mov):
+			vao_id(mov.vao_id)
+	{
+		mov.vao_id = 0;
+	}
+
 	VertexArray::~VertexArray() {
-		glDeleteVertexArrays(1, &vao_id);
+		if(vao_id != 0)
+			glDeleteVertexArrays(1, &vao_id);
 	}
 
 
-	void VertexArray::bind() {
+	void VertexArray::bind() const {
 		glBindVertexArray(vao_id);
 	}
 
@@ -34,7 +41,7 @@ namespace gla {
 		glEnableVertexAttribArray(attrib_pos);
 	}
 
-	GLuint VertexArray::id() {
+	GLuint VertexArray::id() const {
 		return vao_id;
 	}
 

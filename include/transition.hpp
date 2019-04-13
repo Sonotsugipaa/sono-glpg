@@ -5,7 +5,7 @@
 
 namespace gla {
 
-	using transition_func = void (*)(float);
+	using transition_func = void (*)(float progress);
 
 
 	class Transition {

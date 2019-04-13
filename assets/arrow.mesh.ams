@@ -1,0 +1,35 @@
+$output_file:    "assets/arrow.mesh"
+$output_format:  "binary32"
+
+color_l:       70
+color_h:      100
+color_alpha:  100
+
+build() {
+	arrow(color_l color_h)
+}
+
+/*
+	     A
+	    /|\
+	   / | \
+	  /  |  \
+	 / / O \ \
+	 B/--D--\C
+*/
+A(col) { v(  0   0 -60  col) }
+B(col) { v(-40   0  45  col) }
+C(col) { v( 40   0  45  col) }
+D(col) { v(  0   0  35  col) }
+O(col) { v(  0  35  20  col) }
+
+arrow(col_l col_h) {
+	A(col_h) B(col_l) O(col_h)
+	B(col_l) D(col_l) O(col_h)
+	D(col_l) C(col_l) O(col_h)
+	C(col_l) A(col_h) O(col_h)
+}
+
+v(x y z col) {
+	x y z col col col color_alpha
+}

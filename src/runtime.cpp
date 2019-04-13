@@ -11,8 +11,7 @@ namespace gla {
 	Runtime::Runtime(
 			std::string name,
 			int x, int y, int w, int h,
-			bool resizable, bool vsync,
-			std::string vshader, std::string fshader
+			bool resizable, bool vsync
 	) {
 		// SDL
 		if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -52,25 +51,12 @@ namespace gla {
 		// GLEW
 		glewExperimental = GL_TRUE;
 		glewInit();
-
-		// GL features
-		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_DEPTH_TEST);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-
-		// GL Shader
-		shader = new ShaderProgram(vshader, fshader);
-		shader->use();
 	}
 
 	Runtime::~Runtime() {
 		SDL_GL_DeleteContext(*context);
 		SDL_DestroyWindow(window);
 		delete context;
-		delete shader;
 		SDL_Quit();
 	}
 

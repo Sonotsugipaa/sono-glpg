@@ -1,5 +1,5 @@
-#ifndef SONOGLPG_UTILS_HPP
-#define SONOGLPG_UTILS_HPP
+#ifndef SONOGLPG_UTILS_TPP
+#define SONOGLPG_UTILS_TPP
 
 #include <chrono>
 
@@ -9,7 +9,7 @@ namespace gla {
 
 	class Timer {
 	protected:
-		std::chrono::system_clock::time_point
+		std::chrono::steady_clock::time_point
 			time;
 
 	public:
@@ -18,7 +18,9 @@ namespace gla {
 		Timer(Timer&&) = default;
 
 		void reset();
+		float s();
 		float millis();
+		float micros();
 
 		Timer& operator = (const Timer &) = default;
 		Timer& operator = (Timer&&) = default;
@@ -34,6 +36,19 @@ namespace gla {
 
 	template<>
 	float within_bounds<float>(float original, float lower, float higher);
+
+
+	#define UNIT(X)  (X*sizeof(T))
+	template<typename T>
+	T xorshift(T x) {
+		x ^= (x << (UNIT(3))) ^ (x >> (UNIT(3)+1));
+		x ^= (x << (UNIT(2)));
+		x ^= (x >> (UNIT(2)+1));
+		x ^= (x << (UNIT(5)-1));
+		x ^= (x >> (UNIT(5)+1));
+		return x+1;
+	}
+	#undef UNIT
 
 }
 

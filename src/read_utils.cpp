@@ -1,5 +1,10 @@
 #include <cstdlib>
+#include <cstring>
 #include "read_utils.hpp"
+
+// used only for float conversion
+#include <string>
+#include <stdexcept>
 
 
 
@@ -17,7 +22,7 @@ int ch_to_digit(char ch) {
 }
 
 char digit_to_ch(unsigned int n) {
-	if(n >= 0 && n <= 9)
+	if(n <= 9)
 		return n + '0';
 
 	if(n <= (10 + 'Z' - 'A'))
@@ -56,6 +61,19 @@ bool read_int(const char * str, int* dest, int radix) {
 
 bool read_dec_int(const char * str, int* dest) {
 	return read_int(str, dest, 10);
+}
+
+/* This would like some optimization, then again
+ * using std::stof(...) right away might be a better
+ * choice. */
+bool read_dec_float(const char * str, float* dest) {
+	try {
+		*dest = std::stof(str);
+		return true;
+	} catch(std::logic_error& err) {
+		*dest = 0.0f;
+		return false;
+	}
 }
 
 #define MAX_DIGITS_OF(NUMBER_TYPE) (8 * sizeof NUMBER_TYPE)
