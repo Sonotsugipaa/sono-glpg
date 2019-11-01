@@ -65,9 +65,10 @@ namespace {
 
 	// used for MeshLoader::load(...)
 	inline void read_int_to(FILE* file, GLfloat* dest) {
-		int i=0;
-		fread(&i, sizeof(int), 1, file);
-		*dest = (GLfloat) i / POOL_MESH_FILE_PRECISION;
+		uint32_t i=0;
+		fread(&i, sizeof(uint32_t), 1, file);
+		// cast to signed int, then to float
+		*dest = static_cast<GLfloat>((int32_t) i) / POOL_MESH_FILE_PRECISION;
 	}
 
 }
