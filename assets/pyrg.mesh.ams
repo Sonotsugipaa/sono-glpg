@@ -1,9 +1,12 @@
-$output_file:    "assets/pyrg.mesh"
-$output_format:  "binary32"
+ams2o::mode:        ams2o::binary
+ams2o::byte_order:  ams2o::big_endian
+ams2o::word_size:   ams2o::uint32
 
 color_l:       85
 color_h:      100
 color_alpha:  100
+
+
 
 /*
 	"Map"
@@ -23,13 +26,13 @@ color_alpha:  100
 	z3 ^^^
 */
 
-build() {
+build(): {
 	ingots_1( 0 15)
 	ingots_2(15 30)
 	ingots_3(30 45)
 }
 
-ingots_3(L H) {
+ingots_3(L H): {
 	ingot(
 		-22 -18  18  22
 		-15 -10  10  15
@@ -37,7 +40,7 @@ ingots_3(L H) {
 	)
 }
 
-ingots_2(L H) {
+ingots_2(L H): {
 	ingot(
 		-30 -25  -5   0
 		-22 -18  18  22
@@ -51,7 +54,7 @@ ingots_2(L H) {
 	)
 }
 
-ingots_1(L H) {
+ingots_1(L H): {
 	ingot(
 		-45 -40 -20 -15
 		-45 -40 -4  0
@@ -89,7 +92,7 @@ ingots_1(L H) {
 	)
 }
 
-v(x y z col) {
+v(x y z col): {
 	x y z col col col color_alpha
 }
 
@@ -101,7 +104,7 @@ v(x y z col) {
 	|  \
 	3---2
 */
-tri(x1 y1 z1  x2 y2 z2  x3 y3 z3  color) {
+tri(x1 y1 z1  x2 y2 z2  x3 y3 z3  color): {
 	v(x1 y1 z1 color)
 	v(x2 y2 z2 color)
 	v(x3 y3 z3 color)
@@ -115,7 +118,7 @@ tri(x1 y1 z1  x2 y2 z2  x3 y3 z3  color) {
 	|  \|
 	3---2
 */
-sq(x1 y1 z1  x2 y2 z2  x3 y3 z3  x4 y4 z4  color) {
+sq(x1 y1 z1  x2 y2 z2  x3 y3 z3  x4 y4 z4  color): {
 	tri(x1 y1 z1  x3 y3 z3  x2 y2 z2  color)
 	tri(x1 y1 z1  x2 y2 z2  x4 y4 z4  color)
 }
@@ -140,7 +143,7 @@ sq(x1 y1 z1  x2 y2 z2  x3 y3 z3  x4 y4 z4  color) {
 	| X1   X2 |
 	x1       x2
 */
-ingot(x1 X1 X2 x2  z1 Z1 Z2 z2  h H  color) {
+ingot(x1 X1 X2 x2  z1 Z1 Z2 z2  h H  color): {
 	sq(X1 H Z1  x1 h z2  x1 h z1  X1 H Z2  color)
 	sq(X1 H Z2  x2 h z2  x1 h z2  X2 H Z2  color)
 	sq(X2 H Z2  x2 h z1  x2 h z2  X2 H Z1  color)
@@ -148,3 +151,7 @@ ingot(x1 X1 X2 x2  z1 Z1 Z2 z2  h H  color) {
 
 	sq(X1 H Z1  X2 H Z2  X1 H Z2  X2 H Z1  color)
 }
+
+
+
+build

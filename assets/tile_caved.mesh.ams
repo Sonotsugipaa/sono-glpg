@@ -1,9 +1,12 @@
-$output_file: "assets/tile_caved.mesh"
-$output_format: "binary32"
+ams2o::mode:        ams2o::binary
+ams2o::byte_order:  ams2o::big_endian
+ams2o::word_size:   ams2o::uint32
 
-black() { -10000 -10000 -10000 100 }
 
-build() {
+
+black(): { -10000 -10000 -10000 100 }
+
+build(): {
 	-45  0 -45    100 100 100 100
 	-45  0  45    100 100 100 100
 	  0 -9   0    100 100 100 100
@@ -29,3 +32,7 @@ build() {
 	-50 -15  -50  black()
 	-50 -15   50  black()
 }
+
+
+
+build

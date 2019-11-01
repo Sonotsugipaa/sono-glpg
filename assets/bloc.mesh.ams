@@ -1,5 +1,6 @@
-$output_file:    "assets/bloc.mesh"
-$output_format:  "binary32"
+ams2o::mode:        ams2o::binary
+ams2o::byte_order:  ams2o::big_endian
+ams2o::word_size:   ams2o::uint32
 
 color_l:       70
 color_h:      100
@@ -7,11 +8,7 @@ color_alpha:  100
 
 
 
-build() {
-	bloc(-50 50 0 60 80 color_h)
-}
-
-bloc(neg pos h1 h2 h3 color) {
+bloc(neg pos h1 h2 h3 color): {
 	side(pos h3 pos  neg h2 pos  h1  color)
 	side(neg h2 pos  neg h3 neg  h1  color)
 	side(neg h3 neg  pos h2 neg  h1  color)
@@ -25,7 +22,7 @@ bloc(neg pos h1 h2 h3 color) {
 	|   |
 	X---X  <-- y0
 */
-side(x1 y1 z1  x2 y2 z2  y0  color) {
+side(x1 y1 z1  x2 y2 z2  y0  color): {
 	sq(x1 y1 z1  x2 y0 z2  x1 y0 z1  x2 y2 z2  color)
 }
 
@@ -35,7 +32,7 @@ side(x1 y1 z1  x2 y2 z2  y0  color) {
 	|  \|
 	3---2
 */
-sq(x1 y1 z1  x2 y2 z2  x3 y3 z3  x4 y4 z4  color) {
+sq(x1 y1 z1  x2 y2 z2  x3 y3 z3  x4 y4 z4  color): {
 	tri(x1 y1 z1  x2 y2 z2  x3 y3 z3  color)
 	tri(x2 y2 z2  x1 y1 z1  x4 y4 z4  color)
 }
@@ -46,12 +43,16 @@ sq(x1 y1 z1  x2 y2 z2  x3 y3 z3  x4 y4 z4  color) {
 	|  \
 	3---2
 */
-tri(x1 y1 z1  x2 y2 z2  x3 y3 z3  color) {
+tri(x1 y1 z1  x2 y2 z2  x3 y3 z3  color): {
 	v(x1 y1 z1 color)
 	v(x2 y2 z2 color)
 	v(x3 y3 z3 color)
 }
 
-v(x y z col) {
+v(x y z col): {
 	x y z col col col color_alpha
 }
+
+
+
+bloc(-50 50 0 60 80 color_h)
