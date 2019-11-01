@@ -1,4 +1,5 @@
-COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include
+COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include \
+               -I./Amscript2/include -L./Amscript2/lib
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
 CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
 ALL_MAIN_SRCS =\
@@ -17,26 +18,34 @@ make_exec: $(ALL_MAIN_SRCS)
 # objects should not be removed automatically
 .PRECIOUS: build/%.o
 
+# external Amscript2 dependency
+Amscript2/%:
+	make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
+
 # links all C source files from ./src/main
-bin/%: $(ALL_OBJS) src/main/%.c
+bin/%: $(ALL_OBJS) src/main/%.c Amscript2/lib/libamscript2.a
+	mkdir -p bin/
 	#
 	# ----- C executable ----- #
 	gcc $(CFLAGS) -o"$@" $^ $(OPTS)
 
 # links all C++ source files from ./src/main
-bin/%: $(ALL_OBJS) src/main/%.cpp
+bin/%: $(ALL_OBJS) src/main/%.cpp Amscript2/lib/libamscript2.a
+	mkdir -p bin/
 	#
 	# ----- C++ executable ----- #
 	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
 
 # compiles a C source file from ./src
 build/%.o: src/%.c
+	mkdir -p build/
 	#
 	# ----- C object ----- #
 	gcc $(CFLAGS) $< -c -o $@
 
 # compiles a C++ source file from ./src
 build/%.o: src/%.cpp
+	mkdir -p build/
 	#
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@

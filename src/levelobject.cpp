@@ -5,8 +5,10 @@
 
 #include "read_utils.hpp"
 
-#include "amscript/amscript.hpp"
-using amscript::Amscript;
+#include "sneka/amscript_ext.hpp"
+using amscript2::Script;
+using amscript2::Value;
+using amscript2::Reference;
 
 
 
@@ -19,6 +21,16 @@ namespace {
 		"(\\d+(\\.(\\d+))?)"         //  7,  9
 		"(\\s+(\\d+(\\.(\\d+))?))?"  // 11, 13
 	);
+
+
+	std::string getString(Script& src, const std::string& asset_name, Reference ref) {
+		std::vector<Value> result = src.invoke(ref, { });
+		if(result.empty()) {
+			throw sneka::AssetLoadException(asset_name, "missing \"" + ref.refName() + "\" value");
+		} else {
+			return result[0].strValue();
+		}
+	}
 
 }
 
@@ -64,20 +76,16 @@ namespace sneka {
 		}
 
 		try {
-			Amscript file = Amscript(is);
+			Script file = load_amscript(is);
 
-			std::string mesh_str = file.resolveSymbol("mesh");
-			if(mesh_str.empty()) {
-				throw AssetLoadException(nm, "missing \"mesh\" value");
-			}
+			std::string mesh_str = ::getString(file, nm, Reference("mesh"));
+			gla::Id32 type = ::getString(file, nm, Reference("mesh"));
 
-			gla::Id32 type = file.resolveSymbol("type");
-				Mesh& mesh = mesh_loader.get(mesh_str);
+			Mesh& mesh = mesh_loader.get(mesh_str);
 
-				glm::vec4 color = glm::vec4(1.0f);
-
+			glm::vec4 color = glm::vec4(1.0f);
 			{
-				std::string color_str = file.resolveSymbol("color");
+				std::string color_str = ::getString(file, nm, Reference("mesh"));
 				if(color_str.size() > 0) {
 					std::smatch sm;
 					if(std::regex_search(color_str, sm, color_regex)) {
@@ -98,8 +106,8 @@ namespace sneka {
 			}
 
 			return new LevelObjectTemplate(nm, mesh, type, color);
-		} catch(amscript::Exception& ex) {
-			throw AssetLoadException(nm, std::string("invalid amscript (")+ex.what()+")");
+		} catch(std::string& ex) {
+			throw AssetLoadException(nm, std::string("invalid amscript (")+ex+")");
 		} catch(AssetLoadException& ex) {
 			throw AssetLoadException(
 					ex.asset_name,
