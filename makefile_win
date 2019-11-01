@@ -19,51 +19,37 @@ make_exec: $(ALL_MAIN_SRCS)
 .PRECIOUS: wbuild/%.o
 
 # external Amscript2 dependency
-Amscript2/%:
+Amscript2/lib/libamscript2.a:
+	git submodule update --init Amscript2
 	make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
 
 # links all C source files from ./src/main
-wbin/%: $(ALL_OBJS) src/main/%.c Amscript2/lib/libamscript2.a
+wbin/%: $(ALL_OBJS) src/main/%.c
 	mkdir -p wbin/
 	#
 	# ----- C executable ----- #
 	gcc $(CFLAGS) -o"$@" $^ $(OPTS)
 
 # links all C++ source files from ./src/main
-wbin/%: $(ALL_OBJS) src/main/%.cpp Amscript2/lib/libamscript2.a
+wbin/%: $(ALL_OBJS) src/main/%.cpp
 	mkdir -p wbin/
 	#
 	# ----- C++ executable ----- #
 	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
 
 # compiles a C source file from ./src
-wbuild/%.o: src/%.c
+wbuild/%.o: src/%.c Amscript2/lib/libamscript2.a
 	mkdir -p wbuild/
 	#
 	# ----- C object ----- #
 	gcc $(CFLAGS) $< -c -o $@
 
 # compiles a C++ source file from ./src
-wbuild/%.o: src/%.cpp
+wbuild/%.o: src/%.cpp Amscript2/lib/libamscript2.a
 	mkdir -p wbuild/
 	#
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
-
-wbin/baker: src/main/baker.cpp
-	#
-	# ----- .src processor ----- #
-	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
-
-# compiles decimal-to-binary converter
-wbin/itob: src/main/itob.cpp wbuild/read_utils.o
-	#
-	# ----- 10-to-2 converter ----- #
-	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
-
-
-%: %.bake wbin/itob wbin/baker
-	$(shell ./make_asset "$<" "$@")
 
 setup:
 	#
@@ -76,5 +62,5 @@ clean:
 	mkdir wbuild
 
 purge:
-	rm -rf wbin wbuild
-	mkdir wbin wbuild
+	rm -rf wbin wbuild Amscript2/lib
+	mkdir wbin wbuild Amscript2/lib
