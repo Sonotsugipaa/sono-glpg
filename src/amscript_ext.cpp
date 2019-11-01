@@ -9,15 +9,19 @@
 #include <iostream>
 */
 
-using namespace amscript;
-using strvec = std::vector<std::string>;
+using namespace amscript2;
+using amscript2::int_t;
+using amscript2::ref_t;
 
 
 
 namespace {
 
-	void set_random(Amscript* scr, std::string arg) {
-		scr->setSymbol("$random", amscript::Symbol(arg, false));
+	void set_random(int_t rnd, ScopeView& scope) {
+		scope.base()->defineGlobal(
+			ref_t("random"),
+			Definition::ptr(new ArrayDefinition(rnd))
+		);
 	}
 
 	unsigned int xorshift_str(const std::string & src) {
@@ -33,68 +37,70 @@ namespace {
 		return rnd;
 	}
 
-	strvec ext_random_choose(Amscript* scr, strvec args) {
-		strvec retn;
+	std::vector<Value> ext_random_choose(std::vector<Value> args, ScopeView& scope) {
+		std::vector<Value> retn;
 
 		if(! args.empty()) {
+			std::vector<Value> random_symbol_val =
+				scope.resolve(ref_t("random"))->evaluate({ }, scope);
+			if(random_symbol_val.empty())  random_symbol_val = { (int_t) 0 };
 			unsigned int random =
 					gla::xorshift(
-						xorshift_str(scr->resolveSymbol("$random"))
+						random_symbol_val[0].intValue()
 					);
-			retn.push_back(args[random % args.size()]);
+			retn.push_back(std::move(args[random % args.size()]));
 		}
 
 		// But... how? Talk to me, old-myself, talk to me god damnit!
-		throw amscript::RuntimeException("random_choose is broken");
+		throw std::string("random_choose is broken");
 
 		return retn;
 	}
 
-	strvec ext_random_set(Amscript* scr, strvec args) {
+	std::vector<Value> ext_random_set(std::vector<Value> args, ScopeView& scope) {
 		if(args.empty()) {
 			set_random(
-					scr,
-					std::to_string(
-						std::chrono::system_clock::now().time_since_epoch().count()
-					) );
+					std::chrono::system_clock::now().time_since_epoch().count(),
+					scope
+			);
 		} else {
 			unsigned int seed = 0;
 			for(std::size_t i = 0; i < args.size(); i+=1)
-				seed ^= xorshift_str(args[i]);
-			set_random(scr, std::to_string(seed));
+				seed ^= xorshift_str(args[i].strValue());
+			set_random(seed, scope);
 		}
 
-		throw amscript::RuntimeException("random_set is broken");
-		return strvec();
+		throw std::string("random_set is broken");
+		return { };
 	}
 
-	strvec ext_random_number(Amscript* scr, strvec args) {
-		(void) scr;
-		(void) args;
-		throw amscript::RuntimeException("random_number not implemented yet");
+	std::vector<Value> ext_random_number(std::vector<Value>) {
+		throw std::string("random_number not implemented yet");
 	}
 
-	inline void overload(amscript::Amscript& amscript) {
-		amscript.setFunction("$random_set", ext_random_set);
-		amscript.setFunction("$random_choose", ext_random_choose);
-		amscript.setFunction("$random_number", 2, ext_random_number);
-	}
+	const Script base_script = []() {
+		Script r;
+		r.define(ref_t("random_set"), ext_random_set);
+		r.define(ref_t("random_choose"), ext_random_choose);
+		r.define(ref_t("random_number"), ext_random_number);
+		return r;
+	} ();
 
 }
 
 
 namespace sneka {
 
-	Amscript load_amscript(std::istream& istr) {
-		Amscript scr = Amscript(istr);
-		overload(scr);
-		return scr;
+	Script load_amscript(std::istream& istr) {
+		Script clone = base_script;
+		clone.import(Script(istr));
+		return clone;
 	}
 
-	Amscript load_amscript(std::string in) {
-		Amscript scr = Amscript(std::move(in));
-		overload(scr);
-		return scr;
+	Script load_amscript(std::string in) {
+		Script clone = base_script;
+		clone.import(Script(std::move(in)));
+		return clone;
 	}
 
 }
