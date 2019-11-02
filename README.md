@@ -26,13 +26,13 @@ to be low-weight, although that depends on its quality.
 - The ones mentioned in '<b>Requirements</b>'
 - <b>OpenGL 3</b>, <b>GLEW</b>, <b>SDL2</b>
 - <b>GLM</b> (only the headers, for vector and matrix operations)
-- <b>Amscript</b> library (https://github.com/Sonotsugipaa/Amscript)
+- <b>Amscript2</b> library (https://github.com/Sonotsugipaa/Amscript2)
 
 
 ## Setup
 
 <p>
-First you need to install some dependencies: <i>OpenGL</i>, <i>GLEW</i> and
+First you need to install some dependencies: <i>GLEW</i> and
 <i>SDL2</i>.
 <br>
 On <b>Debian</b>-based systems, install these packages:<br>
