@@ -119,6 +119,7 @@
     - `NFR09` - G++
     - `NFR0A` - GNU Make
   - `NFR0B` - /bin/bash
+  - `NFR0C` - UMLet
 
 ### Distribution
 

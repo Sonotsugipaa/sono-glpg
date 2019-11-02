@@ -1,0 +1,9 @@
+<<Incomplete>>
+	Inherited by, associated by, composed of, aggregating or implemented
+	by classes outside the current diagram.
+	When a class has the <<Incomplete>> stereotype, it must be assumed
+	to be missing or misrepresenting some attributes, operations or
+	responsibilities.
+
+<<Enumeration>>
+	A class that has a finite number of possible values.

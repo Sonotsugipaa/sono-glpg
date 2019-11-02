@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>96</y>
+      <w>224</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>AssetResourceIdentifier
+--
++ Type: String
++ Location: String[0..*]
+--
++ AssetResourceIdentifier(
+     type: String = "",
+     location: String[0..1])
++ AssetResourceIdentifier(
+     serial: String)
++ Serial(): String
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>792</x>
+      <y>96</y>
+      <w>368</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>/AssetLoader/
+{abstract}
+--
+
+--
++ GetAsset(AssetResourceIdentifier): Asset[0..1]
++ LoadAsset(AssetResourceIdentifier): Asset[0..1]
++ DropAsset(AssetResourceIdentifier): Asset[0..1]</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>816</x>
+      <y>40</y>
+      <w>312</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>GetAsset looks for an already loaded asset;
+LoadAsset tries to load the requested asset,
+only if it's not already loaded.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>80</x>
+      <y>0</y>
+      <w>664</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>The names for attributes and operations are conceptual:
+their actual names in the code will be different.
+fontsize=24
+halign=center
+bg=gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>280</y>
+      <w>224</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>/Asset/
+{abstract}
+--
++ Ari
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>264</x>
+      <y>224</y>
+      <w>24</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>312</x>
+      <y>664</y>
+      <w>296</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Incomplete&gt;&gt;
+Chunk
+--
+
+--
++ PutWorldObject(Xz: Int[2], WorldObject)
++ GetObjectAt(Xz: Int[2])
++ GetObjects(): Int[0..*]
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>792</x>
+      <y>656</y>
+      <w>360</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>ChunkLoader
+--
+- MeshLoader
+--
+ChunkLoader(MeshLoader)
+
++ GetAsset(Ari): Chunk[0..1]
++ LoadAsset(Ari): Chunk[0..1]
++ DropAsset(Ari): Chunk[0..1]
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>240</x>
+      <y>344</y>
+      <w>88</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;160.0;10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>600</x>
+      <y>696</y>
+      <w>208</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=
+m2=1
+provides</panel_attributes>
+    <additional_attributes>10.0;20.0;240.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1144</x>
+      <y>416</y>
+      <w>64</w>
+      <h>256</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;300.0;60.0;260.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>792</x>
+      <y>464</y>
+      <w>360</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>MeshLoader
+--
+
+--
++ GetAsset(Ari): Mesh[0..1]
++ LoadAsset(Ari): Mesh[0..1]
++ DropAsset(Ari): Mesh[0..1]
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>312</x>
+      <y>472</y>
+      <w>296</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Incomplete&gt;&gt;
+Mesh
+--
+
+--
++ Transform(glm::Matrix4)
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>600</x>
+      <y>496</y>
+      <w>208</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=
+m2=1
+provides</panel_attributes>
+    <additional_attributes>10.0;20.0;240.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1144</x>
+      <y>136</y>
+      <w>64</w>
+      <h>344</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;410.0;60.0;360.0;60.0;10.0;20.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>240</x>
+      <y>400</y>
+      <w>88</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;330.0;10.0;250.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>976</x>
+      <y>552</y>
+      <w>24</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>808</x>
+      <y>584</y>
+      <w>168</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>ChunkLoader needs
+meshes and materials
+to put world objects
+into chunks</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>312</x>
+      <y>808</y>
+      <w>208</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Incomplete&gt;&gt;
+Material
+--
++ Transparency:       Real
++ RoughReflectivity:  Real
++ SmoothReflectivity: Real
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>792</x>
+      <y>808</y>
+      <w>360</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>MaterialLoader
+--
+
+--
+ChunkLoader(MeshLoader)
+
++ GetAsset(Ari): Material[0..1]
++ LoadAsset(Ari): Material[0..1]
++ DropAsset(Ari): Material[0..1]
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>976</x>
+      <y>760</y>
+      <w>24</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>432</x>
+      <y>128</y>
+      <w>224</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Alias&gt;&gt;
+Ari
+--
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>376</x>
+      <y>152</y>
+      <w>72</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>512</x>
+      <y>832</y>
+      <w>296</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=
+m2=1
+provides</panel_attributes>
+    <additional_attributes>10.0;20.0;350.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1144</x>
+      <y>616</y>
+      <w>64</w>
+      <h>208</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;240.0;60.0;200.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>240</x>
+      <y>592</y>
+      <w>88</w>
+      <h>232</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;270.0;10.0;190.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>792</x>
+      <y>1056</y>
+      <w>360</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>LevelLoader
+--
+- ChunkLoader
+--
+Level(ChunkLoader)
+
++ GetAsset(Ari): Level[0..1]
++ LoadAsset(Ari): Level[0..1]
++ DropAsset(Ari): Level[0..1]
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>312</x>
+      <y>976</y>
+      <w>368</w>
+      <h>296</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Incomplete&gt;&gt;
+/Level/
+--
++ Ari: AssetResourceIdentifier
++ ChunkSize: Int
+# ActiveChunk: Chunk
+- ChunkLoader
+--
+Level(Ari, DesiredChunkSize: Int)
+Level(Level, DesiredChunkSize: Int)
+
++ PutWorldObject(Xz: Int[2], WorldObject)
++ GetObjectAt(TileXz: Int[2]): WorldObject[0..1]
++ GetChunk(ChunkXz: Int[2]): Chunk[0..1]
++ GetChunkOf(TileXz: Int[2]): Chunk[0..1]
++ GetLoadedChunks(ChunkXz: Int[2]): Chunk[0..*]
+
+/+ HintPosition(TileXz: Int[2])/
+/+ GetRendererType(): RendererType/
+--
+Responsibilities
+-- Intermediate between the loaded chunks, the world
+   objects, the chunk loader and the system logic
+-- Load and store chunks and world objects</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>1096</y>
+      <w>136</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=
+m2=1
+provides</panel_attributes>
+    <additional_attributes>10.0;20.0;150.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>240</x>
+      <y>736</y>
+      <w>88</w>
+      <h>256</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;300.0;10.0;220.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1144</x>
+      <y>704</y>
+      <w>112</w>
+      <h>424</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0;120.0;510.0;10.0;510.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1144</x>
+      <y>768</y>
+      <w>64</w>
+      <h>304</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;360.0;60.0;320.0;60.0;10.0</additional_attributes>
+  </element>
+</diagram>
