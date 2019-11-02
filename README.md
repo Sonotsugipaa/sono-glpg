@@ -1,6 +1,12 @@
 # Sonotsugipaa's OpenGL Playground
 
 <p>
+	<strong>IMPORTANT</strong>: <br/>
+	The project is being completely re-worked. The existing
+	code will probably be re-used, but all files (except for the
+	ones in <code>./doc/</code>) are to be considered <b>deprecated</b>
+	and may be pruned or heavily modified in the future.
+</p> <p>
 A hobby project for a simple knock-off of a Snake game,
 <strong>Sneka3D</strong>.
 </p> <p>
