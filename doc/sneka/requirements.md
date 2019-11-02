@@ -66,7 +66,8 @@
 - `FR1`   - Levels and game instances
 - `FR100` - Levels are stored as Amscript2 scripts
 - `FR101` - Game instances can be stored on generated Amscript2 scripts
-- `FR102` - Levels can be seamlessly confined to a repeated 2D area
+- `FR102` - Levels can be seamlessly confined to a repeated 2D region
+- `FR102` - Levels can be bound to a non-rectangular region
 - `FR103` - Levels can be infinite
 - `FR105` - Levels can be procedurally generated
 - `FR106` - Levels can be written by a game developer
