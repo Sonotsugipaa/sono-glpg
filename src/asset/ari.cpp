@@ -34,7 +34,7 @@ namespace sneka {
 
 		inline void separate_str(
 				std::string src,
-				std::string& location,
+				std::string& locator,
 				std::vector<std::string>& path,
 				size_t offset = 0
 		) {
@@ -45,7 +45,7 @@ namespace sneka {
 				char c = src[i];
 				if(c == PATH_SEPARATOR) {
 					if(first_path_sep) {
-						location = std::move(buffer);
+						locator = std::move(buffer);
 						first_path_sep = false;
 					} else {
 						path.push_back(std::move(buffer));
@@ -101,7 +101,7 @@ namespace sneka {
 	{
 		if(! path_vec.empty()) {
 			path.reserve(path_vec.size() - 1);
-			location = std::move(path_vec[0]);
+			locator = std::move(path_vec[0]);
 			for(size_t i=1; i < path.size(); ++i) {
 				path.push_back(std::move(path_vec[i]));
 			}
@@ -111,7 +111,7 @@ namespace sneka {
 	Ari::Ari(Type type, std::string path_str):
 			type (std::move(type))
 	{
-		separate_str(std::move(path_str), location, path);
+		separate_str(std::move(path_str), locator, path);
 	}
 
 	Ari::Ari(std::string serial) {
@@ -132,12 +132,12 @@ namespace sneka {
 				offset = 0;
 			}
 		}
-		separate_str(std::move(serial), location, path, offset);
+		separate_str(std::move(serial), locator, path, offset);
 	}
 
 
 	bool Ari::operator < (const Ari& cmp) const {
-		if(location != cmp.location)  return (location < cmp.location);
+		if(locator != cmp.locator)  return (locator < cmp.locator);
 		size_t least_size = path.size();
 		if(cmp.path.size() < least_size)  least_size = cmp.path.size();
 		for(size_t i=0; i < least_size; ++i) {
@@ -149,7 +149,7 @@ namespace sneka {
 
 	std::string Ari::getSerial() const {
 		std::string r = static_cast<std::string>(type) + ':';
-		if(! location.empty())  r += location;
+		if(! locator.empty())  r += locator;
 		r += PATH_SEPARATOR + getPathString();
 		return r;
 	}

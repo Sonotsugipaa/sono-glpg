@@ -12,11 +12,11 @@
     <panel_attributes>AssetResourceIdentifier
 --
 + Type: String
-+ Location: String[0..*]
++ Locator: String[0..*]
 --
 + AssetResourceIdentifier(
      type: String = "",
-     location: String[1..*])
+     locator: String[1..*])
 + AssetResourceIdentifier(
      serial: String)
 + Serial(): String

@@ -51,7 +51,7 @@ bool run_tests() {
 
 
 
-int main(int argn, char**) {
+int main(int, char**) {
 	try {
 		bool r = run_tests();
 		return r? EXIT_SUCCESS : EXIT_FAILURE;

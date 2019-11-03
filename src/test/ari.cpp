@@ -78,7 +78,7 @@ bool run_tests() {
 
 
 
-int main(int argn, char**) {
+int main(int, char**) {
 	try {
 		cout << "\n\t------- CACHED ARI -------" << endl;
 		bool r = run_tests<Ari::Cached>();

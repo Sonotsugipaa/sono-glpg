@@ -26,20 +26,20 @@ namespace sneka {
 		};
 
 		Type type;
-		std::string location;
+		std::string locator;
 		std::vector<std::string> path;
 
 		Ari(Type, std::vector<std::string> path);
 		Ari(Type, std::string path);
 		Ari(std::string serial);
 
-		inline Ari(): type (Type::NONE), location (), path () { }
+		inline Ari(): type (Type::NONE), locator (), path () { }
 
 		bool operator < (const Ari&) const;
 
 		std::string getSerial() const;
 		std::string getPathString() const;
-		inline bool isNull() const { return location.empty() && path.empty(); }
+		inline bool isNull() const { return locator.empty() && path.empty(); }
 		inline bool isRoot() const { return path.empty(); }
 	};
 
