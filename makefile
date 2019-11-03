@@ -1,22 +1,15 @@
-COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include \
-               -I./Amscript2/include -L./Amscript2/lib
-CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
-ALL_MAIN_SRCS =\
-	$(patsubst src/main/%.cpp, bin/%, $(wildcard src/main/*.cpp))
-CPP_SRCS = $(wildcard src/*.cpp)
-ALL_OBJS =\
-	$(patsubst src/%.cpp, build/%.o, $(CPP_SRCS))
+CPPFLAGS = $(shell cat compile_opts)
 OPTS = $(shell cat make_opts)
 
-# compiles all objects, and creates executable files from ./src/main
-make_exec: $(ALL_MAIN_SRCS)
+# empty target
+nothing:
 
 # objects should not be removed automatically
 .PRECIOUS: build/%.o
 
 # external Amscript2 dependency
 Amscript2/lib/libamscript2.a:
-	if [ ! -f "Amscript2/makefile" ]; then git submodule update --init Amscript2; fi
+	git submodule update --init Amscript2
 	make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
 
 # links all C++ source files from ./src/main
@@ -32,6 +25,14 @@ build/%.o: src/%.cpp
 	#
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
+
+.PHONY: lib/libmodule_%.a
+lib/libmodule_%.a: src/%/makefile
+	make --makefile=$< $@
+
+bin/.ari: src/test/ari.cpp lib/libmodule_asset.a
+	mkdir -p bin/
+	g++ $(CPPFLAGS) $< -o $@ -lmodule_asset
 
 setup: purge
 	#
