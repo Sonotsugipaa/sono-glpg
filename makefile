@@ -30,9 +30,9 @@ build/%.o: src/%.cpp
 lib/libmodule_%.a: src/%/makefile
 	make --makefile=$< $@
 
-bin/.ari: src/test/ari.cpp lib/libmodule_asset.a
+bin/asset.%: src/test/%.cpp lib/libmodule_asset.a lib/libmodule_util.a
 	mkdir -p bin/
-	g++ $(CPPFLAGS) $< -o $@ -lmodule_asset
+	g++ $(CPPFLAGS) $< -o $@ -lmodule_asset -lmodule_util
 
 setup: purge
 	#
