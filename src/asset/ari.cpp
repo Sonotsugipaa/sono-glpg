@@ -135,7 +135,7 @@ namespace sneka {
 	 * level:remote/ */
 	std::string Ari::getSerial() const {
 		std::string r = static_cast<std::string>(type) + ':';
-		if(! location.empty())  r += PATH_SEPARATOR + location;
+		if(! location.empty())  r += location;
 		r.reserve(r.size() + path_to_str_heuristic(path.size()));
 		for(const std::string& str : path) {
 			r += (PATH_SEPARATOR + str);
