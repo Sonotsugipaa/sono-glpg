@@ -19,7 +19,7 @@ int main(int argn, char**) {
 			&& run("Ari constructor", test_construct, Ari("mesh:local/level"))
 			&& run("Ari constructor", test_construct, Ari("mesh:local/"))
 			&& run("Ari constructor", test_construct, Ari("mesh:/"))
-			&& run("Ari constructor", test_construct, Ari(":/level"))
+			&& run("Ari constructor", test_construct, Ari(":/level"));
 		return r? EXIT_SUCCESS : EXIT_FAILURE;
 	} catch(AriException& ex) {
 		std::cerr << "An ARI exception has occurred.\n" << ex.description << std::endl;
