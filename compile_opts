@@ -1,0 +1,4 @@
+-std=gnu++17 -g
+-pedantic -Wall -Wextra -Wpedantic
+-I./include -I./Amscript2/include
+-L./lib -L./Amscript2/lib

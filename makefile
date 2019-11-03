@@ -1,34 +1,16 @@
-COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include \
-               -I./Amscript2/include -L./Amscript2/lib
-CFLAGS = -std=gnu99 $(COMMON_FLAGS)
-CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
-ALL_MAIN_SRCS =\
-	$(patsubst src/main/%.c, bin/%, $(wildcard src/main/*.c))\
-	$(patsubst src/main/%.cpp, bin/%, $(wildcard src/main/*.cpp))
-C_SRCS = $(wildcard src/*.c)
-CPP_SRCS = $(wildcard src/*.cpp)
-ALL_OBJS =\
-	$(patsubst src/%.c, build/%.o, $(C_SRCS))\
-	$(patsubst src/%.cpp, build/%.o, $(CPP_SRCS))
+CPPFLAGS = $(shell cat compile_opts)
 OPTS = $(shell cat make_opts)
 
-# compiles all objects, and creates executable files from ./src/main
-make_exec: $(ALL_MAIN_SRCS)
+# empty target
+nothing:
 
 # objects should not be removed automatically
 .PRECIOUS: build/%.o
 
 # external Amscript2 dependency
 Amscript2/lib/libamscript2.a:
-	if [ ! -f "Amscript2/makefile" ]; then git submodule update --init Amscript2; fi
+	git submodule update --init Amscript2
 	make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
-
-# links all C source files from ./src/main
-bin/%: $(ALL_OBJS) src/main/%.c
-	mkdir -p bin/
-	#
-	# ----- C executable ----- #
-	gcc $(CFLAGS) -o"$@" $^ $(OPTS)
 
 # links all C++ source files from ./src/main
 bin/%: $(ALL_OBJS) src/main/%.cpp
@@ -37,25 +19,29 @@ bin/%: $(ALL_OBJS) src/main/%.cpp
 	# ----- C++ executable ----- #
 	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
 
-# compiles a C source file from ./src
-build/%.o: src/%.c Amscript2/lib/libamscript2.a
-	mkdir -p build/
-	#
-	# ----- C object ----- #
-	gcc $(CFLAGS) $< -c -o $@
-
 # compiles a C++ source file from ./src
-build/%.o: src/%.cpp Amscript2/lib/libamscript2.a
+build/%.o: src/%.cpp
 	mkdir -p build/
 	#
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
 
-setup:
+.PHONY: lib/libmodule_%.a wlib/libmodule_%.a
+lib/libmodule_%.a: src/%/makefile
+	mkdir -p lib/
+	make --makefile=$< $@
+wlib/libmodule_%.a: src/%/makefile
+	mkdir -p wlib/
+	make --makefile=$< $@
+
+bin/asset.%: src/test/%.cpp lib/libmodule_asset.a lib/libmodule_util.a
+	mkdir -p bin/
+	g++ $(CPPFLAGS) $< -o $@ -lmodule_asset -lmodule_util
+
+setup: purge
 	#
 	# ----- Workspace creation ----- #
-	mkdir -p src src/main build bin include
-	printf '' >>libraries
+	mkdir -p src/main include/sneka shader assets doc
 
 clean:
 	rm -rf build
