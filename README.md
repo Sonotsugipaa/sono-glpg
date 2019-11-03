@@ -1,12 +1,14 @@
 # Sonotsugipaa's OpenGL Playground
 
-<p>
-	<strong>IMPORTANT</strong>: <br/>
-	The project is being completely re-worked. The existing
-	code will probably be re-used, but all files (except for the
-	ones in <code>./doc/</code>) are to be considered <b>deprecated</b>
-	and may be pruned or heavily modified in the future.
-</p> <p>
+<p> <table>
+	<tr> <th> <strong>IMPORTANT</strong>: </th> </tr>
+	<tr> <td>
+		The project is being completely re-worked. <br/>
+		To see the source files of the existing playable graphics demo,
+		switch to the Git branch "<b>legacy</b>"; <br/>
+		to play it, download it in the Github repository's <i>releases</i> page.
+	</td> </tr>
+</table> </p> <p>
 A hobby project for a simple knock-off of a Snake game,
 <strong>Sneka3D</strong>.
 </p> <p>
