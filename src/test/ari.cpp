@@ -29,7 +29,7 @@ bool test_null(ari_t ari) {
 	bool is_null = ari.isNull();
 	/*cout << ari.getSerial() << " is " << (is_null? "null" : "valid")
 	     << "; location: " << (ari.location.empty()? "null" : "given")
-		  << "; path: " << ari.path.size() << "-long" << endl;*/
+	     << "; path: " << ari.path.size() << "-long" << endl;*/
 	return is_null == expect;
 }
 
@@ -44,7 +44,7 @@ bool test_root(ari_t ari) {
 template<class ari_t>
 bool run_tests() {
 	bool r =
-			run("Ari init & serial (" + ari_str[0] + ')', test_ari<ari_t, 0>, ari_t(ari_str[0]))
+		   run("Ari init & serial (" + ari_str[0] + ')', test_ari<ari_t, 0>, ari_t(ari_str[0]))
 		&& run("Ari init & serial (" + ari_str[1] + ')', test_ari<ari_t, 1>, ari_t(ari_str[1]))
 		&& run("Ari init & serial (" + ari_str[2] + ')', test_ari<ari_t, 2>, ari_t(ari_str[2]))
 		&& run("Ari init & serial (" + ari_str[3] + ')', test_ari<ari_t, 3>, ari_t(ari_str[3]))
