@@ -58,8 +58,13 @@ namespace sneka {
 			if(first_path_sep) {
 				throw ex_invalid_format(std::move(src));
 			} else {
-				path.push_back(std::move(buffer));
-				first_path_sep = false;
+				/* The ":/" and ":level/" ARIs have null paths, but all ARIs with more than
+				 * one path separator have an empty last value, to differentiate between
+				 * files and directories. To identify the root directory AS A DIRECTORY,
+				 * "://" is used. */
+				if(path.empty() && (! buffer.empty())) {
+					path.push_back(std::move(buffer));
+				}
 			}
 		}
 
@@ -130,15 +135,21 @@ namespace sneka {
 	}
 
 
-	/* level:/
-	 * level:/levels/lvl1.ams
-	 * level:remote/ */
 	std::string Ari::getSerial() const {
 		std::string r = static_cast<std::string>(type) + ':';
 		if(! location.empty())  r += location;
-		r.reserve(r.size() + path_to_str_heuristic(path.size()));
-		for(const std::string& str : path) {
-			r += (PATH_SEPARATOR + str);
+		r += PATH_SEPARATOR + getPathString();
+		return r;
+	}
+
+	std::string Ari::getPathString() const {
+		std::string r;
+		r.reserve(path_to_str_heuristic(path.size()));
+		if(! path.empty()) {
+			r += path[0];
+		}
+		for(size_t i=1; i < path.size(); ++i) {
+			r += '/' + path[i];
 		}
 		return r;
 	}
