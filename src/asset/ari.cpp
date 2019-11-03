@@ -43,9 +43,7 @@ namespace sneka {
 			bool first_path_sep = true;
 			for(size_t i = offset; i < src.length(); ++i) {
 				char c = src[i];
-				if(c != PATH_SEPARATOR) {
-					buffer.push_back(c);
-				} else {
+				if(c == PATH_SEPARATOR) {
 					if(first_path_sep) {
 						location = std::move(buffer);
 						first_path_sep = false;
@@ -53,6 +51,8 @@ namespace sneka {
 						path.push_back(std::move(buffer));
 					}
 					buffer.clear();
+				} else {
+					buffer.push_back(c);
 				}
 			}
 			if(first_path_sep) {
@@ -62,7 +62,8 @@ namespace sneka {
 				 * one path separator have an empty last value, to differentiate between
 				 * files and directories. To identify the root directory AS A DIRECTORY,
 				 * "://" is used. */
-				if(path.empty() && (! buffer.empty())) {
+				//if((! path.empty()) && (! buffer.empty())) {
+				if(! (buffer.empty() && path.empty())) {
 					path.push_back(std::move(buffer));
 				}
 			}
@@ -132,6 +133,17 @@ namespace sneka {
 			}
 		}
 		separate_str(std::move(serial), location, path, offset);
+	}
+
+
+	bool Ari::operator < (const Ari& cmp) const {
+		if(location != cmp.location)  return (location < cmp.location);
+		size_t least_size = path.size();
+		if(cmp.path.size() < least_size)  least_size = cmp.path.size();
+		for(size_t i=0; i < least_size; ++i) {
+			if(path[i] != cmp.path[i])  return (path[i] < cmp.path[i]);
+		}
+		return path.size() < cmp.path.size();
 	}
 
 

@@ -26,8 +26,12 @@ build/%.o: src/%.cpp
 	# ----- C++ object ----- #
 	g++ $(CPPFLAGS) $< -c -o $@
 
-.PHONY: lib/libmodule_%.a
+.PHONY: lib/libmodule_%.a wlib/libmodule_%.a
 lib/libmodule_%.a: src/%/makefile
+	mkdir -p lib/
+	make --makefile=$< $@
+wlib/libmodule_%.a: src/%/makefile
+	mkdir -p wlib/
 	make --makefile=$< $@
 
 bin/asset.%: src/test/%.cpp lib/libmodule_asset.a lib/libmodule_util.a

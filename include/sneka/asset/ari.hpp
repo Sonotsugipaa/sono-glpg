@@ -35,6 +35,8 @@ namespace sneka {
 
 		inline Ari(): type (Type::NONE), location (), path () { }
 
+		bool operator < (const Ari&) const;
+
 		std::string getSerial() const;
 		std::string getPathString() const;
 		inline bool isNull() const { return location.empty() && path.empty(); }
