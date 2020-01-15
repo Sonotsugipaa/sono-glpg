@@ -1,4 +1,4 @@
-COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include \
+COMMON_FLAGS = -O3 -DNDEBUG -Wpedantic -Wall -Wextra -Wpedantic -I./include -L./lib \
                -I./Amscript2/include -L./Amscript2/lib
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
 CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
@@ -12,6 +12,16 @@ ALL_OBJS =\
 	$(patsubst src/%.cpp, build/%.o, $(CPP_SRCS))
 OPTS = $(shell cat make_opts)
 
+
+.PHONY: default
+default: bin/snekaintest lib/libamscript2.so
+	strip "$<"
+
+lib/libamscript2.so: Amscript2/lib/libamscript2.so
+	mkdir -p lib/
+	cp Amscript2/lib/libamscript2.so lib/libamscript2.so
+
+
 # compiles all objects, and creates executable files from ./src/main
 make_exec: $(ALL_MAIN_SRCS)
 
@@ -19,7 +29,7 @@ make_exec: $(ALL_MAIN_SRCS)
 .PRECIOUS: build/%.o
 
 # external Amscript2 dependency
-Amscript2/lib/libamscript2.a:
+Amscript2/lib/libamscript2.so:
 	if [ ! -f "Amscript2/makefile" ]; then git submodule update --init Amscript2; fi
 	make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
 
@@ -38,14 +48,14 @@ bin/%: $(ALL_OBJS) src/main/%.cpp
 	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
 
 # compiles a C source file from ./src
-build/%.o: src/%.c Amscript2/lib/libamscript2.a
+build/%.o: src/%.c Amscript2/lib/libamscript2.so
 	mkdir -p build/
 	#
 	# ----- C object ----- #
 	gcc $(CFLAGS) $< -c -o $@
 
 # compiles a C++ source file from ./src
-build/%.o: src/%.cpp Amscript2/lib/libamscript2.a
+build/%.o: src/%.cpp Amscript2/lib/libamscript2.so
 	mkdir -p build/
 	#
 	# ----- C++ object ----- #

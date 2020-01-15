@@ -17,11 +17,10 @@ using amscript2::ref_t;
 
 namespace {
 
+	int_t static_random = 0;
+
 	void set_random(int_t rnd, ScopeView& scope) {
-		scope.base()->defineGlobal(
-			ref_t("random"),
-			Definition::ptr(new ArrayDefinition(rnd))
-		);
+		static_random = rnd;
 	}
 
 	unsigned int xorshift_str(const std::string & src) {
@@ -80,6 +79,7 @@ namespace {
 
 	const Script base_script = []() {
 		Script r;
+		r.define(ref_t("random"), &static_random);
 		r.define(ref_t("random_set"), ext_random_set);
 		r.define(ref_t("random_choose"), ext_random_choose);
 		r.define(ref_t("random_number"), ext_random_number);

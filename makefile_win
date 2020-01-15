@@ -1,4 +1,4 @@
-COMMON_FLAGS = -g -pedantic -Wall -Wextra -Wpedantic -I./include -Lwlib -mwindows \
+COMMON_FLAGS = -O3 -DNDEBUG -Wpedantic -Wall -Wextra -Wpedantic -I./include -Lwlib -mwindows \
                -I./Amscript2/include -L./Amscript2/lib -mconsole
 CFLAGS = -std=gnu99 $(COMMON_FLAGS)
 CPPFLAGS = -std=gnu++17 $(COMMON_FLAGS)
@@ -12,6 +12,12 @@ ALL_OBJS =\
 	$(patsubst src/%.cpp, wbuild/%.o, $(CPP_SRCS))
 OPTS = $(shell cat make_opts_win)
 
+
+sneka.exe: wbin/snekaintest
+	ln -f "$<".exe "$@"
+	strip "$@"
+
+
 # compiles all objects, and creates executable files from ./src/main
 make_exec: $(ALL_MAIN_SRCS)
 
@@ -21,7 +27,7 @@ make_exec: $(ALL_MAIN_SRCS)
 # external Amscript2 dependency
 Amscript2/lib/libamscript2.a:
 	git submodule update --init Amscript2
-	make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
+	$(MAKE) --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
 
 # links all C source files from ./src/main
 wbin/%: $(ALL_OBJS) src/main/%.c

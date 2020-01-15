@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include <chrono>
 #include <map>
@@ -13,6 +14,9 @@
 #include "sneka/gridobject.hpp"
 #include "sneka/levelrenderer.hpp"
 #include "sneka/asset.hpp"
+
+#include "amscript/amscript2.hpp"
+#include "amscript/except.hpp"
 
 #include "runtime.hpp"
 #include "shader.hpp"
@@ -38,10 +42,6 @@
 #define CAM_DISTANCE         (1.0)
 #define CAM_HEIGHT           (2.0)
 #define CAM_PITCH            (1.1)
-#define CURVATURE            (-0.03)
-#define TILES                (30)
-#define OBJECTS              (250)
-#define DRUGS                (0.0)
 #define WORLD_MIN_Z          (0.2)
 #define WORLD_MAX_Z          (100.0)
 
@@ -71,6 +71,58 @@ using std::endl;
 namespace {
 
 	using namespace sneka;
+	using namespace amscript2;
+
+	struct Configuration {
+		int tiles = 30;
+		int objects = 250;
+		bool snap_rotation = false;
+		double drugs = 0.0;
+		double curvature = -0.03;
+
+		template<typename T>
+		static void getIOrDefault(Script& s, std::string ref, T& dest) {
+			std::vector<Value> v = s.invoke(Reference(ref), {});
+			if((! v.empty()) && ((bool) v.front())) {
+				dest = v.front().intValue();
+				std::cout << ref << " = " << dest << std::endl;
+			}
+		}
+		template<typename T>
+		static void getFOrDefault(Script& s, std::string ref, T& dest) {
+			std::vector<Value> v = s.invoke(Reference(ref), {});
+			if((! v.empty()) && ((bool) v.front())) {
+				dest = v.front().fracValue();
+				std::cout << ref << " = " << v.front().strValue() << std::endl;
+			}
+		}
+		static void getBOrDefault(Script& s, std::string ref, bool& dest) {
+			std::vector<Value> v = s.invoke(Reference(ref), {});
+			if((! v.empty()) && ((bool) v.front())) {
+				dest = v.front().intValue() != 0;
+				std::cout << ref << " = " << (dest? "true" : "false") << std::endl;
+			}
+		}
+
+		Configuration(std::string config_path) {
+			try {
+				std::ifstream config_file = std::ifstream(config_path);
+				if(config_file) {
+					Script config = Script("true:1 false:0");
+					config << Script(config_file);
+					getIOrDefault<int>(config, "tiles",         tiles);
+					getIOrDefault<int>(config, "objects",       objects);
+					getBOrDefault(config, "snap_rotation",      snap_rotation);
+					getFOrDefault<double>(config, "drugs",      drugs);
+					getFOrDefault<double>(config, "curvature",  curvature);
+				}
+			} catch(ParseException& ex) {
+				std::cerr
+						<< "Could not load \"" << config_path << "\" ("
+						<< ex.value << ");\nUsing default values.";
+			}
+		}
+	} cfg = Configuration("assets/config.ams");
 
 	glm::vec2 pos, pos_target;
 	glm::ivec2 ipos_target;
@@ -191,19 +243,27 @@ namespace {
 			int unsigned geni = 0;
 			do {
 				genpos = glm::ivec2(
-						gla::xorshift(rand + count + i + genj) % (unsigned int) tiles,
-						gla::xorshift(rand + i - count + genj) % (unsigned int) tiles );
+						gla::xorshift(rand + (i + genj)) % (unsigned int) tiles,
+						gla::xorshift(rand - (i + genj)) % (unsigned int) tiles );
 				genhash = hash_ivec2(genpos);
 				geni += 1;
-				genj += geni;
-				if(geni > 1000)
+				genj += gla::xorshift(geni*3);
+				if(geni > 8000)
 					throw std::runtime_error(
 							"Could not generate a random position for an object"
 							" (too many attempts)" );
 			} while(grid_objects.find(genhash) != grid_objects.end());
 
+			if(cfg.snap_rotation) {
+				newobj->setRotation(
+					(Direction::FORWARD + Direction::LEFT).radians() *
+					(genj % 16) );
+			} else {
+				newobj->setRotation(
+					(Direction::FORWARD + Direction::LEFT).radians() *
+					(static_cast<float>(genj % 16) / 16.0f) );
+			}
 			newobj->setGridPosition(genpos);
-			newobj->setRotation((Direction::FORWARD + Direction::LEFT).radians() * genj);
 			newobj->setColor(color);
 			newobj->shade = shade;
 			newobj->reflect = reflect;
@@ -281,8 +341,8 @@ int main(int argn, char** args) {
 
 	renderer = new LevelRenderer(
 			runtime,
-			floor, TILES,
-			CURVATURE, DRUGS );  TRACE;
+			floor, cfg.tiles,
+			cfg.curvature, cfg.curvature );  TRACE;
 	renderer->setClearColor(glm::vec3(COLOR_SKY));
 	renderer->setLightColor(glm::vec3(COLOR_LIGHT));
 	renderer->getFloorObject().setColor(glm::vec4(COLOR_FLOOR, 1.0f));
@@ -306,7 +366,7 @@ int main(int argn, char** args) {
 
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/pyrg.mesh"),  OBJECTS / 4, TILES,
+			mesh_loader.get("assets/pyrg.mesh"),  cfg.objects / 4, cfg.tiles,
 			OBJECT_COLOR_GOLD,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
@@ -315,7 +375,7 @@ int main(int argn, char** args) {
 			(float) OBJECT_REFLECT_N );
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/blocg.mesh"), OBJECTS / 4, TILES,
+			mesh_loader.get("assets/blocg.mesh"), cfg.objects / 4, cfg.tiles,
 			OBJECT_COLOR_GOLD,
 			(float) OBJECT_SHADE,
 			(float) OBJECT_REFLECT,
@@ -324,7 +384,7 @@ int main(int argn, char** args) {
 			(float) OBJECT_REFLECT_N );
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/bloc.mesh"), OBJECTS / 4, TILES,
+			mesh_loader.get("assets/bloc.mesh"), cfg.objects / 4, cfg.tiles,
 			glm::vec4(COLOR_FLOOR, 1.0f),
 			(float) FLOOR_SHADE,
 			(float) FLOOR_REFLECT,
@@ -333,7 +393,7 @@ int main(int argn, char** args) {
 			(float) FLOOR_REFLECT_N );
 	genObjects(
 			renderer,
-			mesh_loader.get("assets/pyr.mesh"), OBJECTS / 4, TILES,
+			mesh_loader.get("assets/pyr.mesh"), cfg.objects / 4, cfg.tiles,
 			glm::vec4(COLOR_FLOOR, 1.0f),
 			(float) FLOOR_SHADE,
 			(float) FLOOR_REFLECT,
@@ -381,25 +441,25 @@ int main(int argn, char** args) {
 		pos_target = ipos_target;
 
 		// normalize, to keep within bounds of the floor
-		if(ipos_target[0] > TILES) {
-			pos[0]         -= TILES;
-			ipos_target[0] -= TILES;
-			pos_target[0]  -= TILES;
+		if(ipos_target[0] > cfg.tiles) {
+			pos[0]         -= cfg.tiles;
+			ipos_target[0] -= cfg.tiles;
+			pos_target[0]  -= cfg.tiles;
 		}
 		if(ipos_target[0] < 0) {
-			pos[0]         += TILES;
-			ipos_target[0] += TILES;
-			pos_target[0]  += TILES;
+			pos[0]         += cfg.tiles;
+			ipos_target[0] += cfg.tiles;
+			pos_target[0]  += cfg.tiles;
 		}
-		if(ipos_target[1] > TILES) {
-			pos[1]         -= TILES;
-			ipos_target[1] -= TILES;
-			pos_target[1]  -= TILES;
+		if(ipos_target[1] > cfg.tiles) {
+			pos[1]         -= cfg.tiles;
+			ipos_target[1] -= cfg.tiles;
+			pos_target[1]  -= cfg.tiles;
 		}
 		if(ipos_target[1] < 0) {
-			pos[1]         += TILES;
-			ipos_target[1] += TILES;
-			pos_target[1]  += TILES;
+			pos[1]         += cfg.tiles;
+			ipos_target[1] += cfg.tiles;
+			pos_target[1]  += cfg.tiles;
 		}
 
 		if(speed_boost > 0.0f) {

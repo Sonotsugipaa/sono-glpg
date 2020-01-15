@@ -1,0 +1,8 @@
+tiles: 80
+objects: 2600
+curvature: -0.04
+drugs: 0.1
+
+/* the "false" symbol is not resolved correctly due to an unknown bug,
+ * so a function definition has to be used instead of an array definition */
+snap_rotation(): { false }
