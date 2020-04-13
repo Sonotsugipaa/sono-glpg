@@ -9,12 +9,12 @@ nothing:
 
 # external Amscript2 dependency
 Amscript2/lib/libamscript2.a:
-	git submodule update --init Amscript2
-	make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
+	@git submodule update --init Amscript2
+	@make --directory="Amscript2" $(patsubst Amscript2/%,%,$@)
 
 # links all C++ source files from ./src/main
 bin/%: $(ALL_OBJS) src/main/%.cpp
-	mkdir -p bin/
+	@mkdir -p bin/
 	#
 	# ----- C++ executable ----- #
 	g++ $(CPPFLAGS) -o"$@" $^ $(OPTS)
@@ -28,14 +28,14 @@ build/%.o: src/%.cpp
 
 .PHONY: lib/libmodule_%.a wlib/libmodule_%.a
 lib/libmodule_%.a: src/%/makefile
-	mkdir -p lib/
+	@mkdir -p lib/
 	make --makefile=$< $@
 wlib/libmodule_%.a: src/%/makefile
-	mkdir -p wlib/
+	@mkdir -p wlib/
 	make --makefile=$< $@
 
 bin/asset.%: src/test/%.cpp lib/libmodule_asset.a lib/libmodule_util.a
-	mkdir -p bin/
+	@mkdir -p bin/
 	g++ $(CPPFLAGS) $< -o $@ -lmodule_asset -lmodule_util
 
 setup: purge
