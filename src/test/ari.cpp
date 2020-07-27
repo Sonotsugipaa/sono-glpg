@@ -5,12 +5,13 @@
 
 
 
-const std::string ari_str[5] = {
+const std::string ari_str[6] = {
 	"mesh:/lvl1",
 	"mesh:local/lvl1",
 	"mesh:local/",
 	"mesh:/",
-	":/lvl1"
+	":/lvl1",
+	":/"
 };
 const std::string ari_null = "level:/";
 const std::string ari_valid = ":/local";
