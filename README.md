@@ -3,10 +3,14 @@
 <p> <table>
 	<tr> <th> <strong>IMPORTANT</strong>: </th> </tr>
 	<tr> <td>
-		The project is being completely re-worked. <br/>
-		To see the source files of the existing playable graphics demo,
-		switch to the Git branch "<b>legacy</b>"; <br/>
-		to play it, download it in the Github repository's <i>releases</i> page.
+		This project is dead, I have deleted some of its dependencies
+		(written by me) because they were so badly structured and
+		implemented that they were barely even buildable, and they
+		definitely were an embarassment. I'm keeping this repository
+		so that I can salvage some code in the future, but if I am
+		to work on the same concept (and I probably will) I'll do
+		this from scratch. Not <i>that</i> Scratch, I'll use the
+		Vulkan API.
 	</td> </tr>
 </table> </p> <p>
 A hobby project for a simple knock-off of a Snake game,
